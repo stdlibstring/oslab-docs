@@ -7,7 +7,23 @@
 * [shelllab](./docs/shelllab/)：实现简单的 Shell。
 * [malloclab](./docs/malloclab/)：实现简单的内存分配器。
 
+另外，[todo.md](./docs/todo.md) 中记录了一些待完成事项。
 
 书写规范：
 
 * 注意图片引用使用相对路径而不是绝对路径。
+
+## 生成和测试
+
+本项目使用 MkDocs 构建。使用下面命令可生成静态网站：
+
+```bash
+mkdocs build
+```
+
+使用下面命令在本地运行网站，进行测试：
+
+```bash
+mkdocs serve -a localhost:8000   # 可将8000改为其它端口
+```
+
