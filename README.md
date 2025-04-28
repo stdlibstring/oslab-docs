@@ -27,3 +27,9 @@ mkdocs build
 mkdocs serve -a localhost:8000   # 可将8000改为其它端口
 ```
 
+## 致谢
+
+本文档参考了以下项目：
+
+* [计算机系统结构系列实验文档](https://soc.ustc.edu.cn/)
+* [USTC VLab 使用文档](https://vlab.ustc.edu.cn/docs/)（[仓库](https://github.com/USTC-vlab/docs)）
