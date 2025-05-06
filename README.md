@@ -6,6 +6,7 @@
 * [syscalllab](./docs/syscalllab/)：为 Linux 内核添加系统调用。
 * [shelllab](./docs/shelllab/)：实现简单的 Shell。
 * [malloclab](./docs/malloclab/)：实现简单的内存分配器。
+* [ohlab](./docs/ohlab/)：OpenHarmony实现简单的端侧推理。
 
 另外，[todo.md](./docs/todo.md) 中记录了一些待完成事项。
 
