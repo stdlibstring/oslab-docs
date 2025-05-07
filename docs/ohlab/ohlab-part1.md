@@ -163,8 +163,6 @@ OpenHarmony 是 HarmonyOS（华为鸿蒙操作系统）的开源基础版本。�
 - 性能适中: 其硬件配置足以流畅运行 OpenHarmony 标准系统，并能够承载我们本次实验中编译 C++ 代码、运行中小型语言模型（如 Llama.cpp 在 CPU 上推理）的需求。
 > 主要是HUAWEI推荐的╮(╯▽╰)╭
 
-
-
 ### 1.2.2 开发板的使用
 
 在发放的开发板中，有以下物品:
@@ -182,7 +180,7 @@ OpenHarmony 是 HarmonyOS（华为鸿蒙操作系统）的开源基础版本。�
 
 ### 1.2.3 开发板使用规范
 
-开发板的使用采用分组负责人制度。即三人一组，由一人担任负责人并且保管开发板，发放和回收开发板向负责人进行。
+开发板的使用采用分组负责人制度。即三人一组，由一人担任负责人并且保管开发板，发放和回收开发板向负责人进行
 
 <div STYLE="page-break-after: always;"></div>
 
@@ -203,8 +201,7 @@ RK3568 开发板的烧录软件目前**只支持 Windows 系统**，请在 Windo
 
 2. 下载烧录工具和驱动
 
-* [DAYU200 烧录工具](https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/DAYU200%E7%83%A7%E5%86%99%E5%B7%A5%E5%85%B7%E5%8F%8A%E6%8C%87%E5%8D%97.zip)
-  下载后解压到文件夹即可
+* [DAYU200 烧录工具](https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/DAYU200%E7%83%A7%E5%86%99%E5%B7%A5%E5%85%B7%E5%8F%8A%E6%8C%87%E5%8D%97.zip) 下载后解压到文件夹即可
 
 3. 准备编译镜像
 
@@ -462,15 +459,15 @@ OpenHarmony支持多种开发语言和方式：
 
 ## 4.1 实验内容
 
-1. 将提供的 Openharmony5.0 全量标准系统烧录到开发板中，**体验完整版 OpenHarmony 系统**。(参考[2.1 OH烧录](# 2.1 OH烧录))
+1. 将提供的 Openharmony5.0 全量标准系统烧录到开发板中，**体验完整版 OpenHarmony 系统**。(参考[2.1 OH烧录](## 2.1 OH烧录))
 
-2. 尝试使用HDC安装提供的应用,下载链接：https://rec.ustc.edu.cn/share/dfbc3380-2b3c-11f0-aee2-27696db61006 ，名称为`OpenHarmony实验素材 > 第一阶段素材> ImageIdentificationDemo.hap`(参考[2.2 OH命令行工具hdc](# 2.2 OH命令行工具hdc))
+2. 尝试使用HDC安装提供的应用,下载链接：https://rec.ustc.edu.cn/share/dfbc3380-2b3c-11f0-aee2-27696db61006 ，名称为`OpenHarmony实验素材 > 第一阶段素材> ImageIdentificationDemo.hap`(参考[2.2 OH命令行工具hdc](## 2.2 OH命令行工具hdc))
 
   > 在2.2.4中，提供了一个Hap包，用于去网络上找图片（通过开发板的截图功能可以存储到图库中）
   > 
   > 此处安装的Hap为图片识别Demo,点击Photo可以从图库中选择一张图片进行识别，效果如下所示
   > ![alt text](./assets/4.1/1.png)
-3. 安装DevEco Studio，并尝试创建名为自己学号的空白Demo（例如PB23011000）在开发板运行。(参考[3.1 DevEco Studio的安装](# 3.1 在 Windows 上安装 DevEco Studio))
+3. 安装DevEco Studio，并尝试创建名为自己学号的空白Demo（例如PB23011000）在开发板运行。(参考[3.1 DevEco Studio的安装](## 3.1 在 Windows 上安装 DevEco Studio))
 
 
 ## 4.2 实验评分标准

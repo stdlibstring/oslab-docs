@@ -80,7 +80,7 @@ $ unzip native-linux-x64-5.0.3.135-Release.zip
 - OpenHarmony Native SDK 路径： ~/native (请根据您的实际解压路径调整)
   - 交叉编译器路径 (示例): ~/native/llvm/bin/armv7-unknown-linux-ohos-clang++
 1. 在宿主机1(Ubuntu) 上创建源代码文件：
-打开终端，创建一个名为`mylib.cpp`的文件，在该文件中编写一个简单的减法函数如下：
+   打开终端，创建一个名为`mylib.cpp`的文件，在该文件中编写一个简单的减法函数如下：
 
     ```cpp
     // 使用 extern "C" 可以防止 C++ 编译器的名称修饰 (name mangling),
@@ -99,29 +99,29 @@ $ unzip native-linux-x64-5.0.3.135-Release.zip
     ```cpp
     #ifndef MYLIB_H
     #define MYLIB_H
-
+    
     #ifdef __cplusplus
     extern "C" {
     #endif
-
+    
     // 声明库中导出的函数
     double minus_numbers_in_lib(double a,double b)
-
+    
     #ifdef __cplusplus
     }
     #endif
-
+    
     #endif // MYLIB_H
     ```
 3. 将源代码交叉编译为动态链接库 (.so 文件):
 
-    执行以下命令将 mylib.cpp 编译成名为 libmylib.so 的32位动态链接库。
+    执行以下命令将 mylib.cpp 编译成名为 libmylib.so 的32位和64位动态链接库。
     
     **请务必将命令中的 SDK 路径替换为实际的路径。**
     ```sh
     # 进入源代码所在目录 (如果不在该目录)
     # cd <your_source_code_directory>
-
+    
     # 执行交叉编译命令,分别编译32位和64位动态链接库
     $ ~/native/llvm/bin/armv7-unknown-linux-ohos-clang++ mylib.cpp -o libmylib32.so -shared -fPIC
     $ ~/native/llvm/bin/aarch64-unknown-linux-ohos-clang++ mylib.cpp -o libmylib64.so -shared -fPIC
@@ -170,7 +170,7 @@ $ unzip native-linux-x64-5.0.3.135-Release.zip
 > 
 > Q: 为什么需要编译两种架构（32位和64位）的动态链接库？
 >
-> A: DAYU200开发板运行的OpenHarmony为32位架构，所以32位的动态链接库是必须的，但是IDE要求我们同时提供32位和64位的动态链接库（详见3.1.2的问题4），所以我们也需要编译64位的动态链接库。
+> A: DAYU200开发板运行的OpenHarmony为32位架构，所以32位的动态链接库是必须的，但是IDE要求我们同时提供32位和64位的动态链接库（详见第一部分3.1.2的问题4），所以我们也需要编译64位的动态链接库。
 > 
 > Q: 为什么要修改CmakeLists.txt文件？CmakeLists.txt文件是做什么的？
 >
@@ -184,7 +184,7 @@ $ unzip native-linux-x64-5.0.3.135-Release.zip
 
 编译 Llama.cpp 的过程与我们刚刚完成的动态库示例在概念上是高度一致的：
 
-1. Llama.cpp 核心代码会被交叉编译成多个动态链接库 (通常是 libllama.so，libgguf.so等)。这对应我们示例中的 libmylib.so。编译时同样需要 -shared 和 -fPIC 选项。
+1. Llama.cpp 核心代码会被交叉编译成多个动态链接库 (通常是 libllama.so，libgguf.so等)。这对应我们示例中的 libmylib.so。编译时同样需要 -shared 和 -fPIC 选项。（但是由于使用cmake编译，这些选项被隐藏了）
 2. Llama.cpp 项目会提供多个头文件 (通常为 llama.h，gguf.h等)。这对应我们示例中的 mylib.h。
 3. 使用时，需要把编译好的 libllama.so 等动态链接库放到项目目录中，并确保可执行程序能够找到 libllama.so等链接库。
 
@@ -376,20 +376,20 @@ CMake 对交叉编译提供了优秀的支持，主要通过`工具链文件 (To
 
 1. **定义 OpenHarmony SDK 路径 (重要！)**：
 在终端中，首先定义一个指向你的 OpenHarmony Native SDK 在 Linux 环境下的根目录的环境变量。请将 <你的OHOS SDK Linux Native部分的根路径> 替换为你 SDK 的实际路径。
-```bash
-# 示例路径，请务必根据您的实际情况修改！！！
-export OHOS_SDK_LINUX_NATIVE_ROOT="/home/kon/native" 
+    ```bash
+    # 示例路径，请务必根据您的实际情况修改！！！
+    export OHOS_SDK_LINUX_NATIVE_ROOT="/home/kon/native" 
 
-# 验证路径 (可选)
-echo "OpenHarmony SDK Linux Native Root: ${OHOS_SDK_LINUX_NATIVE_ROOT}"
-ls "${OHOS_SDK_LINUX_NATIVE_ROOT}/build-tools/cmake/bin/cmake" || echo "SDK bundled CMake not found!"
-ls "${OHOS_SDK_LINUX_NATIVE_ROOT}/build/cmake/ohos.toolchain.cmake" || echo "OHOS Toolchain file not found!"
-```
+    # 验证路径 (可选)
+    echo "OpenHarmony SDK Linux Native Root: ${OHOS_SDK_LINUX_NATIVE_ROOT}"
+    ls "${OHOS_SDK_LINUX_NATIVE_ROOT}/build-tools/cmake/bin/cmake" || echo "SDK bundled CMake not found!"
+    ls "${OHOS_SDK_LINUX_NATIVE_ROOT}/build/cmake/ohos.toolchain.cmake" || echo "OHOS Toolchain file not found!"
+    ```
 确保 `OHOS_SDK_LINUX_NATIVE_ROOT` 变量设置正确，并且其下的 CMake 和工具链文件存在。
 
 2. 使用OpenHarmony SDK生成编译文件:
     ```sh
-    #  ${OHOS_SDK_LINUX_NATIVE_ROOT}/build-tools/cmake/bin/cmake \
+    ${OHOS_SDK_LINUX_NATIVE_ROOT}/build-tools/cmake/bin/cmake \
         -B build-ohos \
         -DCMAKE_TOOLCHAIN_FILE=${OHOS_SDK_LINUX_NATIVE_ROOT}/build/cmake/ohos.toolchain.cmake \
         -DOHOS_ARCH=armeabi-v7a \
@@ -407,8 +407,8 @@ ls "${OHOS_SDK_LINUX_NATIVE_ROOT}/build/cmake/ohos.toolchain.cmake" || echo "OHO
 
 3. 编译Llama.cpp生成动态链接库与头文件:
     ```sh
-    # ${OHOS_SDK_LINUX_NATIVE_ROOT}/build-tools/cmake/bin/cmake  --build build-ohos --config Debug -j
-    # ${OHOS_SDK_LINUX_NATIVE_ROOT}/build-tools/cmake/bin/cmake --install build-ohos --prefix "build-ohos/install"
+    ${OHOS_SDK_LINUX_NATIVE_ROOT}/build-tools/cmake/bin/cmake  --build build-ohos --config Debug -j
+    ${OHOS_SDK_LINUX_NATIVE_ROOT}/build-tools/cmake/bin/cmake --install build-ohos --prefix "build-ohos/install"
     ```
 4. 查找编译产物：
 
@@ -452,7 +452,7 @@ build-ohos/install/lib/libllama.so: ELF 32-bit LSB shared object, ARM, EABI5 ver
 
 ## 4.1 实验内容
 
-1. 交叉编译llama.cpp得到32位的动态链接库`libllama.so,libggml-base.so,libggml-cpu.so,libggml.so,libllama.so,libllava_shared.so`(参考3.1.2)
+1. 交叉编译llama.cpp得到32位的动态链接库`libllama.so,libggml-base.so,libggml-cpu.so,libggml.so,libllama.so,libllava_shared.so`与头文件(参考3.1.2)
 2. 将llama.cpp的编译产物集成到Demo HAP中(参考3.1.3)
 3. 在DAYU200上运行Demo HAP(参考**第一阶段**3.1.3)
 
@@ -484,6 +484,7 @@ build-ohos/install/lib/libllama.so: ELF 32-bit LSB shared object, ARM, EABI5 ver
     - 防止内存溢出 (Out-Of-Memory, OOM)： 在物理内存完全用尽时，避免系统因无法分配内存而直接崩溃或杀死重要进程。
 
 **如何创建交换分区？**
+
 ```sh
 # hdc shell 进入开发板执行
 cd data/llama_file
