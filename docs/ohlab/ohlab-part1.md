@@ -1,11 +1,11 @@
-# 移动操作系统与端侧AI推理初探
+# 移动操作系统与端侧AI推理初探-移动操作系统(part1)
 
 ## 实验目的
 
-- 了解：一个真正 “实用” 的操作系统还需要什么？
+- 了解一个真正 “实用” 的操作系统还需要什么？
 - 了解开源鸿蒙整体框架并尝试使用开源鸿蒙
-- 了解移动操作系统应用开发流程（Native c++）
-- 学会交叉编译出动态链接库并且在应用开发时使用
+- 了解移动操作系统应用开发流程
+- 学会如何使用HDC安装应用
 
 
 ## 实验环境
@@ -19,7 +19,12 @@
 ## 实验时间安排
 
 > 注：此处为实验发布时的安排计划，请以课程主页和课程群内最新公告为准
-> 此次实验只有两周时间
+>
+> 注: 所有的实验所需要的素材都可以在睿客网盘链接：https://rec.ustc.edu.cn/share/dfbc3380-2b3c-11f0-aee2-27696db61006 中找到。
+>
+> 此次实验只有两周时间，本文档为第一阶段的实验文档，阅读完毕后可以直接开始做第一阶段的实验,在第一周检查时可以获得额外奖励分╰(\*°▽°\*)╯
+>
+> 奖励分不会超过本次实验满分，所以你也可以选择两个阶段一起在第二周检查。
 
 -  5.16晚实验课，讲解实验、检查实验
 -  5.23晚实验课，检查实验
@@ -191,20 +196,19 @@ RK3568 开发板的烧录软件目前**只支持 Windows 系统**，请在 Windo
 
 ### 2.1.1烧录前准备
 
-#### 1.连接开发板
+1. 连接开发板
 
 * 按照下图提示连接**电源线**和**USB烧写线**
+  <img src=".\assets\连接示意图.png" alt="连接示意图" style="zoom:80%;" /> 
 
-  <img src=".\assets\连接示意图.png" alt="连接示意图" style="zoom:80%;" />
-
-#### 2.下载烧录工具和驱动
+2. 下载烧录工具和驱动
 
 * [DAYU200 烧录工具](https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/DAYU200%E7%83%A7%E5%86%99%E5%B7%A5%E5%85%B7%E5%8F%8A%E6%8C%87%E5%8D%97.zip)
   下载后解压到文件夹即可
 
-#### 3.准备编译镜像
+3. 准备编译镜像
 
-* 下载Openharmony4.0全量系统镜像。镜像下载地址：
+* 下载Openharmony5.0全量系统镜像。镜像下载地址：
 
   * 推荐链接：https://rec.ustc.edu.cn/share/cee67650-2a59-11f0-8d78-415e39d48777
 
@@ -266,13 +270,13 @@ RK3568 开发板的烧录软件目前**只支持 Windows 系统**，请在 Windo
 
      <img src=".\assets\image-20240416113523492.png" alt="image-20240416113523492" style="zoom:80%;" />
 
-### 2.2 OH命令行工具hdc
+## 2.2 OH命令行工具hdc
 
-#### 2.2.1 hdc概述
+### 2.2.1 hdc概述
 
 * `hdc`（OpenHarmony Device Connector）是为开发人员提供的用于设备连接调试的命令行工具，该工具需支持部署在Windows/Linux/Mac等系统上与OpenHarmony设备（或模拟器）进行连接调试通信。简言之，hdc是OpenHarmony提供的用于开发人员调试硬件、应用的命令行工具，用在电脑与开发板之间的交互。适用于OpenHarmony应用、硬件开发及测试人员,是每个开发人员的必备、入门工具。
 
-#### 2.2.2 环境准备
+### 2.2.2 环境准备
 
 * 支持运行环境：`windows 10、ubuntu 18.04`以上 `64bit` 版本（下面以Windows11为例）
 
@@ -290,22 +294,22 @@ RK3568 开发板的烧录软件目前**只支持 Windows 系统**，请在 Windo
 
      <img src=".\assets\image-20240416151246106.png" alt="image-20240416151246106" style="zoom:80%;" />
 
-#### 2.2.3 运行hdc
+### 2.2.3 运行hdc
 
 * 打开`cmd`窗口，执行 `hdc shell` 就进入了命令交互界面。
 * 你也可以使用 PowerShell 或者其它 Windows 下的 Shell，用同样的方法使用`hdc`。
 
 <img src=".\assets\image-20240416151431461.png" alt="image-20240416151431461" style="zoom:80%;" />
 
-#### 2.2.4 使用hdc安装应用
+### 2.2.4 使用hdc安装应用
 在 2.1 节中我们成功为 DAYU200 开发板烧录了 OpenHarmony 5.0 标准系统镜像。启动后您可能会发现，这个初始系统非常“干净”，甚至没有预装“应用市场”或“浏览器”等常用工具。这导致我们暂时无法直接在开发板上访问网络资源或下载其他应用。
 
 本节将介绍如何解决这个问题：使用 hdc (HarmonyOS Device Connector) 工具从你的开发主机（电脑）将预先下载好的 HAP 应用包安装到开发板上。HAP (HarmonyOS Ability Package) 是 OpenHarmony 应用的安装包格式。
 
 1. 下载浏览器 HAP 包：[https://rec.ustc.edu.cn/share/f3d8ecf0-2a5b-11f0-b666-7b853ad445dc](https://rec.ustc.edu.cn/share/f3d8ecf0-2a5b-11f0-b666-7b853ad445dc)
-2. 确保您的 DAYU200 开发板已通过 USB Type-C 线连接到电脑,并且2.2.3中可以链接到shell。确认连接正常后，使用 hdc install 命令来安装您下载的 HAP 文件。请将下面命令中的 <您下载的HAP文件路径> 替换为您 实际保存 HAP 文件的完整路径。
+2. 确保您的 DAYU200 开发板已通过 USB Type-C 线连接到电脑,并且2.2.3中可以链接到shell。确认连接正常后，使用 hdc install 命令来安装您下载的 HAP 文件。请将下面命令中的 <您下载的HAP文件路径> 替换为你实际保存 HAP 文件的完整路径。
 ```bash
-hdc install <您下载的HAP文件路径>
+hdc install <下载的HAP文件路径>
 
 示例：
 $ hdc install D:\Downloads\Browser.hap
@@ -317,6 +321,7 @@ AppMod finish
 通过这种 hdc 侧载安装的方式，我们可以为初始的 OpenHarmony 系统补充必要的工具或部署我们开发的应用程序，即使在没有应用市场的情况下也能进行有效的开发和测试。
 
 <div STYLE="page-break-after: always;"></div>
+
 
 # 第三部分 安装DevEco Studio部署开发环境
 
@@ -343,7 +348,7 @@ DevEco Studio 是 HUAWE 推出的官方集成开发环境（IDE），用于 Harm
   - 如果已经打开了工程，可以在菜单栏选择File > New > Create Project来创建一个新NDK工程。
 2. 根据工程创建向导，选择Native C++工程模板，然后单击Next。
 ![创建项目](./assets/3.1.2/1.png)
-3. 在`Configure Your Project`页面可以修改`Project Name`与项目目录，然后单击Finish。
+3. 在`Configure Your Project`页面可以修改`Project Name`与项目目录，然后单击Finish。（这里Project Name推荐修改为自己的学号）
 
 4. 项目目录主要文件说明
   - entry：应用模块，编译构建生成一个HAP。
@@ -358,22 +363,22 @@ DevEco Studio 是 HUAWE 推出的官方集成开发环境（IDE），用于 Harm
 6. 登录华为账号用于对项目签名。点击`File > Project Structure > Project > Signing Configs`,界面勾选`Support HarmonyOS` 和 `Automatically generate signing`，等待自动签名完成即可,下图为成功登录后的结果
 ![登录账号](./assets/3.1.2/3.png)
 7. **安装完毕SDK后**,修改项目配置文件`build-profile.json5`,修改内容如下所示(有些选项可能原本配置文件中不存在，直接添加即可)
-```text
-# 修改前的内容
-        "compatibleSdkVersion": "5.0.2(14)",
-        "runtimeOS": "HarmonyOS",
-# 修改后的内容
-        "compatibleSdkVersion": 14,
-        "compileSdkVersion": 14,
-        "targetSdkVersion": 14,
-        "runtimeOS": "OpenHarmony"
-```
-![修改配置文件](./assets/3.1.2/4.png)
+    ```text
+    # 修改前的内容
+            "compatibleSdkVersion": "5.0.2(14)",
+            "runtimeOS": "HarmonyOS",
+    # 修改后的内容
+            "compatibleSdkVersion": 14,
+            "compileSdkVersion": 14,
+            "targetSdkVersion": 14,
+            "runtimeOS": "OpenHarmony"
+    ```
+    ![修改配置文件](./assets/3.1.2/4.png)
 8. **安装完毕SDK后**,修改项目配置文件`entry/build-profile.json5`,修改内容如下所示
-```text
-"abiFilters": ["armeabi-v7a","arm64-v8a"]
-```
-![修改配置文件](./assets/3.1.2/5.png)
+    ```text
+    "abiFilters": ["armeabi-v7a","arm64-v8a"]
+    ```
+    ![修改配置文件](./assets/3.1.2/5.png)
 9. 在6和7中，修改配置文件时，在编辑界面有提示需要同步项目文件，直接点击`sync now`即可
 ![sync](./assets/3.1.2/6.png)
 > 这里应该会有同学吐槽，为什么这么麻烦，下面将一一解释
@@ -408,183 +413,74 @@ DevEco Studio 是 HUAWE 推出的官方集成开发环境（IDE），用于 Harm
 通过3.1.2创建的项目可以通过模拟器运行，**后续提供的Demo无法使用模拟器运行**
 
 1. 选择运行方式（模拟器/开发板）
-2. 点击绿色三角形运行按钮，选择显示模型2in1,即可运行项目（项目有两个页面，运行时显示`Hello World`，点击`Hello World`后页面变成`Welcome`，在其背后会计算2+3的值并且输出到日志中），下面为点击`Hello World`后的结果
+2. 点击绿色三角形运行按钮，选择显示模型,随便选择一个,即可运行项目（项目有两个页面，运行时显示`Hello World`，点击`Hello World`后页面变成`Welcome`，在其背后会计算2+3的值并且输出到日志中），下面为点击`Hello World`后的结果
 ![运行截图](./assets/3.1.2/8.png)
-3. 如果选择通过开发板运行，直接点击开发板上的`Hello World`即可。IDE会将软件安装到开发板上，回到开发板系统主页可以看到
+3. 如果选择通过开发板运行，直接点击开发板上的`Hello World`即可。IDE会将软件安装到开发板上，回到开发板系统主页可以看到名为lable的图标。
 
 > 由于移动操作系统应用没有终端，不会将输出结果通过`printf`显示到终端上,所以调试一般通过日志得到(Lab2中曾接触过)。
 
-## 3.2  在 Ubuntu 上准备 OpenHarmony Native SDK
-本次实验的核心任务之一是交叉编译 C++ 代码库（Llama.cpp）。这个过程需要在 Linux 环境下进行，并且需要一套特定的交叉编译工具链和 OpenHarmony 系统库/头文件（统称为 Native SDK 或 Toolchain）。这套工具运行在您的 Ubuntu 系统上，但其编译产生的目标代码是运行在 DAYU200 (arm32 架构) 上的 OpenHarmony 系统。
+## 3.2 OpenHarmony 应用开发方式简介 (聚焦 Native C++)
+在 3.1 节中我们了解了可选的集成开发环境 DevEco Studio 的安装。无论我们是否在 Windows 上使用完整的 IDE 进行所有开发工作，理解 OpenHarmony 应用是如何构建的，以及我们实验中重点关注的 Native C++ 代码如何融入其中，都至关重要。
 
-1. 使用wget下载OpenHarmony Native SDK
+本节将介绍 OpenHarmony 应用的整体开发流程，并引入一些核心概念，为后续的 Native C++ 实践（如交叉编译和集成 Llama.cpp）打下基础。
 
-    下载地址:https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/native-linux-x64-5.0.3.135-Release.zip
-  
-2. 解压，注意解压目录，后续需要使用
-```sh
-$ unzip native-linux-x64-5.0.3.135-Release.zip
-```
+### 3.2.1 OpenHarmony 应用的基本构成
 
-> 这里估计又会有疑问，在3.1步中明明下载过SDK，为什么这里还需要下载SDK?
->
-> 最主要原因为Linux和Windows使用的链接库不同，在开发板运行的OpenHarmony的内核是Linux，所以我们需要在Linux上编译出链接库使用，并且我们这里只使用了Native SDK，即编译CPP程序需要的工具，而在3.1步中，我们还下载了编译前端的SDK
-## 3.2 交叉编译应用过程
+1. 应用包 (Application Package - HAP):
 
-> ❗注意：本部分采用Hello World程序演示步骤，与实验检查要求需要编译的应用不一样，请仔细阅读实验评分标准。
+- HAP是OpenHarmony应用编译、分发和安装的基本单位。一个HAP文件（以.hap为后缀）包含了应用代码、资源文件、第三方库和配置文件。你可以把它类比为Android的APK包或iOS的IPA包。
 
-在前面的步骤中，我们已经在 Ubuntu 系统上准备了 OpenHarmony Native SDK，其中包含了针对 DAYU200 开发板（arm32架构）的交叉编译工具链和系统库。现在，我们将深入理解什么是交叉编译，并实践一个简单的交叉编译过程。
+- 一个应用可以由一个或多个HAP包组成，这些HAP包共同构成一个Bundle (应用束)。通常，一个Bundle对应用户在设备上看到的“一个应用”。
 
-### 3.2.0 什么是交叉编译
+2. Ability:
 
-**编译 (Compilation)** 大家可能比较熟悉，它是指将人类可读的源代码（如 C、C++、Java 代码）转换成计算机处理器能够直接执行的机器码（可执行文件或库文件）的过程。这个过程通常由编译器在本机完成，例如，在你的 x86 架构的 Windows 电脑上用 Visual Studio 编译一个 Windows 程序，或者在你的 x86 架构的 Ubuntu 系统上用 GCC 编译一个 Linux 程序。这种在当前系统架构下编译出可运行于当前系统架构的程序的方式，我们称之为**本地编译 (Native Compilation)**。
+- Ability是OpenHarmony应用最重要的、最核心的构成单元，代表了应用提供的一个特定功能或能力的抽象。 每个Ability都是可以独立运行和交互的实体。你可以把Ability看作是应用与系统或其他应用交互的“触点”。
 
-**交叉编译 (Cross-Compilation)** 则有所不同。它是指：**在一个特定的硬件架构和操作系统（我们称之为“宿主机”或“Host”）上，编译产生能够运行在另一个不同硬件架构和/或操作系统（我们称之为“目标机”或“Target”）上的可执行代码的过程。**
+- OpenHarmony提供了多种类型的Ability，以满足不同的业务场景：
+  - Page Ability: 用于展示页面，提供用户界面。
+  - Service Ability: 用于提供后台服务，不直接与用户交互。
+  - Data Ability: 用于提供数据访问服务，通常用于与其他应用共享数据。
 
-- **宿主机 (Host)**: 通常是开发者使用的、计算能力较强的计算机，例如我们实验中使用的运行 Ubuntu 24.04 的 x86_64 架构 PC。
-- **目标机 (Target)**: 是我们希望最终运行我们程序的设备，例如我们实验中使用的运行 OpenHarmony 的 DAYU200 开发板，其处理器是 ARMv7a(armeabi32) 架构。
+### 3.2.2 开发方式概述
+OpenHarmony支持多种开发语言和方式：
+1. ArkTS/JS (主要UI和应用逻辑开发):
 
-### 3.2.1 为什么需要交叉编译
-在嵌入式系统和移动设备开发中，交叉编译非常普遍且必要，主要原因包括：
+  - OpenHarmony推荐使用ArkTS (一种基于TypeScript并对其进行扩展的语言) 配合其声明式的ArkUI框架来开发应用的UI界面和主要的上层业务逻辑。这种方式开发效率高，生态工具支持也比较完善，类似于其他现代移动平台上的主流UI开发范式。
+2. Native C/C++ (高性能模块、底层库、复用现有代码):
 
-1. 目标机资源受限： 像 DAYU200 这样的开发板或许多嵌入式设备，其处理器性能、内存大小、存储空间都远不如桌面PC。在这些设备上直接进行大型项目（如操作系统内核、复杂的 C++ 应用如 Llama.cpp）的编译会非常缓慢，甚至因资源不足而无法完成。
-2. 目标机缺乏开发环境： 很多目标设备可能没有安装编译器、链接器、库文件等完整的开发工具链。它们被设计为运行特定应用，而不是进行软件开发。(OpenHarmony中没有开发工具链)
-3. 开发效率和便利性： 开发者通常更习惯在功能强大、工具齐全的PC上进行代码编写、调试和项目管理。交叉编译使得开发者可以在熟悉的开发环境中为资源受限或环境不同的目标设备构建软件。
-4. 特定架构需求： 有些软件就是为特定非主流架构设计的，开发者可能没有该架构的物理机器用于本地编译。
-### 3.2.2 交叉编译示例：为 DAYU200 编译和使用动态链接库
-在此示例中，我们将创建一个简单的动态链接库，并将其放入3.1部分的Demo，编译运行。
-环境假设：
+- 对于性能要求极高、需要直接访问硬件资源、或者希望复用现有成熟C/C++代码库（例如游戏引擎、音视频编解码库、AI计算库等）的场景，OpenHarmony提供了完整的Native C/C++开发支持。
 
-- 宿主机1： Vmware上的Ubuntu 24.04 (x86_64)
-- 宿主机2： Windows 10/11 (x86_64)
-- 目标机： DAYU200 开发板 (arm32)，运行 OpenHarmony 5.0 标准系统
-- OpenHarmony Native SDK 路径： ~/native (请根据您的实际解压路径调整)
-  - 交叉编译器路径 (示例): ~/native/llvm/bin/armv7-unknown-linux-ohos-clang++
-1. 在宿主机1(Ubuntu) 上创建源代码文件：
-打开终端，创建一个名为`mylib.cpp`的文件，在该文件中编写一个简单的打印和加法函数如下：
+- 这正是我们本次实验集成Llama.cpp所采用的方式。 Llama.cpp本身是用C++编写的高性能AI推理库，通过Native方式集成可以最大程度地发挥其性能。
 
-    ```cpp
-    // 使用 extern "C" 可以防止 C++ 编译器的名称修饰 (name mangling),
-    // 使得这些函数更容易被 C 语言或其他语言调用, 或者在不同 C++ 编译器间保持一致性。
-    // 对于纯 C++ 内部使用, 且主程序也用同一编译器编译时, 这并非总是必需, 但作为库导出是一种良好实践。
-    extern "C" {
-        double minus_numbers_in_lib(double a,double b) {
-            return a - b;
-        }
-    }
-    ```
-2. 为库创建头文件(mylib.h):
+这两种方式并非互斥，一个复杂的应用通常会结合使用：用ArkTS/JS构建美观易用的用户界面和上层逻辑，用C/C++实现核心的高性能计算模块并通过特定机制（如NAPI）供上层调用。
 
-    在同一文件夹创建`mylib.h`，声明库中的函数:
-
-    ```cpp
-    #ifndef MYLIB_H
-    #define MYLIB_H
-
-    #ifdef __cplusplus
-    extern "C" {
-    #endif
-
-    // 声明库中导出的函数
-    double minus_numbers_in_lib(double a,double b)
-
-    #ifdef __cplusplus
-    }
-    #endif
-
-    #endif // MYLIB_H
-    ```
-3. 将源代码交叉编译为动态链接库 (.so 文件):
-
-    执行以下命令将 mylib.cpp 编译成名为 libmylib.so 的动态链接库。
-    
-    **请务必将命令中的 SDK 路径替换为实际的路径。**
-    ```sh
-    # 进入源代码所在目录 (如果不在该目录)
-    # cd <your_source_code_directory>
-
-    # 执行交叉编译命令
-    $ ~/native/llvm/bin/armv7-unknown-linux-ohos-clang++ mylib.cpp -o libmylib.so -shared -fPIC
-    ```
-    如果命令执行成功，当前目录下会生成一个名为 hello_dayu 的文件。
-3. 在宿主机1上验证生成的文件类型：
-
-    我们可以使用`file`命令来查看生成的可执行文件的信息：
-    ```sh
-    file hello_dayu
-    ```
-    应该会看到类似如下的输出:
-    ```sh
-    hello_dayu: ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), statically linked, with debug_info, not stripped
-    ```
-    注意输出中的 ARM EABI5 version 1，这表明它是一个为 ARM 32位架构编译的可执行文件，并且是为 OpenHarmony 系统准备的。这个文件不能在你的 x86_64 Ubuntu 宿主机上直接运行。如果你尝试运行 (./hello_dayu)，系统会报错（例如 cannot execute binary file: Exec format error）。
-4. 将可执行文件从宿主机1下载到宿主机2：即从虚拟机传输文件到Windows。（可以使用虚拟机的增强功能，共享文件夹，睿客网盘，邮箱等方式）
-
-### 3.2.3 交叉编译运行
->  注意，从这一步开始将在宿主机2上操作。
-
-首先，请参照实验文档第二部分的`OH命令行工具hdc`一节下载和配置HDC。
-
-1. 按照上述烧写要求将实验开发板连接到电脑。
-
-2. 打开命令提示符，运行如下指令检查是否成功连接：
-
-   ```sh
-   hdc list targets
-   ```
-
-   如果出现了设备名字（一串由数字和字母组成的奇怪字符串），则说明连接成功。效果如下：
-
-   ![](./assets/3.2.4-1.png)
-
-   > 如果你执行后没有出现设备，只显示`[EMPTY]`，请确认镜像烧写是否成功，如果镜像烧写成功，请尝试插拔开发板充电器。
-
-3. 将编译好的程序`hello_dayu`发送到开发板上，执行如下指令：
-
-   ```shell
-   hdc file send  [宿主机2上hello_dayu的路径]  /data/local/tmp/
-   ```
-
-   注意把上面指令中的路径写上你自己存放`hello`程序的路径，比如`hdc file send  D:\hello  /data/local/tmp/`
-
-4. 执行`hdc shell`进入shell交互模式。
-
-5. 执行`cd /data/local/tmp/`进入hello所在目录（具体目录根据你的hdc file send来确定，比如在第3步中传输到`/data/local/tmp/`,则进入该目录）。
-
-6. 执行`chmod +x hello`为`hello`程序添加执行权限。
-
-7. 执行`./hello`执行程序得到输出`Hello OpenHarmony from DAYU200! (Cross-Compiled)`：
-
-## 3.4 任务目标
-
-
-## 3.5 任务提示
-
-1. 添加子系统时由于编译选项的原因，OpenHarmony 不允许任何 Warning 的产生，如果编译出现问题，请查看编译日志是否是代码中出现了 warning （在lab2中提供的TODO代码中存在warning，具体为`split_string`函数中`string_dup[MAX_BUF_SIZE]`的定义没有用到，以及最后while判断时缺少`()`）
-
-2. 添加子系统时可能不需要`include`,可以不使用`include`的文件，具体方法自行判断
-
-3. 子系统添加完成后通过`ls`可以查看到可执行文件的名字，通过 `hdc shell` 直接输入该名字即可正常执行
-
-4. 由于shell环境的原因，删除键可能无法使用，属于正常情况
+> OpenHarmony与Android应用开发方式及其相似，其中大部分概念在Android也有相同的概念。
 
 <div STYLE="page-break-after: always;"></div>
 
-# 第四部分：实验内容与检查标准
+# 第四部分：第一阶段实验内容与检查标准
 
 ## 4.1 实验内容
 
-1. 将提供的 Openharmony5.0 全量标准系统烧录到开发板中，**体验完整版 OpenHarmony 系统**。
-2. 安装DevEco Studio，并尝试使用提供的Demo
+1. 将提供的 Openharmony5.0 全量标准系统烧录到开发板中，**体验完整版 OpenHarmony 系统**。(参考[2.1 OH烧录](# 2.1 OH烧录))
 
+2. 尝试使用HDC安装提供的应用,下载链接：https://rec.ustc.edu.cn/share/dfbc3380-2b3c-11f0-aee2-27696db61006 ，名称为`OpenHarmony实验素材 > 第一阶段素材> ImageIdentificationDemo.hap`(参考[2.2 OH命令行工具hdc](# 2.2 OH命令行工具hdc))
 
-**更具体实验要求请参考 [3.4  任务目标](# 3.4 任务目标) 和 [4.2 实验评分标准](# 4.2 实验评分标准) 。**
+  > 在2.2.4中，提供了一个Hap包，用于去网络上找图片（通过开发板的截图功能可以存储到图库中）
+  > 
+  > 此处安装的Hap为图片识别Demo,点击Photo可以从图库中选择一张图片进行识别，效果如下所示
+  > ![alt text](./assets/4.1/1.png)
+3. 安装DevEco Studio，并尝试创建名为自己学号的空白Demo（例如PB23011000）在开发板运行。(参考[3.1 DevEco Studio的安装](# 3.1 在 Windows 上安装 DevEco Studio))
+
 
 ## 4.2 实验评分标准
 
-本次实验共 10 分，实验检查要求和评分标准如下：
+本次实验共 10 分，第一阶段满分为 5 分，奖励分 2 分，实验检查要求和评分标准如下：
 
-
+1. 成功烧录Openharmony5.0 全量标准系统烧录到开发板(2')
+2. 成功通过HDC安装提供的应用并且可以使用(1')
+3. 成功安装DevEco Studio(1')
+4. 成功创建名为自己的学号的空白Demo在开发板运行(1')
 
 # 附录
 
