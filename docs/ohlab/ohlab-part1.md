@@ -466,7 +466,7 @@ OpenHarmony支持多种开发语言和方式：
   > 在2.2.4中，提供了一个Hap包，用于去网络上找图片（通过开发板的截图功能可以存储到图库中）
   > 
   > 此处安装的Hap为图片识别Demo,点击Photo可以从图库中选择一张图片进行识别，效果如下所示
-  > ![alt text](./assets/4.1/1.png)
+  > <img src=".\assets\4.1\1.png" alt="image-20240416151431461" style="zoom:80%;" />
 3. 安装DevEco Studio，并尝试创建名为自己学号的空白Demo（例如PB23011000）在开发板运行。(参考[3.1 DevEco Studio的安装](## 3.1 在 Windows 上安装 DevEco Studio))
 
 
