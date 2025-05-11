@@ -1,0 +1,817 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="中国科学技术大学操作系统课程实验文档">
+      
+      
+        <meta name="author" content="USTC OS Team">
+      
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
+    
+    
+      
+        <title>备份资料 - USTC OS Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.2afb09e1.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#22-ohhdc" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../index.html" title="USTC OS Docs" class="md-header__button md-logo" aria-label="USTC OS Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            USTC OS Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              备份资料
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="USTC OS Docs" class="md-nav__button md-logo" aria-label="USTC OS Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    USTC OS Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    简介
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    实验一
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            实验一
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vmlab/vmlab.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Part1 环境准备
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shelllab/shellab.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Part2 实现Shell
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../syscalllab/syscalllab.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Part3 实现系统调用
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../malloclab/malloclab.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    实验二
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    实验三
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            实验三
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ohlab-part1.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Part1 开源鸿蒙初探
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#22-ohhdc" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2 OH命令行工具hdc
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 OH命令行工具hdc">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#221-hdc" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2.1 hdc概述
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#222" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2.2 环境准备
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#223-hdc" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2.3 运行hdc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#224-hdc" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2.4 使用hdc安装应用
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#32-openharmony-native-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2 OpenHarmony 应用开发方式简介 (聚焦 Native C++)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.2 OpenHarmony 应用开发方式简介 (聚焦 Native C++)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#321-openharmony" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2.1 OpenHarmony 应用的基本构成
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#322" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2.2 开发方式概述
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      附录
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="附录">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-scp" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. SCP 命令使用指南
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. SCP 命令使用指南">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-scp" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.1 SCP 介绍
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-scp" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.2 SCP 使用方法
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.2 SCP 使用方法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#121-ipvlab" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.2.1 查看虚拟机ip地址(如果使用vlab，可以忽略该步骤)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#122-scp" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.2.2 使用scp进行文件传输
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h2 id="22-ohhdc">2.2 OH命令行工具hdc</h2>
+<h3 id="221-hdc">2.2.1 hdc概述</h3>
+<ul>
+<li><code>hdc</code>（OpenHarmony Device Connector）是为开发人员提供的用于设备连接调试的命令行工具，该工具需支持部署在Windows/Linux/Mac等系统上与OpenHarmony设备（或模拟器）进行连接调试通信。简言之，hdc是OpenHarmony提供的用于开发人员调试硬件、应用的命令行工具，用在电脑与开发板之间的交互。适用于OpenHarmony应用、硬件开发及测试人员,是每个开发人员的必备、入门工具。</li>
+</ul>
+<h3 id="222">2.2.2 环境准备</h3>
+<ul>
+<li>
+<p>支持运行环境：<code>windows 10、ubuntu 18.04</code>以上 <code>64bit</code> 版本（下面以Windows11为例）</p>
+</li>
+<li>
+<p>安装USB设备驱动：<a href="####1. 安装USB驱动">见烧录部分</a></p>
+</li>
+<li>
+<p><code>hdc</code>工具下载</p>
+</li>
+<li>
+<p>下载安装包<a href="https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/HDC.zip">https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/HDC.zip</a></p>
+</li>
+<li>
+<p>解压缩，并将其中的文件<code>hdc.exe</code>和<code>libusb_shared.dll</code>，复制到文件夹 <code>E:\OH\hdc_bin\</code> 目录下（可自定义目录名）</p>
+</li>
+<li>
+<p><code>hdc</code> 路径环境配置：在设置中找到高级系统设置，然后按照以下步骤操作。“高级系统设置”→高级→环境设置→系统环境变量中的 path→输入<code>E:\OH\hdc_bin\</code> →一路“确定”</p>
+<p><img src=".\assets\image-20240416151120103.png" alt="image-20240416151120103" style="zoom:80%;" /></p>
+<p><img src=".\assets\image-20240416151246106.png" alt="image-20240416151246106" style="zoom:80%;" /></p>
+</li>
+</ul>
+<h3 id="223-hdc">2.2.3 运行hdc</h3>
+<ul>
+<li>打开<code>cmd</code>窗口，执行 <code>hdc shell</code> 就进入了命令交互界面。</li>
+<li>你也可以使用 PowerShell 或者其它 Windows 下的 Shell，用同样的方法使用<code>hdc</code>。</li>
+</ul>
+<p><img src=".\assets\image-20240416151431461.png" alt="image-20240416151431461" style="zoom:80%;" /></p>
+<h3 id="224-hdc">2.2.4 使用hdc安装应用</h3>
+<p>在 2.1 节中我们成功为 DAYU200 开发板烧录了 OpenHarmony 5.0 标准系统镜像。启动后您可能会发现，这个初始系统非常“干净”，甚至没有预装“应用市场”或“浏览器”等常用工具。这导致我们暂时无法直接在开发板上访问网络资源或下载其他应用。</p>
+<p>本节将介绍如何解决这个问题：使用 hdc (HarmonyOS Device Connector) 工具从你的开发主机（电脑）将预先下载好的 HAP 应用包安装到开发板上。HAP (HarmonyOS Ability Package) 是 OpenHarmony 应用的安装包格式。</p>
+<ol>
+<li>下载浏览器 HAP 包：<a href="https://rec.ustc.edu.cn/share/f3d8ecf0-2a5b-11f0-b666-7b853ad445dc">https://rec.ustc.edu.cn/share/f3d8ecf0-2a5b-11f0-b666-7b853ad445dc</a></li>
+<li>确保您的 DAYU200 开发板已通过 USB Type-C 线连接到电脑,并且2.2.3中可以链接到shell。确认连接正常后，使用 hdc install 命令来安装您下载的 HAP 文件。请将下面命令中的 &lt;您下载的HAP文件路径&gt; 替换为你实际保存 HAP 文件的完整路径。
+<div class="highlight"><pre><span></span><code>hdc<span class="w"> </span>install<span class="w"> </span>&lt;下载的HAP文件路径&gt;
+
+示例：
+$<span class="w"> </span>hdc<span class="w"> </span>install<span class="w"> </span>D:<span class="se">\D</span>ownloads<span class="se">\B</span>rowser.hap
+<span class="o">[</span>Info<span class="o">]</span>App<span class="w"> </span>install<span class="w"> </span>path:D:<span class="se">\D</span>ownloads<span class="se">\B</span>rowser.hap,<span class="w"> </span>queuesize:0,<span class="w"> </span>msg:install<span class="w"> </span>bundle<span class="w"> </span>successfully.
+AppMod<span class="w"> </span>finish
+</code></pre></div></li>
+<li>安装成功后，系统页面会显示应用的Logo，点击即可运行（由于应用需要联网，推荐使用Wifi联网后使用）</li>
+</ol>
+<p>通过这种 hdc 侧载安装的方式，我们可以为初始的 OpenHarmony 系统补充必要的工具或部署我们开发的应用程序，即使在没有应用市场的情况下也能进行有效的开发和测试。</p>
+<div STYLE="page-break-after: always;"></div>
+
+<ol>
+<li>
+<p>项目目录主要文件说明</p>
+</li>
+<li>
+<p>entry：应用模块，编译构建生成一个HAP。</p>
+<ul>
+<li>src &gt; main &gt; cpp &gt; types：用于存放C++的API接口描述文件</li>
+<li>src &gt; main &gt; cpp &gt; types &gt; libentry &gt; index.d.ts：描述C++ API接口行为，如接口名、入参、返回参数等。</li>
+<li>src &gt; main &gt; cpp &gt; CMakeLists.txt：CMake配置文件，提供CMake构建脚本。</li>
+<li>src &gt; main &gt; cpp &gt; napi_init.cpp：定义C++ API接口的文件。</li>
+<li>src &gt; main &gt; ets &gt; pages &gt; Index.ets：用于存放页面的ArkTS源码。</li>
+<li>src &gt; main &gt; resources：用于存放应用所用到的资源文件，如图形、多媒体、模型文件等。</li>
+</ul>
+</li>
+</ol>
+<h2 id="32-openharmony-native-c">3.2 OpenHarmony 应用开发方式简介 (聚焦 Native C++)</h2>
+<p>在 3.1 节中我们了解了可选的集成开发环境 DevEco Studio 的安装。无论我们是否在 Windows 上使用完整的 IDE 进行所有开发工作，理解 OpenHarmony 应用是如何构建的，以及我们实验中重点关注的 Native C++ 代码如何融入其中，都至关重要。</p>
+<p>本节将介绍 OpenHarmony 应用的整体开发流程，并引入一些核心概念，为后续的 Native C++ 实践（如交叉编译和集成 Llama.cpp）打下基础。</p>
+<h3 id="321-openharmony">3.2.1 OpenHarmony 应用的基本构成</h3>
+<ol>
+<li>
+<p>应用包 (Application Package - HAP):</p>
+</li>
+<li>
+<p>HAP是OpenHarmony应用编译、分发和安装的基本单位。一个HAP文件（以.hap为后缀）包含了应用代码、资源文件、第三方库和配置文件。你可以把它类比为Android的APK包或iOS的IPA包。</p>
+</li>
+<li>
+<p>一个应用可以由一个或多个HAP包组成，这些HAP包共同构成一个Bundle (应用束)。通常，一个Bundle对应用户在设备上看到的“一个应用”。</p>
+</li>
+<li>
+<p>Ability:</p>
+</li>
+<li>
+<p>Ability是OpenHarmony应用最重要的、最核心的构成单元，代表了应用提供的一个特定功能或能力的抽象。 每个Ability都是可以独立运行和交互的实体。你可以把Ability看作是应用与系统或其他应用交互的“触点”。</p>
+</li>
+<li>
+<p>OpenHarmony提供了多种类型的Ability，以满足不同的业务场景：</p>
+</li>
+<li>Page Ability: 用于展示页面，提供用户界面。</li>
+<li>Service Ability: 用于提供后台服务，不直接与用户交互。</li>
+<li>Data Ability: 用于提供数据访问服务，通常用于与其他应用共享数据。</li>
+</ol>
+<h3 id="322">3.2.2 开发方式概述</h3>
+<p>OpenHarmony支持多种开发语言和方式：</p>
+<ol>
+<li>
+<p>ArkTS/JS (主要UI和应用逻辑开发):</p>
+</li>
+<li>
+<p>OpenHarmony推荐使用ArkTS (一种基于TypeScript并对其进行扩展的语言) 配合其声明式的ArkUI框架来开发应用的UI界面和主要的上层业务逻辑。这种方式开发效率高，生态工具支持也比较完善，类似于其他现代移动平台上的主流UI开发范式。</p>
+</li>
+<li>
+<p>Native C/C++ (高性能模块、底层库、复用现有代码):</p>
+</li>
+<li>
+<p>对于性能要求极高、需要直接访问硬件资源、或者希望复用现有成熟C/C++代码库（例如游戏引擎、音视频编解码库、AI计算库等）的场景，OpenHarmony提供了完整的Native C/C++开发支持。</p>
+</li>
+<li>
+<p>这正是我们本次实验集成Llama.cpp所采用的方式。 Llama.cpp本身是用C++编写的高性能AI推理库，通过Native方式集成可以最大程度地发挥其性能。</p>
+</li>
+</ol>
+<p>这两种方式并非互斥，一个复杂的应用通常会结合使用：用ArkTS/JS构建美观易用的用户界面和上层逻辑，用C/C++实现核心的高性能计算模块并通过特定机制（如NAPI）供上层调用。</p>
+<blockquote>
+<p>OpenHarmony与Android应用开发方式及其相似，其中大部分概念在Android也有相同的概念。</p>
+</blockquote>
+<h1 id="_1">附录</h1>
+<h2 id="1-scp">1. SCP 命令使用指南</h2>
+<p>在使用虚拟机时，很常用的一项功能为在虚拟机和宿主机之间传输数据，在虚拟机平台上，我们可以使用平台自带的部分功能，比如共享文件夹，拖拽等功能。或者我们可以使用在线的云存储平台例如邮箱，睿课网盘等传输文件。本节将介绍一个命令行工具用于在宿主机和虚拟机之间传输数据，该工具为Windows和Linux自带工具，无需下载配置即可使用</p>
+<h3 id="11-scp">1.1 SCP 介绍</h3>
+<p>scp 是 secure copy 的缩写, 是 linux 系统下基于 ssh 登陆进行安全的远程文件拷贝命令。在群文件中<code>实验技巧.PDF</code>中，我们介绍过如何通过ssh链接到虚拟机，但是没有说如何通过ssh在虚拟机和宿主机之间传输文件。下面的内容基于你已经了解了ssh如何连接虚拟机。</p>
+<h3 id="12-scp">1.2 SCP 使用方法</h3>
+<p>scp可以在linux上使用，也可以在windows的命令行工具(cmd/powershell)中使用，使用<code>man scp</code>可以查看scp的具体用法。下面将在Windows上演示如何进行文件传输。</p>
+<h4 id="121-ipvlab">1.2.1 查看虚拟机ip地址(如果使用vlab，可以忽略该步骤)</h4>
+<p>使用<code>ip addr</code>查看ip地址,一般来说，以192.168开头的ip为虚拟机的ip地址。</p>
+<p>在命令行(powershell/cmd)中使用<code>ping 192.168.xx.xx -c 3</code>可以查看是否可以连接到该地址，即是否可以连接到虚拟机.如果显示连接超时，则输入的ip地址不正确，请再次验证是否是该ip地址。</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ping 192.168.122.248 -c 3</span>
+PING<span class="w"> </span><span class="m">192</span>.168.122.248<span class="w"> </span><span class="o">(</span><span class="m">192</span>.168.122.248<span class="o">)</span><span class="w"> </span><span class="m">56</span><span class="o">(</span><span class="m">84</span><span class="o">)</span><span class="w"> </span>bytes<span class="w"> </span>of<span class="w"> </span>data.
+<span class="m">64</span><span class="w"> </span>bytes<span class="w"> </span>from<span class="w"> </span><span class="m">192</span>.168.122.248:<span class="w"> </span><span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">ttl</span><span class="o">=</span><span class="m">64</span><span class="w"> </span><span class="nv">time</span><span class="o">=</span><span class="m">0</span>.650<span class="w"> </span>ms
+<span class="m">64</span><span class="w"> </span>bytes<span class="w"> </span>from<span class="w"> </span><span class="m">192</span>.168.122.248:<span class="w"> </span><span class="nv">icmp_seq</span><span class="o">=</span><span class="m">2</span><span class="w"> </span><span class="nv">ttl</span><span class="o">=</span><span class="m">64</span><span class="w"> </span><span class="nv">time</span><span class="o">=</span><span class="m">0</span>.485<span class="w"> </span>ms
+<span class="m">64</span><span class="w"> </span>bytes<span class="w"> </span>from<span class="w"> </span><span class="m">192</span>.168.122.248:<span class="w"> </span><span class="nv">icmp_seq</span><span class="o">=</span><span class="m">3</span><span class="w"> </span><span class="nv">ttl</span><span class="o">=</span><span class="m">64</span><span class="w"> </span><span class="nv">time</span><span class="o">=</span><span class="m">0</span>.498<span class="w"> </span>ms
+
+---<span class="w"> </span><span class="m">192</span>.168.122.248<span class="w"> </span>ping<span class="w"> </span>statistics<span class="w"> </span>---
+<span class="m">3</span><span class="w"> </span>packets<span class="w"> </span>transmitted,<span class="w"> </span><span class="m">3</span><span class="w"> </span>received,<span class="w"> </span><span class="m">0</span>%<span class="w"> </span>packet<span class="w"> </span>loss,<span class="w"> </span><span class="nb">time</span><span class="w"> </span>2055ms
+rtt<span class="w"> </span>min/avg/max/mdev<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.485/0.544/0.650/0.074<span class="w"> </span>ms
+</code></pre></div>
+<h4 id="122-scp">1.2.2 使用scp进行文件传输</h4>
+<p>假设我们现在有一个文件名为<code>helloworld.c</code>,该文件在windows桌面上，那么我们需要先将windows命令行使用<code>cd</code>命令到达桌面(Desktop)文件夹，也可以直接在桌面或者你的文件所在的目录右键-&gt;<code>从终端打开</code>。</p>
+<p>如果我们想把该文件传输到虚拟机上的家目录，则使用以下命令</p>
+<div class="highlight"><pre><span></span><code>scp<span class="w"> </span>./helloworld.c<span class="w"> </span>user@192.168.xx.xx:~/
+</code></pre></div>
+<p>如果你想要传输一个文件夹（例如文件夹名称为<code>helloworld</code>）到家目录下的叫做<code>sample</code>文件夹中，则使用以下命令</p>
+<div class="highlight"><pre><span></span><code>scp<span class="w"> </span>-r<span class="w"> </span>./helloworld<span class="w"> </span>user@192.168.xx.xx:~/sample/
+</code></pre></div>
+<p>反过来，如果我们想要从虚拟机上传输一个文件到宿主机，则将位置反过来即可,例如虚拟机家目录下有一个<code>helloworld.c</code>文件，我们想要传输到本地</p>
+<div class="highlight"><pre><span></span><code>scp<span class="w"> </span>user@192.168.xx.xx:~/hellowolrd.c<span class="w"> </span>./
+</code></pre></div>
+<p>如果你使用的vlab，则可以不使用ip地址进行传输，直接将上面的<code>user@192.168.xx.xx</code>替换为<code>[用户名]@vlab.ustc.edu.cn</code>，并且在<code>scp</code>命令后添加<code>-i vlab-vmxxxx.pem</code>即可。（具体参数见自己的vlab网页显示）。当然如果使用vlab，更推荐使用vlab自带的文件传输功能。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>

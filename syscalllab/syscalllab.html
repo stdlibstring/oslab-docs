@@ -1,0 +1,1523 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="中国科学技术大学操作系统课程实验文档">
+      
+      
+        <meta name="author" content="USTC OS Team">
+      
+      
+      
+        <link rel="prev" href="../vmlab/vmlab.html">
+      
+      
+        <link rel="next" href="../malloclab/malloclab.html">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
+    
+    
+      
+        <title>Part3 实现系统调用 - USTC OS Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.2afb09e1.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#linuxpart3" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../index.html" title="USTC OS Docs" class="md-header__button md-logo" aria-label="USTC OS Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            USTC OS Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Part3 实现系统调用
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="USTC OS Docs" class="md-nav__button md-logo" aria-label="USTC OS Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    USTC OS Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    简介
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    实验一
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            实验一
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vmlab/vmlab.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Part1 环境准备
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shelllab/shellab.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Part2 实现Shell
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Part3 实现系统调用
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="syscalllab.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Part3 实现系统调用
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      实验目的
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      实验环境
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      实验时间安排
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      如何提问
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      为什么要做这个实验
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      其他友情提示
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../malloclab/malloclab.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    实验二
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    实验三
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            实验三
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ohlab/ohlab-part1.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Part1 开源鸿蒙初探
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      实验目的
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      实验环境
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      实验时间安排
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      如何提问
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      为什么要做这个实验
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      其他友情提示
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="linuxpart3">实验一：Linux基础与系统调用——添加系统调用(part3)</h1>
+<h2 id="_1">实验目的</h2>
+<ul>
+<li>掌握Linux内核编译方法；</li>
+<li>掌握使用gdb调试内核的方法及步骤；</li>
+<li>学习如何添加新的系统调用。</li>
+</ul>
+<h2 id="_2">实验环境</h2>
+<ul>
+<li>虚拟机：VMware</li>
+<li>操作系统：Ubuntu 24.04.2 LTS</li>
+</ul>
+<blockquote>
+<p>系统的安装形式可以自由选择，双系统，虚拟机都可以，系统版本则推荐使用本文档所用版本。注意：由于Linux各种发行版非常庞杂且存在较大差异，因此本试验在其他Linux发行版可能会存在兼容性问题。如果想使用其他环境（如vlab）或系统（如Arch、WSL等），请根据自己的系统<strong>自行</strong>调整实验步骤以及具体指令，达成实验目标即可，但其中出现的兼容性问题助教<strong>无法</strong>保证能够一定解决。</p>
+</blockquote>
+<h2 id="_3">实验时间安排</h2>
+<blockquote>
+<p>注：此处为实验发布时的安排计划，请以课程主页和课程群内最新公告为准</p>
+</blockquote>
+<ul>
+<li>3.28 晚实验课，讲解实验第一部分、第二部分，检查实验 </li>
+<li>4.4  清明节放假 </li>
+<li>4.11 晚实验课，讲解实验第三部分，检查实验</li>
+<li>4.18 晚实验课，检查实验</li>
+<li>4.25 晚及之后实验课，补检查实验 </li>
+</ul>
+<blockquote>
+<p>补检查分数照常给分，但会<strong>记录</strong>此次检查未按时完成，此记录在最后综合分数时作为一种参考（即：最终分数可能会低于当前分数）。</p>
+</blockquote>
+<p>检查时间、地点：周五晚18: 30~22: 00，电三楼406/408。</p>
+<h2 id="_4">如何提问</h2>
+<ul>
+<li>请同学们先阅读《提问指南》。<a href="https://lug.ustc.edu.cn/wiki/doc/howtoask/">原文链接</a></li>
+<li>提问前，请先<strong>阅读报错信息</strong>、查询在线文档，或百度。<a href="https://docs.qq.com/sheet/DU1JrWXhKdFFpWVNR">在线文档链接</a>；</li>
+<li>在向助教提问时，请详细描述问题，并提供相关指令及相关问题的报错截图；</li>
+<li>在QQ群内提问时，如遇到长时未收到回复的情况，可能是由于消息太多可能会被刷掉，因此建议在在线文档上提问；</li>
+<li>如果助教的回复成功地帮你解决了问题，请回复“问题已解决”，并将问题及解答更新到在线文档。这有助于他人解决同样的问题。</li>
+</ul>
+<h2 id="_5">为什么要做这个实验</h2>
+<ul>
+<li>为什么要学会使用Linux？ </li>
+<li>Linux的安全性、稳定性更好，性能也更好，配置也更灵活方便，所以常用于服务器和开发环境。实验室和公司的服务器一般也都用Linux；</li>
+<li>Linux是开源系统，代码修改方便，很多学术成果都基于Linux完成；</li>
+<li>Windows是闭源系统，代码无法修改，无法进行后续实验。</li>
+<li>为什么要使用虚拟机？ </li>
+<li>虚拟机对你的电脑影响最低。双系统若配置不正确，可能导致无法进入Windows，而虚拟机自带的快照功能也可以解决部分误操作带来的问题。</li>
+<li>本实验并不禁止其他环境的使用，但考虑其他环境（如WSL）变数太大，比如可能存在兼容性或者其他配置问题，会耽误同学们大量时间浪费在实验内容以外的琐事，因此建议各位同学尽量保持与本试验一致或类似的环境。</li>
+<li>为什么要学会编译Linux内核？ </li>
+<li>这是后续实验的基础。在后续实验中，我们会让大家通过阅读Linux源码、修改Linux源码、编写模块等方式理解一个真实的操作系统是怎么工作的。</li>
+</ul>
+<h2 id="_6">其他友情提示</h2>
+<ul>
+<li><strong>合理安排时间，强烈不建议在ddl前赶实验</strong>。</li>
+<li>本课程的实验实践性很强，请各位大胆尝试，适当变通，能完成实验任务即可。</li>
+<li>pdf上文本的复制有时候会丢失或者增加不必要的空格，有时候还会增加不必要的回车，有些指令一行写不下分成两行了，一些同学就漏了第二行。如果出了bug，建议各位先仔细确认自己输入的指令是否正确。要<strong>逐字符</strong>比对。每次输完指令之后，请观察一下指令的输出，检查一下这个输出是不是报错。<strong>请在复制文档上的指令之前先理解一下指令的含义。</strong> 我们在检查实验时会抽查提问指令的含义。</li>
+<li>如果你想问“为什么PDF的复制容易出现问题”，请参考<a href="https://type.cyhsu.xyz/2018/09/understanding-pdf-the-digitalized-paper/">此文章</a>。</li>
+<li>如果同学们遇到了问题，请先查询在线文档。在线文档地址：<a href="https://docs.qq.com/sheet/DU1JrWXhKdFFpWVNR">链接</a></li>
+</ul>
+<div STYLE="page-break-after: always;"></div>
+
+<h1 id="_7">章节零 实验总览</h1>
+<p><img alt="image-20250327223439365" src=".\assets\os-overview.png" /></p>
+<h1 id="linuxshell">章节一：编译、调试Linux内核，并使用你自己的shell</h1>
+<h2 id="11">1.1 先导知识</h2>
+<h3 id="111">1.1.1 系统内核启动过程</h3>
+<p>Linux kernel在自身初始化完成之后，需要能够找到并运行第一个用户程序（此程序通常叫做“init”程序）。用户程序存在于文件系统之中，因此，内核必须找到并挂载一个文件系统才可以成功完成系统的引导过程。</p>
+<p>在grub中提供了一个选项“root=”用来指定第一个文件系统，但随着硬件的发展，很多情况下这个文件系统也许是存放在USB设备，SCSI设备等等多种多样的设备之上，如果需要正确引导，USB或者SCSI驱动模块首先需要运行起来，可是不巧的是，这些驱动程序也是存放在文件系统里，因此会形成一个悖论。</p>
+<p>为解决此问题，Linux kernel提出了一个RAM disk的解决方案，把一些启动所必须的用户程序和驱动模块放在RAM disk中，这个RAM disk看上去和普通的disk一样，有文件系统，有cache，内核启动时，首先把RAM disk挂载起来，等到init程序和一些必要模块运行起来之后，再切换到真正的文件系统之中。</p>
+<p>但是，这种RAM disk的方案（下称initrd）虽然解决了问题但并不完美。 比如，disk有cache机制，对于RAM disk来说，这个cache机制就显得很多余且浪费空间；disk需要文件系统，那文件系统（如ext2等）必须被编译进kernel而不能作为模块来使用。</p>
+<p>Linux 2.6 kernel提出了一种新的实现机制，即initramfs。顾名思义，initramfs只是一种RAM filesystem而不是disk。initramfs实际是一个cpio归档，启动所需的用户程序和驱动模块被归档成一个文件。因此，不需要cache，也不需要文件系统。</p>
+<h3 id="112-initramfs">1.1.2 什么是initramfs</h3>
+<p>initramfs 是一种以 cpio 格式压缩后的 rootfs 文件系统，它通常和 Linux 内核文件一起被打包成boot.img 作为启动镜像。</p>
+<p>BootLoader 加载 boot.img，并启动内核之后，内核接着就对 cpio 格式的 initramfs 进行解压，并将解压后得到的 rootfs 加载进内存，最后内核会检查 rootfs 中是否存在 init 可执行文件（该init 文件本质上是一个执行的 shell 脚本），如果存在，就开始执行 init 程序并创建 Linux 系统用户空间 PID 为 1 的进程，然后将磁盘中存放根目录内容的分区真正地挂载到 / 根目录上，最后通过 <code>exec chroot . /sbin/init</code> 命令来将 rootfs 中的根目录切换到挂载了实际磁盘分区文件系统中，并执行 /sbin/init 程序来启动系统中的其他进程和服务。</p>
+<p>基于ramfs开发的initramfs取代了initrd。</p>
+<h3 id="113-initrd">1.1.3 什么是initrd</h3>
+<p>initrd代指内核启动过程中的一个阶段：临时挂载文件系统，加载硬盘的基础驱动，进而过渡到最终的根文件系统。</p>
+<p>initrd也是早期基于ramdisk生成的临时根文件系统的名称。现阶段虽然基于initramfs，但是临时根文件系统也依然存在某些发行版称其为initrd。例如，CentOS 临时根文件系统命名为 initramfs-`uname -r`.img，Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img（uname -r是系统内核版本）。</p>
+<h3 id="114-qemu">1.1.4 QEMU</h3>
+<p>QEMU是一个开源虚拟机。可以在里面运行Linux甚至Windows等操作系统。</p>
+<p>本次实验需要在虚拟机中安装QEMU，并使用该QEMU来运行编译好的Linux内核。这么做的原因如下：</p>
+<ul>
+<li>在Windows下编译LInux源码十分麻烦，且QEMU在Windows下速度很慢；</li>
+<li>之后的实验会涉及修改Linux源码。如果直接修改Ubuntu的内核，改完代码重新编译之后需要重启才能完成更改，但带GUI的Ubuntu系统启动速度较慢。另外，操作失误可能导致Ubuntu系统损坏无法运行。</li>
+</ul>
+<h2 id="12">1.2 下载、安装</h2>
+<blockquote>
+<p>为防止表述混乱，本文档指定<code>~/oslab</code>为本次实验使用的的目录。同学们也可以根据需要在其他目录中完成本次实验。如果在实验中遇到“找不到<code>~/oslab</code>”的报错，请先创建相关目录。</p>
+</blockquote>
+<h3 id="120-qemu-linux">1.2.0 安装 qemu 和 Linux 编译依赖库</h3>
+<p>我们在part2已经让各位同学安装了相关库，如果还未安装，使用包管理器安装以下包：</p>
+<ul>
+<li>qemu-system-x86 (Ubuntu 20.04以上) 或 qemu (Ubuntu 其他版本)</li>
+<li>git</li>
+<li>build-essential （里面包含了make/gcc/g++等，省去了单独安装的麻烦）</li>
+<li>libelf-dev</li>
+<li>xz-utils</li>
+<li>libssl-dev</li>
+<li>bc</li>
+<li>libncurses5-dev</li>
+<li>libncursesw5-dev</li>
+</ul>
+<p>为了方便同学们复制粘贴，将所有的依赖放在这里：<code>qemu-system-x86 git build-essential libelf-dev xz-utils libssl-dev bc libncurses5-dev libncursesw5-dev</code></p>
+<h3 id="121-linux">1.2.1 下载 Linux 内核源码</h3>
+<ul>
+<li>下载Linux内核源码，保存到<code>~/oslab/</code>目录（提示：使用<code>wget</code>）。源码地址： </li>
+<li><a href="https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.9.263.tar.xz">https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.9.263.tar.xz</a></li>
+<li>备用链接1：<a href="https://git.lug.ustc.edu.cn/cggwz/osexpr/-/raw/main/linux-4.9.263.tar.xz">https://git.lug.ustc.edu.cn/cggwz/osexpr/-/raw/main/linux-4.9.263.tar.xz</a></li>
+<li>备用链接2（该链接直接使用浏览器下载，希望大家优先使用上面的链接）：<a href="https://rec.ustc.edu.cn/share/fd142c30-e345-11ee-a1e6-d9366df5cc79">https://rec.ustc.edu.cn/share/fd142c30-e345-11ee-a1e6-d9366df5cc79</a></li>
+<li>解压Linux内核源码（提示：使用<code>tar</code>。xz格式的解压参数是<code>Jxvf</code>，参数区分大小写）。</li>
+</ul>
+<h3 id="122-busybox">1.2.2 下载 busybox</h3>
+<ul>
+<li>下载busybox源码，保存到<code>~/oslab/</code>目录（提示：使用<code>wget</code>）。源码地址： </li>
+<li><a href="https://busybox.net/downloads/busybox-1.32.1.tar.bz2">https://busybox.net/downloads/busybox-1.32.1.tar.bz2</a></li>
+<li>备用链接1：<a href="https://git.lug.ustc.edu.cn/cggwz/osexpr/-/raw/main/busybox-1.32.1.tar.bz2">https://git.lug.ustc.edu.cn/cggwz/osexpr/-/raw/main/busybox-1.32.1.tar.bz2</a></li>
+<li>备用链接2（该链接直接使用浏览器下载，希望大家优先使用上面的链接）：<a href="https://rec.ustc.edu.cn/share/92eb3b20-e345-11ee-a46a-fd7a50991a4a">https://rec.ustc.edu.cn/share/92eb3b20-e345-11ee-a46a-fd7a50991a4a</a></li>
+<li>解压busybox源码（提示：使用<code>tar</code>。bz2格式的解压参数是<code>jxvf</code>）。</li>
+</ul>
+<p>如果1.2.1和1.2.2执行正确的话，你应该能在<code>~/oslab/</code>目录下看到两个子目录，一个叫<code>linux-4.9.263</code>，是<strong>Linux内核源码路径</strong>。另一个叫<code>busybox-1.32.1</code>，是<strong>busybox源码路径</strong>。</p>
+<h3 id="123-linux">1.2.3 编译 Linux 源码</h3>
+<ol>
+<li>
+<p>精简配置：将我们提供的<code>.config</code>文件下载到Linux内核源码路径（提示：该路径请看1.2.2最后一段的描述，使用<code>wget</code>下载）。<code>.config</code>文件地址： </p>
+</li>
+<li>
+<p><a href="https://git.lug.ustc.edu.cn/cggwz/osexpr/-/raw/main/.config">https://git.lug.ustc.edu.cn/cggwz/osexpr/-/raw/main/.config</a></p>
+</li>
+<li>备用链接：<a href="https://git.lug.ustc.edu.cn/gloomy/ustc_os/-/raw/master/term2021/lab1/.config">https://git.lug.ustc.edu.cn/gloomy/ustc_os/-/raw/master/term2021/lab1/.config</a></li>
+</ol>
+<blockquote>
+<p>提示：以<code>.</code>开头的文件是隐藏文件。如果你下载后找不到它们，请参考<a href="https://www.runoob.com/linux/linux-comm-ls.html">Linux ls命令</a>。</p>
+</blockquote>
+<ol>
+<li>
+<p>内核配置：在Linux内核源码路径下运行<code>make menuconfig</code>以进行编译设置。本次实验直接选择Save，然后Exit。 </p>
+</li>
+<li>
+<p>编译：在Linux内核源码路径下运行<code>make -j $((`nproc`-1))</code>以编译内核。作为参考，助教台式机CPU为i5-7500(4核4线程)，使用VitrualBox虚拟机，编译用时5min左右。 </p>
+</li>
+</ol>
+<blockquote>
+<p>提示：</p>
+<ol>
+<li><code>nproc</code>是个shell内置变量，代表CPU核心数。如果虚拟机分配的cpu数只有1（如Hyper-V默认只分配1核），则需先调整虚拟机分配的核心数。</li>
+<li>如果你的指令只有<code>make -j</code>，后面没有加上处理器核数，那么编译器会无限开多线程。因为Linux内核编译十分复杂，这会直接吃满你的系统资源，导致系统崩溃。</li>
+<li><code>nproc</code>前的<code>`</code>是反引号，位于键盘左上侧。<strong>不</strong>是enter键旁边那个。</li>
+</ol>
+</blockquote>
+<p>若干其他问题及其解决方案：</p>
+<blockquote>
+<p>问题1: 编译内核时遇到 make[1]: *** No rule to make target 'debian/canonical-certs.pem', needed by 'certs/x509_certificate_list'. Stop.
+解决方案：用文本编辑器(vim 或 gedit)打开 PATH-TO-linux-4.9.263/.config文件, 找到并注释掉包含CONFIG_SYSTEM_TRUSTED_KEY 和 CONFIG_MODULE_SIG_KEY 的两行即可.
+解决方案链接： https://unix.stackexchange.com/questions/293642/attempting-to-compile-kernel-yieldsa-certification-error</p>
+<p>问题2：make menuconfig时遇到以下错误：Your display is too small to run Menuconfig! It must be at least
+19 lines by 80 columns.
+解决方案：请阅读报错信息并自行解决该问题。</p>
+</blockquote>
+<ol>
+<li>如果编译成功，我们可以在Linux内核源码路径下的<code>arch/x86_64/boot/</code>下看到一个<code>bzImage</code>文件，这个文件就是内核镜像文件。 </li>
+</ol>
+<blockquote>
+<p>若怀疑编译/安装有问题，可以先在Linux内核源码路径下运行<code>make clean</code>之后从1.2.3.1开始。</p>
+</blockquote>
+<h3 id="124-busybox">1.2.4 编译busybox</h3>
+<ol>
+<li>在busybox的源码路径下运行<code>make menuconfig</code>以进行编译设置。修改配置如下：(空格键勾选)</li>
+</ol>
+<div class="highlight"><pre><span></span><code>Settings<span class="w"> </span>–&gt;
+<span class="w">  </span>Build<span class="w"> </span>Options
+<span class="w">   </span><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Build<span class="w"> </span>static<span class="w"> </span>binary（no<span class="w"> </span>share<span class="w"> </span>libs）
+</code></pre></div>
+<ol>
+<li>在busybox的源码路径下执行<code>rm networking/tc.c</code>指令。</li>
+</ol>
+<blockquote>
+<p>新版本内核相关结构体定义发生改变，导致tc指令安装会失败，本实验我们无需该指令，所以删除它，再进行编译。</p>
+</blockquote>
+<ol>
+<li>
+<p>编译：在busybox的源码路径下运行<code>make -j $((`nproc`-1))</code>以编译busybox。本部分的提示与1.2.3.3相同。</p>
+</li>
+<li>
+<p>安装：在busybox的源码路径下运行<code>sudo make install</code>。</p>
+</li>
+</ol>
+<blockquote>
+<p>若怀疑编译/安装有问题，可以先在busybox的源码路径下运行<code>make clean</code>之后从1.2.4.1开始。</p>
+</blockquote>
+<h3 id="125">1.2.5 制作根文件系统</h3>
+<ol>
+<li>
+<p>将工作目录切换为busybox源码目录下的<code>_install</code>目录。</p>
+</li>
+<li>
+<p><strong>使用<code>sudo</code>创建</strong>一个名为<code>dev</code>的文件夹（提示：参考<a href="https://www.runoob.com/linux/linux-comm-mkdir.html">Linux mkdir命令</a>）。</p>
+</li>
+<li>
+<p>使用以下指令创建<code>dev/ram</code>和<code>dev/console</code>两个设备文件：</p>
+</li>
+<li>
+<p><code>sudo mknod dev/console c 5 1</code></p>
+</li>
+<li>
+<p><code>sudo mknod dev/ram b 1 0</code></p>
+</li>
+<li>
+<p><strong>使用<code>sudo</code>创建</strong>一个名为<code>init</code>的文件（提示：参考第一部分2.3.16）。<strong>使用文本编辑器编辑文件</strong>，文件内容如下：</p>
+</li>
+</ol>
+<blockquote>
+<p>特别提示：这一步<strong>不是</strong>让你在终端里执行这些命令。在复制粘贴时，请注意空格、回车是否正确地保留。</p>
+<p>在命令行下启动gedit会在终端里报warning，忽略即可。<a href="https://askubuntu.com/questions/798935/set-document-metadata-failed-when-i-run-sudo-gedit">参考链接</a></p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/bin/sh</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;INIT SCRIPT&quot;</span>
+mkdir<span class="w"> </span>/proc
+mkdir<span class="w"> </span>/sys
+mount<span class="w"> </span>-t<span class="w"> </span>proc<span class="w"> </span>none<span class="w"> </span>/proc
+mount<span class="w"> </span>-t<span class="w"> </span>sysfs<span class="w"> </span>none<span class="w"> </span>/sys
+mkdir<span class="w"> </span>/tmp
+mount<span class="w"> </span>-t<span class="w"> </span>tmpfs<span class="w"> </span>none<span class="w"> </span>/tmp
+<span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\nThis boot took </span><span class="k">$(</span>cut<span class="w"> </span>-d<span class="s1">&#39; &#39;</span><span class="w"> </span>-f1<span class="w"> </span>/proc/uptime<span class="k">)</span><span class="s2"> seconds\n&quot;</span>
+<span class="nb">exec</span><span class="w"> </span>/bin/sh
+</code></pre></div>
+<ol>
+<li>
+<p>赋予<code>init</code>执行权限：<code>sudo chmod +x init</code></p>
+</li>
+<li>
+<p>将x86-busybox下面的内容打包归档成cpio文件，以供Linux内核做initramfs启动执行:</p>
+</li>
+</ol>
+<p><code>find . -print0 | cpio --null -ov --format=newc | gzip -9 &gt; 你们自己指定的cpio文件路径</code></p>
+<blockquote>
+<p>注意1：该命令一定要在busybox的 _install 目录下执行。</p>
+<p>注意2：每次修改<code>_install</code>，都要重新执行该命令。</p>
+<p>注意3：请自行指定cpio文件名及其路径。示例：<code>~/oslab/initramfs-busybox-x64.cpio.gz</code></p>
+<p>示例指令：<code>find . -print0 | cpio --null -ov --format=newc | gzip -9 &gt;  ~/oslab/initramfs-busybox-x64.cpio.gz</code></p>
+</blockquote>
+<h3 id="126-qemu">1.2.6 运行qemu</h3>
+<p>我们本次实验需要用到的qemu指令格式：
+<code>qemu-system-x86_64 [-s] [-S] [-kernel ImagePath] [-initrd InitPath] [--append Para] [-nographic]</code></p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-s</td>
+<td>在1.3.2介绍</td>
+</tr>
+<tr>
+<td>-S</td>
+<td>在1.3.2介绍</td>
+</tr>
+<tr>
+<td>-kernel ImagePath</td>
+<td>指定系统镜像的路径为ImagePath。在本次实验中，该路径为1.2.4.4所述的bzImage文件路径。</td>
+</tr>
+<tr>
+<td>-initrd InitPath</td>
+<td>指定initramfs(1.2.5生成的cpio文件)的路径为InitPath。在本次实验中，该路径为1.2.5.7所述的cpio文件路径。</td>
+</tr>
+<tr>
+<td>--append Para</td>
+<td>指定给内核启动赋的参数。</td>
+</tr>
+<tr>
+<td>-nographic</td>
+<td>设置无图形化界面启动。</td>
+</tr>
+</tbody>
+</table>
+<p>在<code>--append</code>参数中，本次实验需要使用以下子参数：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>nokaslr</td>
+<td>关闭内核地址随机化，便于调试。</td>
+</tr>
+<tr>
+<td>root=/dev/ram</td>
+<td>指定启动的第一个文件系统为ramdisk。我们在1.2.5.3创建了<code>/dev/ram</code>这个设备文件。</td>
+</tr>
+<tr>
+<td>init=/init</td>
+<td>指定init进程为/init。我们在1.2.5.4创建了init。</td>
+</tr>
+<tr>
+<td>console=ttyS0</td>
+<td><strong>对于无图形化界面启动</strong>（如WSL），需要使用本参数指定控制台输出位置。</td>
+</tr>
+</tbody>
+</table>
+<p>这些参数之间以空格分隔。</p>
+<p>总结(TL;DR)：</p>
+<blockquote>
+<p>运行下述指令前，请注意先<font color=FF0000><strong>理解指令含义</strong>，<strong>注意换行问题</strong></font>。</p>
+<p>如果报错找不到文件，请先检查：<strong>是否把pdf的换行和不必要的空格复制进去了？前几步输出的东西是不是在期望的位置上？</strong> 我们不会提示下述指令里哪些空格/换行符是应有的，哪些是不应有的。请自行对着上面的指令含义排查。
+如果报错Failed to execute /init (error -8)，建议从1.2.5开始重做。若多次重做仍有问题，建议直接删掉解压好的busybox和Linux源码目录，从3.2.4重做。目前已知init文件配置错误、Linux内核编译出现问题都有可能导致本错误。</p>
+</blockquote>
+<ul>
+<li>以图形界面，弹出窗口形式运行内核：</li>
+</ul>
+<div class="highlight"><pre><span></span><code>qemu-system-x86_64<span class="w"> </span>-kernel<span class="w"> </span>~/oslab/linux-4.9.263/arch/x86_64/boot/bzImage<span class="w"> </span>-initrd<span class="w"> </span>~/oslab/initramfs-busybox-x64.cpio.gz<span class="w"> </span>--append<span class="w"> </span><span class="s2">&quot;nokaslr root=/dev/ram init=/init&quot;</span>
+</code></pre></div>
+<ul>
+<li>Ubuntu 20.04/20.10 环境下如果出现问题，可执行以下指令:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>qemu-system-x86_64<span class="w"> </span>-kernel<span class="w"> </span>~/oslab/linux-4.9.263/arch/x86/boot/bzImage<span class="w"> </span>-initrd<span class="w"> </span>~/oslab/initramfs-busybox-x64.cpio.gz<span class="w"> </span>--append<span class="w"> </span><span class="s2">&quot;nokaslr root=/dev/ram init=/init&quot;</span>
+</code></pre></div>
+<ul>
+<li>如不希望qemu以图形界面启动，希望以无界面形式启动（如WSL），输出重定向到当前shell，使用以下命令:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>qemu-system-x86_64<span class="w"> </span>-kernel<span class="w"> </span>~/oslab/linux-4.9.263/arch/x86_64/boot/bzImage<span class="w"> </span>-initrd<span class="w">  </span>~/oslab/initramfs-busybox-x64.cpio.gz<span class="w"> </span>--append<span class="w"> </span><span class="s2">&quot;nokaslr root=/dev/ram init=/init console=ttyS0 &quot;</span><span class="w"> </span>-nographic
+</code></pre></div>
+<p>其他常见问题：</p>
+<ol>
+<li>如何检查运行是否正确？</li>
+</ol>
+<p><strong>弹出的黑色窗口就是qemu</strong>。因为系统内核在启动的时候会输出一些log，所以qemu界面里偶尔会蹦出一两条log是正常的，<strong><font color=FF0000> 只要这些log不是诸如"kernel panic"之类的报错 </font></strong>即可。建议尝试输入一条命令，比如在弹出的窗口里面输入<code>ls</code>回车，如果能够显示相关的文件列表,即说明运行正确。 </p>
+<ol>
+<li>鼠标不见了，该怎么办？</li>
+</ol>
+<p>请观察窗口上方的标题栏，"Press （请自行观察标题栏上的说明） to release grab"</p>
+<ol>
+<li>如何关闭qemu？</li>
+</ol>
+<p>对于图形化界面，直接点击右上角的叉就行了。对于非图形化界面，请先按下<code>Ctrl+A</code>，松开这两个键之后再按键盘上的<code>X</code>键。</p>
+<p><img src="./assets/pic-3.2.png" style="zoom:67%;" /></p>
+<h2 id="13-gdb">1.3 使用 gdb调试内核</h2>
+<p>gdb是一款命令行下常用的调试工具，可以用来打断点、显示变量的内存地址，以及内存地址中的数据等。使用方法是<code>gdb 可执行文件名</code>，即可在gdb下调试某二进制文件。</p>
+<p>一般在使用gcc等编译器编译程序的时候，编译器不会把调试信息放进可执行文件里，进而导致gdb知道某段内存里有内容，但并不知道这些内容是变量a还是变量b。或者，gdb知道运行了若干机器指令，但不知道这些机器指令对应哪些C语言代码。所以，在使用gdb时需要在编译时加入<code>-g</code>选项，如：<code>gcc -g -o test test.c</code>来将调试信息加入可执行文件。而Linux内核采取了另一种方式：它把符号表独立成了另一个文件，在调试的时候载入符号表文件就可以达到相同的效果。</p>
+<ul>
+<li>gdb里的常用命令</li>
+</ul>
+<div class="highlight"><pre><span></span><code>r/run<span class="w">                                 </span><span class="c1"># 开始执行程序</span>
+b/break<span class="w"> </span>&lt;location&gt;<span class="w">                    </span><span class="c1"># 在location处添加断点，location可以是代码行数或函数名</span>
+b/break<span class="w"> </span>&lt;location&gt;<span class="w"> </span><span class="k">if</span><span class="w"> </span>&lt;condition&gt;<span class="w">   </span><span class="c1"># 在location处添加断点，仅当condition条件满足才中断运行</span>
+c/continue<span class="w">                          </span><span class="c1"># 继续执行到下一个断点或程序结束</span>
+n/next<span class="w">                                </span><span class="c1"># 运行下一行代码，如果遇到函数调用直接跳到调用结束</span>
+s/step<span class="w">                                </span><span class="c1"># 运行下一行代码，如果遇到函数调用则进入函数内部逐行执行</span>
+ni/nexti<span class="w">                              </span><span class="c1"># 类似next，运行下一行汇编代码（一行c代码可能对应多行汇编代码）</span>
+si/stepi<span class="w">                              </span><span class="c1"># 类似step，运行下一行汇编代码</span>
+l/list<span class="w">                                </span><span class="c1"># 显示当前行代码</span>
+p/print<span class="w"> </span>&lt;expression&gt;<span class="w">                  </span><span class="c1"># 查看表达式expression的值</span>
+q<span class="w">                                     </span><span class="c1"># 退出gdb</span>
+</code></pre></div>
+<h3 id="131-gdb">1.3.1 安装 gdb</h3>
+<p>使用包管理器安装名为gdb的包即可。</p>
+<h3 id="132-gdb-server">1.3.2 启动 gdb server</h3>
+<p>使用1.2.6所述指令运行qemu。但需要加上<code>-s</code>和<code>-S</code>两个参数。这两个参数的含义如下：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-s</td>
+<td>启动gdb server调试内核，server端口是1234。若不想使用1234端口，则可以使用<code>-gdb tcp:xxxx</code>来取代此选项。</td>
+</tr>
+<tr>
+<td>-S</td>
+<td>若使用本参数，在qemu刚运行时，CPU是停止的。你需要在gdb里面使用c来手动开始运行内核。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="133">1.3.3 建立连接</h3>
+<p><strong>另开</strong>一个终端，运行gdb，然后在gdb界面里运行如下命令：</p>
+<div class="highlight"><pre><span></span><code>target<span class="w"> </span>remote:1234<span class="w">   </span><span class="c1"># 建立gdb与gdb server间的连接。这时候我们看到输出带有??，还报了一条warning</span>
+<span class="w">                     </span><span class="c1"># 这是因为没有加载符号表，gdb不知道运行的是什么代码。</span>
+c<span class="w">                    </span><span class="c1"># 手动开始运行内核。执行完这句后，你应该能发现旁边的qemu开始运行了。</span>
+q<span class="w">                    </span><span class="c1"># 退出gdb。</span>
+</code></pre></div>
+<h3 id="134-linux">1.3.4 重新编译Linux内核使其携带调试信息</h3>
+<p>刚才因为没有加载符号表，所以gdb不知道运行了什么代码。所以我们要重新编译Linux来使其携带调试信息。</p>
+<ol>
+<li>
+<p>进入Linux源码路径。</p>
+</li>
+<li>
+<p>执行下列语句(这条语句没有回车，注意文档显示时产生的额外换行问题)：
+   <code>./scripts/config -e DEBUG_INFO -e GDB_SCRIPTS -d DEBUG_INFO_REDUCED -d DEBUG_INFO_SPLIT -d DEBUG_INFO_DWARF4</code></p>
+</li>
+<li>
+<p>重新编译内核。<code>make -j $((`nproc`-1))</code></p>
+</li>
+</ol>
+<p>作为参考，助教台式机CPU为i5-7500(4核4线程)，编译用时8.5min左右。</p>
+<h3 id="135">1.3.5 加载符号表、设置断点</h3>
+<ol>
+<li>
+<p>重新执行1.3.2.</p>
+</li>
+<li>
+<p><strong>另开</strong>一个终端，运行gdb，然后在gdb界面里运行如下命令：</p>
+</li>
+</ol>
+<div class="highlight"><pre><span></span><code>target<span class="w"> </span>remote:1234<span class="w">        </span><span class="c1"># 建立gdb与gdb server间的连接。这时候我们看到输出带有??，</span>
+<span class="w">                       </span><span class="c1"># 这是因为没有加载符号表，gdb不知道运行的是什么代码。</span>
+file<span class="w"> </span>Linux源码路径/vmlinux<span class="w"> </span><span class="c1"># 加载符号表。（不要把左边的东西原封不动地复制过来，这一步可能会有warning，属于正常现象，请忽略）</span>
+n<span class="w">                         </span><span class="c1"># 单步运行。此时可以看到右边不是??，而是具体的函数名了。</span>
+<span class="k">break</span><span class="w"> </span>start_kernel<span class="w">        </span><span class="c1"># 设置断点在start_kernel函数。</span>
+c<span class="w">                         </span><span class="c1"># 运行到断点。</span>
+l<span class="w">                         </span><span class="c1"># 查看断点代码。</span>
+p<span class="w"> </span>init_task<span class="w">               </span><span class="c1"># 查看断点处名为&quot;init_task&quot;的变量值。这个变量是个结构体，里面有一大堆成员。</span>
+</code></pre></div>
+<p><img src="./assets/pic-3.3.5.png" style="zoom:80%;" /></p>
+<div STYLE="page-break-after: always;"></div>
+
+<h1 id="linux-strace">章节二  编写系统调用实现一个Linux strace</h1>
+<h2 id="20-linux">2.0 如何阅读Linux源码</h2>
+<p>因为直接在VSCode、Visual Studio等本地软件中阅读Linux源码会让电脑运行速度变得很慢，所以我们建议使用在线阅读。一个在线阅读站是<a href="https://elixir.bootlin.com/linux/v4.9.263/source">https://elixir.bootlin.com/linux/v4.9.263/source</a>。左栏可以选择内核源码版本，右边是目录树或代码，右上角有搜索框。下面举例描述一次查阅Linux源码的过程。</p>
+<p>假定我们要查询Linux中进程名最长有多长。首先，我们知道进程在内存中的数据结构是结构体 <code>task_struct</code>，所以我们首先查找 <code>task_struct</code>在哪。搜索发现在 <code>include/linux/sched.h</code>。（下面那个从名字来看像个附属模块，所以大概可以确定结构体的声明应该在 <code>sched.h</code>。）</p>
+<p><img src="./assets/pic-3.0.1.png" alt="pic-3.0.1" style="zoom: 60%;" /></p>
+<p>进入 <code>sched.h</code>查看 <code>task_struct</code>的声明。我们不难猜到，进程名应该是个一维char数组。所以我们开始找 <code>char</code>数组。看了几十个成员之后，我们找到了 <code>char comm[TASK_COMM_LEN]</code>这个东西。右边注释写着 <code>executable name excluding path</code>，应该就是这个了。所以它的长度就应该是 <code>TASK_COMM_LEN</code>。</p>
+<p><img src="./assets/pic-3.0.2.png" alt="pic-3.0.2" style="zoom: 60%;" /></p>
+<p>于是我们点击一下这个 <code>TASK_COMM_LEN</code>，找到这个宏在哪定义。发现定义也在 <code>sched.h</code>。点开就能看到宏定义了。至于它的长度到底是多少，留作习题，给大家自己实践查询。</p>
+<p><img src="./assets/pic-3.0.3.png" style="zoom: 60%;" /></p>
+<h2 id="21">2.1 若干名词解释</h2>
+<h3 id="211">2.1.1 用户空间、内核空间</h3>
+<ul>
+<li><strong>用户空间</strong>：用户空间是操作系统为<strong>用户级应用程序</strong>分配的虚拟内存区域。应用程序（如文本编辑器、浏览器等）在此空间中运行，仅能访问受限的资源和内存。</li>
+<li><strong>内核空间</strong>：内核空间是操作系统<strong>内核及核心功能</strong>运行的虚拟内存区域，负责硬件管理、进程调度、内存分配等核心任务。</li>
+</ul>
+<h3 id="212">2.1.2 系统调用</h3>
+<p><strong>系统调用 (System call, Syscall)</strong>是操作系统提供给<strong>用户程序访问内核空间的合法接口</strong>。</p>
+<p>系统调用<strong>运行于内核空间，可以被用户空间调用</strong>，是内核空间和用户空间划分的关键所在，它保证了两个空间必要的联系。从用户空间来看，系统调用是一组统一的抽象接口，用户程序<strong>无需考虑接口下面是什么</strong>；从内核空间来看，用户程序不能直接进行敏感操作，所有对内核的操作都必须通过功能受限的接口间接完成，保证了<strong>内核空间的稳定和安全</strong>。</p>
+<blockquote>
+<p>我们平时的编程中<strong>为什么没有意识到系统调用的存在</strong>？这是因为应用程序现在一般<strong>通过应用编程接口 (API)来间接使用系统调用</strong>，比如我们如果想要C程序打印内容到终端，只需要使用C的标准库函数API <code>printf()</code>就可以了，而不是使用系统调用 <code>write()</code> 将内容写到终端的输出文件 (<code>STDOUT_FILENO</code>) 中。</p>
+</blockquote>
+<h3 id="213-glibc">2.1.3 glibc</h3>
+<p>glibc是GNU发布的c运行库。glibc是linux系统中最底层的api，几乎其它任何运行库都会依赖于glibc。glibc除了封装linux操作系统所提供的系统服务外，它本身也提供了许多其它一些必要功能服务的实现，其内容包罗万象。glibc内含的档案群分散于系统的目录树中，像支架一般撑起整个操作系统。</p>
+<p><code>stdio.h</code>, <code>malloc.h</code>, <code>unistd.h</code>等都是glibc实现的封装。</p>
+<h2 id="22">2.2 系统调用是如何执行的</h2>
+<ol>
+<li>
+<p>调用应用程序调用<strong>库函数（API）</strong>
+   Linux使用的开源标准C运行库glibc（GNU libc）有一个头文件 <code>unistd.h</code>，其中声明了很多<strong>封装好的</strong>系统调用函数，如 <code>read/write</code>。这些API会调用实际的系统调用。</p>
+</li>
+<li>
+<p>API将<strong>系统调用号存入</strong>EAX，然后<strong>触发软中断</strong>使系统进入内核空间。
+   32位x86机器使用汇编代码 <code>int $0x80</code>触发中断。具体如何触发软中断可以去参考Linux的实现源码（如 <code>arch/x86/entry/entry_32.S</code>）。因为这部分涉及触发中断的汇编指令，这部分代码是用汇编语言写的。</p>
+</li>
+</ol>
+<blockquote>
+<p>对于64位x86机器，现在往往使用syscall来触发中断，具体如何触发软中断可以去参考Linux的实现源码(如 <code>arch/x86/entry/entry_64.S</code>重点关注该文件的144行和157行两个处理逻辑，第一段为保存用户空间的指针，紧接着 <code>call do_syscall_64</code>即为真正开始执行内核态系统调用)</p>
+</blockquote>
+<ol>
+<li>内核的中断处理函数根据系统调用号，调用对应的<strong>内核函数</strong>（也就是课上讲的的系统调用）。前面的 <code>read/write</code>，实际上就是调用了内核函数 <code>sys_read/sys_write</code> 。(对于64位机器，即进入 <code>do_syscall_64</code>函数，该函数在 <code>arch/x86/entry/common.c</code>中定义，并且最后使用<strong>syscall_return_slowpath(regs)</strong>函数来返回)</li>
+</ol>
+<blockquote>
+<p>总结：添加系统调用需要<strong>注册中断处理函数和对应的调用号</strong>，内核才能找到这个系统调用，并执行对应的内核函数。</p>
+</blockquote>
+<ol>
+<li>内核函数完成相应功能，将返回值存入EAX，返回到中断处理函数；</li>
+</ol>
+<blockquote>
+<p>注1：系统执行相应功能，调用的是C代码编写的函数，而不是汇编代码，减轻了实现系统调用的负担。系统调用的函数定义在 <code>include/linux/syscalls.h</code>中。因为汇编代码到C代码的参数传递是通过栈实现的，所以，所有系统调用的函数前面都使用了 <code>asmlinkage</code> 宏，它意味着编译时限制只使用栈来传递参数。如果不这么做，用汇编代码调用C函数时可能会产生异常。
+注2：用户空间和内核空间各自的地址是不能直接互相访问的，需要借助函数拷贝来实现数据传递，后面会说明。</p>
+</blockquote>
+<ol>
+<li>中断处理函数返回到API中；</li>
+</ol>
+<blockquote>
+<p>返回前执行<strong>syscall_return_slowpath(regs)</strong>函数，该函数用于处理内核中的状态，参数 <code>regs</code>中包含执行的系统调用号(<code>regs-&gt;orig_ax</code>),以及系统调用返回值(<code>regs-&gt;ax</code>)。执行该函数的进程的pid可以通过task得到(<code>task-&gt;pid</code>)</p>
+</blockquote>
+<ol>
+<li>API将EAX返回给应用程序。</li>
+</ol>
+<blockquote>
+<p>注：当glibc库没有封装某个系统调用时，我们就没办法通过使用封装好的API来调用该系统调用，而使用 <code>int $0x80</code>触发中断又需要进行汇编代码的编写，这两种方法都不适合我们在添加过新系统调用后再编写测试代码去调用。因此我们后面采用的是第三种方法，使用glibc提供的 <code>syscall</code>库函数，这个库函数只需要传入调用号和对应内核函数要用到的参数，就可以直接调用我们新写的系统调用。具体详见2.4.1.</p>
+</blockquote>
+<h2 id="23">2.3 添加系统调用的流程</h2>
+<blockquote>
+<p>Linux 4.9的文档 <code>linux-4.9.263/Documentation/adding-syscalls.txt</code>中有说明如何添加一个系统调用。本实验文档假设所有同学使用的平台都是x86，采用的是x86平台的系统调用添加方法。其他平台的同学可以参考上述文档给出的其他平台系统调用添加方法。</p>
+</blockquote>
+<p>在实现系统调用之前，要先考虑好添加系统调用的函数原型，确定函数名称、要传入的参数个数和类型、返回值的意义。在实际设计中，还要考虑加入系统调用的必要性。</p>
+<p>我们这里以一个统计系统中进程个数的系统调用 <code>ps_counter(int *num)</code> 作为演示，num是返回值对应的地址。</p>
+<blockquote>
+<p>因为系统调用的返回值表示系统调用的完成状态（0是正常，其他值是异常，代表错误编号），所以不建议用返回值传递信息。</p>
+</blockquote>
+<p>本节的各步是没有严格顺序的，但在编译前都要完成：</p>
+<h3 id="231">2.3.1 注册系统调用</h3>
+<p>内核的汇编代码会在 <code>arch/x86/include/generated/asm/syscalls_64.h</code> 中查找调用号。为便于添加系统调用，x86平台提供了一个专门用来注册系统调用的文件 <code>/arch/x86/entry/syscalls/syscall_64.tbl</code>。在编译时，脚本 <code>arch/x86/entry/syscalls/syscalltbl.sh</code>会被运行，将上述 <code>syscall_64.tbl</code>文件中登记过的系统调用都生成到前面的 <code>syscalls_64.h</code>文件中。因此我们需要修改 <code>syscall_64.tbl</code>。</p>
+<p>打开 <code>linux源码路径/arch/x86/entry/syscalls/syscall_64.tbl</code> 。</p>
+<div class="highlight"><pre><span></span><code># linux-4.9.263/arch/x86/entry/syscalls/syscall_64.tbl
+# ... 前面还有，但没展示
+329   common   pkey_mprotect     sys_pkey_mprotect
+330   common   pkey_alloc        sys_pkey_alloc
+331   common   pkey_free         sys_pkey_free
+# 以上是系统自带的，不是我写的，下面这个是
+332   common  ps_counter         sys_ps_counter
+</code></pre></div>
+<p>这个文件是<strong>x86平台下的系统调用注册表</strong>，记录了很多数字与函数名的映射关系。我们在这个文件中注册系统调用。
+每一行从左到右各字段的含义，及填写方法是：</p>
+<ul>
+<li>系统调用号：请为你的系统调用找一个没有用过的数字作为调用号（记住调用号，后面要用）</li>
+<li>调用类型：本次实验请选择common（含义为：x86_64和x32都适用）</li>
+<li>系统调用名xxx</li>
+<li>内核函数名sys_xxx</li>
+</ul>
+<blockquote>
+<p>提示：为保持代码美观，每一列用制表符排得很整齐。但经本人测试，无论你是用制表符还是用空格分隔，无论你用多少空格或制表符，只要你把每一列分开了，无论是否整齐，对这一步的完成都没有影响。</p>
+</blockquote>
+<h3 id="232">2.3.2 声明内核函数原型</h3>
+<p>打开 <code>linux-4.9.263/include/linux/syscalls.h</code>，里面是对于系统调用函数原型的定义，在最后面加上我们创建的新的系统调用函数原型，格式为 <code>asmlinkage long sys_xxx(...)</code> 。注意，如果传入了用户空间的地址，需要加入 <code>__user</code>宏来说明。</p>
+<div class="highlight"><pre><span></span><code><span class="n">asmlinkage</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">sys_mlock2</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">flags</span><span class="p">);</span>
+<span class="n">asmlinkage</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">sys_pkey_mprotect</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span>
+<span class="w">           </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">prot</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">pkey</span><span class="p">);</span>
+<span class="n">asmlinkage</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">sys_pkey_alloc</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">flags</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">init_val</span><span class="p">);</span>
+<span class="n">asmlinkage</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">sys_pkey_free</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">pkey</span><span class="p">);</span>
+<span class="c1">//这里是我们新增的系统调用</span>
+<span class="n">asmlinkage</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">sys_ps_counter</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">__user</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">num</span><span class="p">);</span>
+
+<span class="cp">#endif</span>
+</code></pre></div>
+<h3 id="233">2.3.3 实现内核函数</h3>
+<p>你可以在 <code>linux-4.9.264/kernel/sys.c</code> 代码的最后添加你自己的函数，这个文件中有很多已经实现的系统调用的函数作为参考。我们给出了一段示例代码：</p>
+<div class="highlight"><pre><span></span><code><span class="n">SYSCALL_DEFINE1</span><span class="p">(</span><span class="n">ps_counter</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">__user</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="p">){</span>
+<span class="w">   </span><span class="k">struct</span><span class="w"> </span><span class="nc">task_struct</span><span class="o">*</span><span class="w"> </span><span class="n">task</span><span class="p">;</span>
+<span class="w">   </span><span class="kt">int</span><span class="w"> </span><span class="n">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">   </span><span class="n">printk</span><span class="p">(</span><span class="s">&quot;[Syscall] ps_counter</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">   </span><span class="n">for_each_process</span><span class="p">(</span><span class="n">task</span><span class="p">){</span>
+<span class="w">      </span><span class="n">counter</span><span class="w"> </span><span class="o">++</span><span class="p">;</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w">   </span><span class="n">copy_to_user</span><span class="p">(</span><span class="n">num</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">counter</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>以下是这段代码的解释：</p>
+<ol>
+<li>使用宏 <code>SYSCALL_DEFINEx</code>来简化实现的过程 ，其中x代表参数的个数。传入宏的参数为：调用名(不带sys_)、以及每个参数的类型、名称（注意这里输入时为两项）。</li>
+</ol>
+<p>以我们现在的 <code>sys_ps_counter</code>为例。因为使用了一个参数，所以定义语句是 <code>SYSCALL_DEFINE1(ps_counter, int *, num)</code>。如果该系统调用有两个参数，那就应该是 <code>SYSCALL_DEFINE2(ps_counter, 参数1的类型, 参数1的名称, 参数2的类型, 参数2的名称)</code>，以此类推。</p>
+<blockquote>
+<p>无法通过 <code>SYSCALL_DEFINEx</code>定义二维数组（如 <code>char (*p)[50]</code>）为参数。你可以尝试定义一个，然后结合编译器的报错信息分析该宏的实现原理，并分析不能定义的原因。</p>
+</blockquote>
+<ol>
+<li><code>printk()</code>是内核中实现的print函数，和 <code>printf()</code>的使用方式相同，<code>printk()</code>会将信息写入到内核日志中。尤其地，在qemu下调试内核时，系统日志会直接打印到屏幕上，所以我们可以直接在屏幕上看到 <code>printk</code>打印出的内容。<code>printf()</code>是使用了C的标准库函数的时候才能使用的，而内核中无法使用标准库函数。你不能 <code>#include&lt;stdio.h&gt;</code>，自然不能用 <code>printf()</code>。</li>
+</ol>
+<blockquote>
+<p>在使用 <code>printk</code>时，行首输出的时间等信息是去不掉的。</p>
+</blockquote>
+<ol>
+<li>
+<p>为了获取当前的所有进程，我们使用了宏函数 <code>for_each_process(p)</code>（定义在 <code>include/linux/sched.h</code>中），遍历当前所有任务的信息结构体 <code>task_struct</code>（同样定义在 <code>include/linux/sched.h</code>中），并将地址赋值给参数 <code>p</code>。后面实验内容中我们会进一步用到 <code>task_struct</code>中的成员变量来获取更多相关信息，注意我们暂时不讨论多线程的场景，每一个 <code>task_struct</code>对应的可以认为就是一个进程。</p>
+</li>
+<li>
+<p>前面说到，系统调用是在内核空间中执行，所以如果我们要将在内核空间获取的值传递给用户空间，需要使用函数 <code>copy_to_user(void __user *to, const void *from, unsigned long n)</code> 来完成从内核空间到用户空间的复制。 其中，<code>from</code> 和 <code>to</code> 是复制的来源和目标地址，<code>n</code>是复制的大小，我们这里就是 <code>sizeof(int)</code>。</p>
+</li>
+</ol>
+<h2 id="24">2.4 测试</h2>
+<blockquote>
+<p>若想使用VS Code调试Linux内核，可以参考此文章：<a href="https://zhuanlan.zhihu.com/p/105069730">https://zhuanlan.zhihu.com/p/105069730</a>，直接从“VS Code配置”一章阅读即可。实际操作中，你可能还需要在VS Code中安装"C/C++"和"C/C++ Extension Pack"插件。</p>
+</blockquote>
+<h3 id="241">2.4.1 编写测试代码</h3>
+<p>在你的Linux环境下（不是打开qemu后弹出的那个）编写测试代码。我们在这里命名其为 <code>get_ps_num.c</code>。新增的系统调用可以使用 <code>long int syscall (long int sysno, ...)</code> 来触发，<code>sysno</code>就是我们前面添加的调用号，后面跟着要传入的参数，下面是一个简单的测试代码样例：</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="cpf">&lt;unistd.h&gt;</span>
+<span class="cp">#include</span><span class="cpf">&lt;sys/syscall.h&gt;</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">    </span><span class="n">syscall</span><span class="p">(</span><span class="mi">332</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">result</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;process number is %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">result</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<blockquote>
+<p>提示：</p>
+<ul>
+<li>这里的测试代码是用户态代码，不是内核态代码，所以可以使用 <code>printf</code>。</li>
+<li>为使用系统调用号调用系统调用，需要使用 <code>sys/syscall.h</code>内的 <code>syscall</code> 函数。</li>
+<li>我们推荐使用C语言而不是C++，因为C++在下一步(3.4.2)的静态编译时容易出现问题。使用C语言时需要注意C和C++之间的语法差异。</li>
+</ul>
+</blockquote>
+<h3 id="242">2.4.2 编译</h3>
+<p>使用gcc编译器编译 <code>get_ps_num.c</code>。<strong>本次实验需要使用静态编译（<code>-static</code>选项）</strong>。要用到的gcc指令原型是：<code>gcc [-static] [-o outfile] infile</code>。</p>
+<blockquote>
+<p>不使用静态编译会导致在qemu内运行测试程序时报错找不到文件，因为找不到链接库。</p>
+</blockquote>
+<h3 id="243">2.4.3 运行测试程序</h3>
+<ol>
+<li>将2.4.2编译出的可执行文件 <code>get_ps_num</code>放到 <code>busybox-1.32.1/_install</code>下面，重新制作initramfs文件（重新执行1.2.5.6的find操作），这样我们才能在qemu中看见编译好的 <code>get_ps_num</code>可执行文件。</li>
+</ol>
+<blockquote>
+<p>注意：因为_install文件夹只有root用户才有修改权限，所以复制文件应该在命令行下使用 <code>sudo</code>。</p>
+</blockquote>
+<ol>
+<li>
+<p>重新编译linux源码（重新执行1.2.3.3，无需重新make menuconfig）</p>
+</li>
+<li>
+<p>运行qemu（重新执行1.2.6，我们在这里不要求使用gdb调试）</p>
+</li>
+<li>
+<p>在qemu中运行 <code>get_ps_num</code>程序 ，得到当前的进程数量（这个进程数量是包括 <code>get_ps_num</code>程序本身的，下图中，除了 <code>get_ps_num</code>本身外，还有55个进程）。</p>
+</li>
+<li>
+<p>验证：使用 <code>ps aux | wc -l</code> 获取当前进程数。但这个输出的结果与上一步中得到的不同。请自己思考数字不同的原因。</p>
+</li>
+</ol>
+<blockquote>
+<p>在实际操作中，系统中的进程数量可能不是55。只要与 <code>ps aux | wc -l</code>得到的结果匹配即可。</p>
+</blockquote>
+<p><img src="./assets/pic-3.4.3.1.png" alt="2022-03-29 16-10-49 的屏幕截图.png" style="zoom:80%;" /></p>
+<h2 id="25-strace">2.5 附加知识：正则表达式 &amp; strace命令</h2>
+<blockquote>
+<p>本部分在后续的实验中会用到，请不要跳过</p>
+</blockquote>
+<h3 id="251">2.5.1 正则表达式</h3>
+<blockquote>
+<p>参考链接：https://www.runoob.com/regexp/regexp-syntax.html</p>
+</blockquote>
+<p>正则表达式，又称规则表达式、常规表示法（Regular Expression，简写为 regex、regexp 或 RE），是计算机科学领域中对字符串操作的一种逻辑公式。它由事先定义好的特定字符及这些字符的组合构成一个 “规则字符串”，以此来表达对其他字符串的过滤逻辑，通常用于查找、替换符合特定特征的字符串。(如果你使用的IDE是vscode，Ctrl-f后，查找框最后一个选项即使用正则表达式匹配)</p>
+<p>基本语法：</p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>说明</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.</td>
+<td>匹配任意单个字符（除换行符）</td>
+<td><code>a.c</code> → “abc”、“a1c”</td>
+</tr>
+<tr>
+<td>\d</td>
+<td>匹配数字（等价于 [0-9]）</td>
+<td><code>\d\d</code> → “12”、“99”</td>
+</tr>
+<tr>
+<td>\w</td>
+<td>匹配字母、数字、下划线</td>
+<td><code>\w+</code> → “hello_123”</td>
+</tr>
+<tr>
+<td>\s</td>
+<td>匹配空白字符（空格、制表符等）</td>
+<td><code>\s+</code> → 匹配连续空格</td>
+</tr>
+<tr>
+<td>^</td>
+<td>匹配字符串开头</td>
+<td><code>^abc</code> → 以 “abc” 开头</td>
+</tr>
+<tr>
+<td>$</td>
+<td>匹配字符串结尾</td>
+<td><code>xyz$</code> → 以 “xyz” 结尾</td>
+</tr>
+<tr>
+<td>^ /$</td>
+<td>字符串开始 / 结束</td>
+<td><code>^start / end$</code></td>
+</tr>
+<tr>
+<td>[abc]</td>
+<td>匹配括号内的任意字符</td>
+<td><code>[aeiou]</code> → 匹配元音字母</td>
+</tr>
+<tr>
+<td>[^abc]</td>
+<td>匹配不在括号内的任意字符</td>
+<td><code>[^0-9]</code> → 非数字字符</td>
+</tr>
+</tbody>
+</table>
+<p>举个栗子🌰：</p>
+<p>如果想要找系统调用中含有'read'的，例如('readlinkat','read','readv'等)，则直接使用正则表达式 <code>read</code>即可匹配。</p>
+<p>如果想要完全匹配，即只想找'read'系统调用，则使用正则表达式 <code>\bread\b</code>(\b表示单词边界，更多的语法规则自行google)</p>
+<p>如果想要完全匹配'read'或者'write'，即只想过滤这两个系统调用，则可以使用正则表达式 <code>\bread\b|\bwrite\b</code>('|'表示选择匹配，只要匹配其中之一即可)</p>
+<blockquote>
+<p>本实验将会使用到c语言的正则表达式库 <code>regex.h</code>，该库在各个Linux发行版中存在，但是在内核中不存在，所以不能在内核中使用该头文件,使用方法主要分为两个步骤</p>
+<ul>
+<li>1.编译正则表达式(代码已给出)</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">regcomp</span><span class="p">(</span><span class="o">&amp;</span><span class="n">regex</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="n">REG_EXTENDED</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">       </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Invalid regex: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+<span class="w">       </span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="w">   </span><span class="p">}</span>
+</code></pre></div>
+<ul>
+<li>2.匹配正则表达式,使用第一步得到的regex，若下面函数执行返回值为0，即 <code>need_judge</code>字符串符合pattern，即被匹配到</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">regexec</span><span class="p">(</span><span class="o">&amp;</span><span class="n">regex</span><span class="p">,</span><span class="w"> </span><span class="n">need_judge</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+<p>后续编译原理课程将会系统学习该工具，上面的例子足够完成本次实验，不再赘述</p>
+</blockquote>
+<h3 id="252-strace">2.5.2 strace命令</h3>
+<blockquote>
+<p>参考链接：https://www.cnblogs.com/machangwei-8/p/10388883.html</p>
+<p>下载strace使用命令 <code>sudo apt install strace</code></p>
+</blockquote>
+<p>在Linux系统中，strace命令是一个集诊断、调试、统计与一体的工具，可用来追踪调试程序。（其使用ptrace系统调用来实现）</p>
+<p>举个栗子🌰：
+从其他机器copy了一个程序，但是运行直接报错，没有源码的情况下，怎么判断哪里出错了？（反汇编太麻烦了😭）</p>
+<p>使用strace追踪其使用的系统调用流程，可以看到在报错信息的那一行，到底是哪个系统调用，其执行的参数是什么，根据该信息可以进一步查找问题</p>
+<blockquote>
+<p>本次实验将添加类似ptrace系统调用，并且完成一个简单的strace程序</p>
+</blockquote>
+<h2 id="26">2.6 任务目标</h2>
+<ul>
+<li>在linux4.9下创建适当的（可以是一个或多个）系统调用。利用新实现的系统调用，实现在Linux4.9下，追踪程序使用哪些系统调用（使用正则表达式过滤），参考命令 <code>strace</code>（注意，本实验需要关注后续的 <code>实验提示</code>！！！！）:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>strace<span class="w"> </span>ls
+execve<span class="o">(</span><span class="s2">&quot;/usr/bin/ls&quot;</span>,<span class="w"> </span><span class="o">[</span><span class="s2">&quot;ls&quot;</span><span class="o">]</span>,<span class="w"> </span>0x7ffd025c7530<span class="w"> </span>/*<span class="w"> </span><span class="m">50</span><span class="w"> </span>vars<span class="w"> </span>*/<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
+brk<span class="o">(</span>NULL<span class="o">)</span><span class="w">                               </span><span class="o">=</span><span class="w"> </span>0x555996f2b000
+arch_prctl<span class="o">(</span>0x3001<span class="w"> </span>/*<span class="w"> </span>ARCH_???<span class="w"> </span>*/,<span class="w"> </span>0x7ffd825cdf80<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>-1<span class="w"> </span>EINVAL<span class="w"> </span><span class="o">(</span>Invalid<span class="w"> </span>argument<span class="o">)</span>
+mmap<span class="o">(</span>NULL,<span class="w"> </span><span class="m">8192</span>,<span class="w"> </span>PROT_READ<span class="p">|</span>PROT_WRITE,<span class="w"> </span>MAP_PRIVATE<span class="p">|</span>MAP_ANONYMOUS,<span class="w"> </span>-1,<span class="w"> </span><span class="m">0</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0x7f48990c4000
+access<span class="o">(</span><span class="s2">&quot;/etc/ld.so.preload&quot;</span>,<span class="w"> </span>R_OK<span class="o">)</span><span class="w">      </span><span class="o">=</span><span class="w"> </span>-1<span class="w"> </span>ENOENT<span class="w"> </span><span class="o">(</span>No<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory<span class="o">)</span>
+.......此处省略
+close<span class="o">(</span><span class="m">1</span><span class="o">)</span><span class="w">                                </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
+close<span class="o">(</span><span class="m">2</span><span class="o">)</span><span class="w">                                </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
+exit_group<span class="o">(</span><span class="m">0</span><span class="o">)</span><span class="w">                           </span><span class="o">=</span><span class="w"> </span>?
++++<span class="w"> </span>exited<span class="w"> </span>with<span class="w"> </span><span class="m">0</span><span class="w"> </span>+++
+</code></pre></div>
+<ul>
+<li>
+<p>输出的信息需要包括：</p>
+</li>
+<li>
+<p>进程的PID</p>
+</li>
+<li>需要追踪的系统调用名称</li>
+<li>需要追踪的系统调用返回值</li>
+<li>具体评分规则见3.3。 我们不限制大家创建系统调用的数量、功能，也不限制测试程序的实现。能完成实验内容即可。</li>
+<li>下面是示例输出（由于是内核态打印的信息，所以前面[]中的数字不定）。</li>
+</ul>
+<div class="highlight"><pre><span></span><code>$ ./trace &quot;.&quot; ls
+[  216.310823] 986: syscall execve -&gt; 0
+[  216.312476] 986: syscall brk -&gt; 11907072
+[  216.312911] 986: syscall brk -&gt; 11910464
+[  216.313688] 986: syscall arch_prctl -&gt; 0
+[  216.314377] 986: syscall set_tid_address -&gt; 986
+[  216.314805] 986: syscall set_robust_list -&gt; 0
+[  216.315553] 986: syscall prlimit64 -&gt; 0
+[  216.316537] 986: syscall readlinkat -&gt; 12
+[  216.316996] 986: syscall getrandom -&gt; -11
+....
+[  216.331815] 986: syscall close -&gt; 0
+[  216.332365] 986: syscall fstat -&gt; 0
+[  216.332715] 986: syscall ioctl -&gt; 0
+bin      init     proc     sbin     tmp      usr
+[  216.334948] 986: syscall write -&gt; 109
+dev      linuxrc  root     sys      trace
+[  216.336595] 986: syscall write -&gt; 92
+$ ./trace &quot;\bfstat\b&quot; ls
+[ 5348.862758] 997: syscall fstat -&gt; 0
+[ 5348.864303] 997: syscall fstat -&gt; 0
+bin      init     proc     sbin     tmp      usr
+dev      linuxrc  root     sys      trace
+</code></pre></div>
+<h2 id="27">2.7 任务提示</h2>
+<ul>
+<li>
+<p>在系统调用的内核函数中，如果要得到当前进程的进程结构体，可以使用<code>struct task_struct *task = current;</code></p>
+</li>
+<li>
+<p>实验需要修改进程结构体 <code>task_struct</code>(定义在 <code>include/linux/sched.h</code>),需要添加变量（用于判断该进程是否需要被追踪）和数组（用于记录需要追踪的系统调用号）</p>
+</li>
+<li>
+<p>实验需要修改系统调用返回函数 <code>syscall_return_slowpath</code>(定义在 <code>arch/x86/entry/common.c</code>),当某个系统调用执行完毕后，是否需要打印信息到终端？系统调用号、其返回值，以及进程pid获得方法查看2.2节系统调用的执行流程。</p>
+</li>
+<li>
+<p>修改系统调用返回函数( <code>syscall_return_slowpath</code>)时，可能会用到 <code>trace.c</code>中提供的系统调用表 <code>syscall_names</code>，自行复制到该函数之前即可。</p>
+</li>
+<li>
+<p>实验需要补全 <code>trace.c</code>文件，其用于对正则表达式进行判断需要追踪哪些系统调用并传递给内核，不在 <code>syscall_names</code>中的系统调用不进行追踪。</p>
+</li>
+<li>
+<p>追踪到的系统调用信息直接在内核打印即可，在内核打印使用什么函数？</p>
+</li>
+<li>
+<p>如果需要将用户空间的变量复制到内核空间(例如解析得到的需要追踪的系统调用号)，用 <code>copy_from_user(void *to, const void __user *from, unsigned long n)</code>。</p>
+</li>
+<li>
+<p>内核使用for循环不允许直接定义变量，例如 <code>for(int i = 0; i &lt; cnt; i++)</code>,需要先定义i，然后进行使用</p>
+</li>
+<li>
+<p>内核空间对栈内存（如局部变量等）的使用有较大限制。你可能无法在内核态开较长的数组作为局部变量。但本次实验的预期解法不使用很多的内核态栈内存。</p>
+</li>
+<li>
+<p>本次实验无需在内核态动态分配空间，如有需求请自行查询实现方法。</p>
+</li>
+<li>
+<p><strong>如果访问数组越界，会出现很多奇怪的错误（如程序运行时报malloc错误、段错误、输出其他数组的值或一段乱码（注意，烫烫烫是Visual C的特性，Linux下没有烫烫烫）、其他数组的值被改变等）。提问前请先排查是否出现了此类问题。</strong></p>
+</li>
+<li>
+<p>一些常见错误：</p>
+</li>
+<li>
+<p>拼写错误，如 <code>asmlkage</code>、<code>commom</code>、<code>__uesr</code>、中文逗号</p>
+</li>
+<li>语法错误，如 <code>sizeof(16 * int)</code></li>
+<li>C标准问题，如C语言声明结构体、算 <code>sizeof</code>时应该用 <code>struct xxx</code>而不是直接 <code>xxx</code></li>
+</ul>
+<p>上述错误均可以通过阅读编译器报错信息查出。</p>
+<div STYLE="page-break-after: always;"></div>
+
+<h1 id="_8">章节三： 检查要求</h1>
+<p>本部分实验无实验报告。</p>
+<p>本部分实验共11分。</p>
+<h2 id="31-5">3.1 第三部分检查要求(5')</h2>
+<p>现场能启动虚拟机并启动gdb调试，即现场执行1.3.5，共5分。本部分检查中，允许学生对照实验文档操作。</p>
+<ul>
+<li>你需要能够简要解释符号表的作用。若不能解释，本部分减1分。</li>
+<li>此外，<strong>为提高检查效率，请自己编写一个【shell脚本】启动qemu（即，使用Part2 1.3所述方法完成本部分1.3.5的第一步）。</strong> 若不能使用脚本启动qemu，本部分减1分。你不需要使用脚本启动或操作gdb。</li>
+</ul>
+<h2 id="32-2">3.2 知识问答 (2')</h2>
+<p>我们会使用随机数发生器随机地从下面题库中抽三道题，每回答正确一题得一分，满分2分。也就是说，允许答错一题。请按照自己的理解答题，答题时不准念实验文档或念提前准备的答案稿。
+下面是题库：</p>
+<ol>
+<li>解释 <code>wc</code>和 <code>grep</code>指令的含义。</li>
+<li>解释 <code>ps aux | grep firefox | wc -l</code>的含义。</li>
+<li><code>echo aaa | echo bbb | echo ccc</code>是否适合做shell实验中管道符的检查用例？说明原因。</li>
+<li>对于匿名管道，如果写端不关闭，并且不写，读端会怎样？</li>
+<li>对于匿名管道，如果读端关闭，但写端仍尝试写入，写端会怎样？</li>
+<li>假如使用匿名管道从父进程向子进程传输数据，这时子进程不写数据，为什么子进程要关闭管道的写端？</li>
+<li>fork之后，是管道从一分为二，变成两根管道了吗？如果不是，复制的是什么？</li>
+<li>解释系统调用 <code>dup2</code>的作用。</li>
+<li>什么是shell内置指令，为什么不能fork一个子进程然后 <code>exec cd</code>？</li>
+<li>为什么 <code>ps aux | wc -l</code>得出的结果比 <code>get_ps_num</code>多2？</li>
+<li>进程名的最大长度是多少？这个长度在哪定义？</li>
+<li>strace可以追踪通过fork创建的子进程的系统调用，fork系统调用使用了哪个函数来实现这一行为?(提示：fork使用的函数定义在 <code>linux/fork.c:copy_procss</code>中)</li>
+<li>找到你的学号的后两位对应的64位机器的系统调用，并说明该系统调用的功能（例如学号为PB23111678，则查看78对应的系统调用）。</li>
+<li>在修改内核代码的时候，能用 <code>printf</code>调试吗？如果不能，应该用什么调试？</li>
+<li><code>read()、write()、dup2()</code>都能直接调用。现在我们已经写好了一个名为ps_counter的系统调用。为什么我们不能在测试代码中直接调 <code>ps_counter()</code>来调用系统调用？</li>
+</ol>
+<p>大家可以自己思考或互相讨论这些题目的答案（但不得在本课程群内公布答案）。助教不会公布这些题目的答案。</p>
+<h2 id="33-4">3.3 “编写系统调用”部分检查标准 (4')</h2>
+<ul>
+<li>你的程序可以追踪系统调用，即可以打印所有系统调用执行信息以及进程pid。本部分共1分。</li>
+<li>你的程序可以过滤追踪部分系统调用，即可以指定打印部分系统调用执行信息以及进程pid。本部分共1分。</li>
+<li>你需要在现场阅读Linux源码，展示pid的数据类型是什么（即，透过多层 <code>typedef</code>找到真正的pid数据类型）。本部分共1分。</li>
+<li>你需要流畅地展示你修改了哪些文件的代码，允许对着实验文档描述（即，现场讲解代码）。本部分共1分。若未能完成任何一个功能，则该部分分数无效。</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>
