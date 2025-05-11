@@ -124,7 +124,7 @@
 在了解了移动操作系统的一般概念和特性后，现在我们将焦点转向本次实验的主角——OpenHarmony
 #### 1.3.1 什么是 OpenHarmony？
 
-OpenHarmony（中文常称为“开放鸿蒙”）是一个由开放原子开源基金会（OpenAtom Foundation）孵化和运营的开源项目。它并非仅仅是传统意义上的手机或平板操作系统，而是一个面向全场景、可分布式部署的智能终端操作系统。简单来说，它的目标是成为驱动未来各种智能设备（从小型物联网设备到功能丰富的智能手机、平板、智慧屏等）的统一基础平台。
+OpenHarmony（中文常称为“开源鸿蒙”）是一个由开放原子开源基金会（OpenAtom Foundation）孵化和运营的开源项目。它并非仅仅是传统意义上的手机或平板操作系统，而是一个面向全场景、可分布式部署的智能终端操作系统。简单来说，它的目标是成为驱动未来各种智能设备（从小型物联网设备到功能丰富的智能手机、平板、智慧屏等）的统一基础平台。
 
 #### 1.3.2 OpenHarmony核心理念与愿景
 
@@ -346,7 +346,7 @@ OpenHarmony 是 HarmonyOS（华为鸿蒙操作系统）的开源基础版本。�
 
   2. 松开 `RESET` 键（②号键）， 烧录工具显示“发现一个 `LOADER` 设备” ， 说明此时已经进入烧写模式，可以松开`VOL-/RECOVERY`键。
 
-     <img src=".\assets\loader.png" alt="loader" style="zoom:60%;" /><img src=".\assets\non-device.jpg" alt="non-device" style="zoom:60%;" />
+     <img src=".\assets\loader.png" alt="loader" style="zoom:60%;" /><img src=".\assets\non-device.jpg" alt="non-device" style="zoom:50%;" />
 
      
 
@@ -358,7 +358,7 @@ OpenHarmony 是 HarmonyOS（华为鸿蒙操作系统）的开源基础版本。�
 
   烧写成功后，开发板会自动启动，并在约30s后，成功打开系统，系统和普通的手机系统类似，但只有很少的几个应用。另外，由于开发板性能较弱，系统可能稍微有些卡顿，这也是正常现象。大家可以自行体验。
   
-  <img src=".\assets\image-20240416113523492.png" alt="image-20240416113523492" style="zoom:50%;" /><img src="./assets/OH安装后效果.jpg" style="zoom:22%;" />
+  <img src=".\assets\image-20240416113523492.png" alt="image-20240416113523492" style="zoom:40%;" /><img src="./assets/OH安装后效果.jpg" style="zoom:18%;" />
 
 > **什么是MASKROM？什么是LOADER？**可以认为是开发板厂商设计的开发板的不同状态。MASKROM类似一种只读模式，LOADER则是烧录模式。参考：[瑞芯微系列：系统烧录和登录系统 - 知乎](https://zhuanlan.zhihu.com/p/634585861)
 
@@ -606,7 +606,9 @@ compatibleSdkVersion and releaseType of the app do not match the apiVersion and 
 
 2. 选择左侧`Project`，然后选择上方` Signing Configs`选项卡。
 
-3. 在界面中勾选`Support HarmonyOS` ，此时，下方出现提示并提示`Failed to auto generate signing, please sign in first.`这是因为，如果要发布正式版的应用，需要登录华为账号，通过华为账号生成签名。如果你希望发布你的应用，或者使用Release版本的应用，请点击`Sign in`，在网页中登录。登录、签名成功后，界面类似下图。<img src="./assets/3.1.2/3.png" alt="登录账号" style="zoom:50%;" />
+3. 在界面中勾选`Support HarmonyOS` ，此时，下方出现提示并提示`Failed to auto generate signing, please sign in first.`这是因为，如果要发布正式版的应用，需要登录华为账号，通过华为账号生成签名。如果你希望发布你的应用，或者使用Release版本的应用，请点击`Sign in`，在网页中登录。登录、签名成功后，界面类似下图。
+
+   <img src="./assets/3.1.2/3.png" alt="登录账号" style="zoom:35%;" />
 
 <div STYLE="page-break-after: always;"></div>
 
