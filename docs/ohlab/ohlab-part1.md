@@ -2,10 +2,12 @@
 
 ## 实验目的
 
-- 了解一个真正 “实用” 的操作系统还需要什么？
-- 了解开源鸿蒙整体框架并尝试使用开源鸿蒙
-- 了解移动操作系统应用开发流程
-- 学会如何使用HDC安装应用
+- 了解一个 “实用” 的操作系统还需要什么？
+- 了解移动操作系统应用开发流程，了解移动操作系统与桌面/服务器操作系统的区别。
+  - 了解交叉编译等跨架构开发中用到的基本概念。
+  - 体验实际的移动应用开发。
+
+- 了解开源鸿蒙整体框架并尝试使用开源鸿蒙。
 
 
 ## 实验环境
@@ -22,9 +24,9 @@
 >
 > 注: 所有的实验所需要的素材都可以在睿客网盘链接：https://rec.ustc.edu.cn/share/dfbc3380-2b3c-11f0-aee2-27696db61006 中找到。
 >
-> 此次实验只有两周时间，本文档为第一阶段的实验文档，阅读完毕后可以直接开始做第一阶段的实验,在第一周检查时可以获得额外奖励分╰(\*°▽°\*)╯
+> 此次实验只有两周时间，本文档为第一阶段的实验文档。在第一周内，完成本文档的部分任务，可以获得额外的分数，我们由此鼓励大家尽快开始实验，以避免最后时间太短导致的来不及完成/开发板使用冲突。
 >
-> 奖励分不会超过本次实验满分，所以你也可以选择两个阶段一起在第二周检查。
+> **虽然本次实验进行了分组，但每个人仍然要独自完成所有实验内容。分组仅为了共用开发板。**
 
 -  5.16晚实验课，讲解实验、检查实验
 -  5.23晚实验课，检查实验
@@ -32,13 +34,37 @@
 
 ## 友情提示/为什么要做这个实验？
 
-- **本实验难度不高，目的是让大家了解当前移动操作系统以及移动应用开发方法，并尝试使用AI推理满足功能。**
-- 如果同学们遇到了问题，请先查询在线文档。在线文档地址：[https://docs.qq.com/sheet/DU1JrWXhKdFFpWVNR](https://docs.qq.com/sheet/DU1JrWXhKdFFpWVNR)
+- **本实验难度并不高，几乎没有代码上的要求，只是让大家了解完整的移动应用开发流程，并在此过程中，体会移动操作系统与我们之前使用的桌面/服务端操作系统的不同。**
+- 如果同学们遇到了问题，请先查询在线文档，也欢迎在文档内/群内/私聊助教提问。在线文档地址：[https://docs.qq.com/sheet/DU1JrWXhKdFFpWVNR](https://docs.qq.com/sheet/DU1JrWXhKdFFpWVNR)
+  - 为了提供足够的信息，方便助教助教更快更好地解答你的疑问，我们推荐你阅读（由LUG撰写的）[提问指南](https://lug.ustc.edu.cn/wiki/doc/howtoask/)。**当然，这并不是必须的，你可以随时提问，助教都会尽可能提供帮助。**
+
+
+
+# 实验内容简介
+
+> 本节提供对本次实验的概览，让大家能更好地理解本次实验要做什么，目标是什么。实验的具体步骤可以参考本文档后面章节。
+
+本次实验中，我们将在提供的 DAYU200 开发板上，运行 OpenHarmony 操作系统，并开发能运行在该开发板上和 OpenHarmony 上的大模型推理应用。为了实现这个目标，需要依次完成以下几个任务：
+
+1. 将 OpenHarmony 系统安装到开发板上并运行。
+
+2. 安装并配置 OpenHarmony 应用的开发环境，成功开发并在开发板上运行一个示例应用。
+
+3. 完成大语言模型推理应用的开发，其中包括：
+
+   * 通过交叉编译，将大模型推理框架（Llama.cpp）编译为能够在开发板上使用的动态链接库。
+
+   * 调用上述库，完成应用，并运行在开发板上。
+
+在实验的第一阶段，我们主要完成前两部分。
+
 
 
 # 第一部分 移动操作系统以及润和DAYU200开发板介绍
 
 ## 1.1 什么是“实用”的操作系统？
+
+> 以下只是助教自己的理解。和实验好像也不是那么相关，所以大家想跳过也不是不行。O(∩_∩)O
 
 在操作系统理论课中，我们经常接触各种概念模型、设计原则和算法。但当我们走出课堂，进入实际开发或应用场景时，“实用性”（Practicality）就成为了衡量一个操作系统好坏的关键标准之一。那么，什么构成了一个“实用”的操作系统呢？
 
@@ -145,9 +171,18 @@ OpenHarmony 是 HarmonyOS（华为鸿蒙操作系统）的开源基础版本。�
 
 > 其实是为了统一实验平台，单独设计Android实验可能部分同学无法做这个实验。
 
-## 1.2 DAYU200开发板
+## 1.3 DAYU200开发板
 前面我们介绍了作为软件基础的 OpenHarmony 操作系统，现在我们来认识一下承载这个系统并供我们进行实际操作的硬件平台——DAYU200 开发板。
-### 1.2.1 DAYU200开发板介绍
+
+> **为什么实验要使用开发板？**如同实验目的中提到的，本实验希望大家体会移动操作系统与我们平时使用的桌面操作系统的区别。而操作系统的区别很大程度也是由硬件的区别带来的。可以把开发板当成是**一台拓展性比较强的手机**（或者平板，虽然性能比较差），方便大家体验移动开发流程。
+
+### 1.3.1 DAYU200开发板介绍
+
+> 虽然本节详细介绍了了开发板的各类硬件规格，但本次实验中你需要知道的其实只有：
+>
+> * 开发板的处理器是RK3568芯片，使用的指令集是**32位的ARM**。（具体而言，是`armeabi-v7a`。）
+>   * 大家应该在《组成原理》课上，应该已经知道了不同指令集的区别。ARM是现在移动设备上最流行的指令集。大家使用的手机、智能手表，以及新款 MacBook，使用的都是ARM架构。
+> * 开发板的内存（RAM）大小是2GB，存储容量是32GB。
 
 为了能够流畅运行功能相对完整的 OpenHarmony 标准系统，并支持复杂的应用开发与调试，DAYU200 配备了较为强大的硬件资源。其核心规格通常包括：
 - 处理器 (SoC): 核心是瑞芯微 (Rockchip) RK3568 芯片。这是一款高性能、低功耗的应用处理器，集成了：
@@ -156,14 +191,18 @@ OpenHarmony 是 HarmonyOS（华为鸿蒙操作系统）的开源基础版本。�
   - NPU (可选): 部分版本集成神经网络处理单元，可提供约 1 TOPS 的 AI 算力，用于硬件加速人工智能应用（本次实验主要使用 CPU 进行推理，但了解 NPU 的存在有助于理解硬件加速潜力）。
 - 内存 (RAM): 开发板内存为2GB的 LPDDR4/LPDDR4X 内存。充足的内存对于运行标准系统和我们的 AI 推理任务至关重要。（2GB对于推理较大模型就有点不够，附录中我们会教大家如何创建交换分区）
 - 存储 (Storage): 板载 eMMC 闪存作为主要的系统和数据存储介质，开发板容量为 32GB。
+
+同时，开发板还提供了多种接口，可以连接各种外设。（虽然我们实验没有用到，但感兴趣的同学可以自行了解。）
+
 > 更多信息可以查看链接 [润和HH-SCDAYU200开发套件](https://gitee.com/hihope_iot/docs/tree/master/HiHope_DAYU200#https://gitee.com/hihope_iot/docs/blob/master/HiHope_DAYU200/docs/README.md)
 
-### 1.2.2 为什么选择使用DAYU200开发板
+### 1.3.2 为什么选择使用DAYU200开发板
+
 - 官方与社区支持: DAYU200 是 OpenHarmony 官方和社区重点支持的开发板之一，有持续的软件版本适配和丰富的文档、教程资源。这意味着我们可以更容易地获取到可运行的 OpenHarmony 标准系统镜像和解决遇到的问题。
 - 性能适中: 其硬件配置足以流畅运行 OpenHarmony 标准系统，并能够承载我们本次实验中编译 C++ 代码、运行中小型语言模型（如 Llama.cpp 在 CPU 上推理）的需求。
 > 主要是HUAWEI推荐的╮(╯▽╰)╭
 
-### 1.2.2 开发板的使用
+### 1.3.2 开发板的使用
 
 在发放的开发板中，有以下物品:
 
@@ -173,285 +212,401 @@ OpenHarmony 是 HarmonyOS（华为鸿蒙操作系统）的开源基础版本。�
 4. mini USB B数据线(用于串口调试，本实验可以忽略)
    <img src=".\assets\cable.png" alt="Cable" style="zoom:80%;" />
 
-当开发板开机后,部分开发板运行的是Openharmony4.0版本的mini system，其没有图形化界面，会直接卡在LOGO，这是正常现象；后面实验我们将教大家如何烧录Openharmony5.0版本的全量系统。
+当开发板开机后,部分开发板运行的是Openharmony4.0版本的mini system（去年同学们遗留下来的），其没有图形化界面，会直接卡在LOGO，这是正常现象；后面实验我们将教大家如何烧录Openharmony5.0版本的全量系统。
 
-当接上电源后，开发板一般会自行启动，如果没有启动请查看开发板上的按钮，根据按钮的功能进行尝试打开
-    <img src="./assets/HH-SCDAYU200.png" alt="Cable" style="zoom:80%;" />
+当接上电源后，开发板一般会自行启动，如果没有启动请查看开发板上的按钮，根据按钮的功能进行尝试打开。
 
-### 1.2.3 开发板使用规范
+如下图红框，开发板上有六个按钮，按钮下有对应的名称。第一排的三个按钮（RESET、SELECT、MUTE），本次实验不涉及。第二排的三个按钮类似普通手机侧面的三个按钮，分别是：
 
-开发板的使用采用分组负责人制度。即三人一组，由一人担任负责人并且保管开发板，发放和回收开发板向负责人进行
+* Power：电源键，负责开关机、锁屏、亮屏。
+* VOL+/RECOVERY：音量+/恢复模式键，平时负责增加音量，也可引导手机进入恢复模式。（后面文档会说明。）
+* VOL-：音量-键。
+
+​    <img src="./assets/HH-SCDAYU200.png" alt="Cable" style="zoom:80%;" />
+
+### 1.3.3 开发板使用规范
+
+开发板的使用采用分组负责人制度。即三人一组，由一人担任负责人并且保管开发板，发放和回收开发板向负责人进行。
 
 <div STYLE="page-break-after: always;"></div>
 
-# 第二部分 开源鸿蒙镜像的烧录
+# 第二部分 将开源鸿蒙系统安装到开发板上
 
 在这一部分，我们将介绍 OpenHarmony 镜像的烧录。为了方便大家体验开发版，助教给大家准备了已经编译好的完整版 OpenHarmony 镜像，可以直接烧录到开发板上。
 
-## 2.1 OH烧录
+> 本实验**不要求**大家编译 OpenHarmony 操作系统，是因为完整版的操作系统编译资源开销较大，且需要花费较长时间。（我们在实验一编译了最小版本的 Linux 内核，就需要花费15~30分钟，而 OH 系统在此基础上增加了一系列组件（如GUI和应用支持），完整编译需要上百GB存储空间和数小时的时间。）
+>
+> 如果大家对编译 OpenHarmony 系统的过程感兴趣，可以参考 OpenHarmony 社区文档：
+>
+> https://gitee.com/openharmony/docs/blob/master/zh-cn/device-dev/subsystems/subsys-build-all.md
+>
+> （当然，想实际编译还会遇到无数的坑，助教们去年就踩了很久。^_^）
 
-RK3568 开发板的烧录软件目前**只支持 Windows 系统**，请在 Windows 系统下进行本章节的步骤。
+## 2.1 OpenHarmony 烧录
 
-### 2.1.1烧录前准备
+在实验一中，我们曾经为虚拟机安装了操作系统。当时，安装系统的大致流程为：
+
+1. 将镜像连接到虚拟机（相当于将系统光盘插到电脑里）；
+2. 从光盘启动系统，并将系统按设置安装（写入）到虚拟机里。
+
+在大部分个人电脑/服务器上，系统安装流程也是类似的。
+
+然而，对于移动设备而言，以上安装方式是**不可行**的。一方面，移动设备的硬件结构多种多样，难以将系统封装为一个在任何设备上都能启动的镜像。另一方面，移动设备厂商通常也不希望用户能任意更换操作系统，通常也不允许从外部存储设备启动。所以，移动设备更换系统的流程通常更为复杂，且和具体设备相关。
+
+对于我们的开发板，安装系统的方式为，通过开发板制造商提供的软件，直接将系统数据**硬件级传输**到开发板存储设备的对应位置。这种模式在嵌入式开发中很常见，我们称为**烧录（Burning）**。在本节中，我们将介绍 RK3568 开发板的烧录流程。
+
+> [!IMPORTANT]
+>
+> RK3568 开发板的烧录软件目前**只支持 Windows 系统**，请在 Windows 系统下进行本章节的步骤。
+
+### 2.1.1 软件环境准备
+
+#### 2.1.1.1 下载及解压
+
+在烧录前，需要大家下载以下内容，并解压到你喜欢的文件夹。（本文档以`D:/OHLab/`为例。）
+
+* **DAYU200 烧录工具**
+  * 下载地址：https://rec.ustc.edu.cn/share/dfbc3380-2b3c-11f0-aee2-27696db61006 
+    * 选择`DAYU200烧写工具及指南.zip`
+  * 备用下载链接：[DAYU200 烧录工具 - GitLab](https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/DAYU200%E7%83%A7%E5%86%99%E5%B7%A5%E5%85%B7%E5%8F%8A%E6%8C%87%E5%8D%97.zip) 
+
+* **Openharmony5.0全量系统镜像**
+  * 下载地址：https://rec.ustc.edu.cn/share/dfbc3380-2b3c-11f0-aee2-27696db61006  
+    * 选择`OpenHarmony5.0-image.zip`
+  * 备用下载链接：https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/OpenHarmony5.0-image.zip
+
+#### 2.1.1.2 安装USB驱动
+
+在解压后的`烧写工具及指南`文件夹里，进入`windows/`目录，解压其中的`DriverAssitant_v5.1.1.zip`文件至单独文件夹，
+
+然后，双击击解压后的`DriverInstall.exe`打开安装程序，点击下图所示的“驱动安装”按钮：
+
+<img src=".\assets\usb驱动1.jpg" alt="usb驱动1" style="zoom: 80%;" /><img src=".\assets\usb驱动2.jpg" alt="usb驱动2" style="zoom:80%;" />
+
+显示“安装驱动成功”即可，然后可关闭该程序。
+
+> 驱动程序，简称驱动，是规定电脑软件与特定硬件如何交互的程序。现在，主流操作系统安装时通常会自带大量常用硬件的驱动，因此我们不需要手动安装。但当需要与操作系统中没有的硬件交互时，就需要我们手动安装驱动了。
+
+### 2.1.2 开发板的连接
 
 1. 连接开发板
 
-* 按照下图提示连接**电源线**和**USB烧写线**
-  <img src=".\assets\连接示意图.png" alt="连接示意图" style="zoom:80%;" /> 
+* 按照下图提示连接**电源线**和**USB烧写线**。注意，开发板上有三个 USB插口，请连接到中间那个。（接口旁标注了`USB 3.0 OTG`。）
 
-2. 下载烧录工具和驱动
+  * 烧写线另一端连接你的计算机。电源线插入电源插座。（这就不用说了吧！ (∩_∩)）
 
-* [DAYU200 烧录工具](https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/DAYU200%E7%83%A7%E5%86%99%E5%B7%A5%E5%85%B7%E5%8F%8A%E6%8C%87%E5%8D%97.zip) 下载后解压到文件夹即可
 
-3. 准备编译镜像
+> 不是说是手机吗，为什么还需要连接电源？大概是为了简化开发板设计吧……
 
-* 下载Openharmony5.0全量系统镜像。镜像下载地址：
+<img src=".\assets\连接示意图.png" alt="连接示意图" style="zoom:80%;" /> 
 
-  * 推荐链接：https://rec.ustc.edu.cn/share/cee67650-2a59-11f0-8d78-415e39d48777
+### 2.1.3烧录步骤
 
-  * 备用链接：https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/OpenHarmony5.0-image.zip
+#### 2.1.3.1. 打开烧写工具 
 
-### 2.1.2烧录步骤
+* 如果你的开发板没有打开，请按开发板上的Power键打开开发板。（显示DAYU图标，或进入系统即可。）
 
-#### 1. 安装USB驱动
+* 双击烧录工具（`烧写工具及指南`文件夹）中 `windows\RKDevTool.exe` 打开烧写工具。
 
-* 双击烧录工具中 `windows\DriverAssitant_v5.1.1\DriverInstall.exe` 打开安装程序，点击下图所示驱动安装按钮: 
+* 如图所示，如果你的连接正确，且开发板电源开启，则开发工具下方状态栏会显示：发现一个MASKROM设备。
 
-  <img src=".\assets\usb驱动1.jpg" alt="usb驱动1" style="zoom: 80%;" /><img src=".\assets\usb驱动2.jpg" alt="usb驱动2" style="zoom:80%;" />
+  * 如果开发工具状态栏显示“没有发现设备”，则说明连接没有成功。请检查电源线、烧写线是否正确连接。重新拔插烧写线，并尝试长按开发板Power键强制关机，然后再次按Power键开机，等待15秒左右。并检查是否成功。
 
-#### 2. 打开烧写工具 
-
-* 双击烧录工具中 `windows\RKDevTool.exe` 打开烧写工具， 如图所示， 默认是 Maskrom 模式：
 
   <img src=".\assets\image-20240416110119355.png" alt="image-20240416110119355" style="zoom:80%;" />
 
-* 导入编译文件镜像包中的 `config.cfg`配置，路径为 `OpenHarmony\config.cfg`
+* 导入编译文件镜像包中的 `config.cfg`配置，该配置文件在刚刚解压的系统镜像目录里，路径为 `OpenHarmony\config.cfg`，导入的方法为：（如下面三张图所示）
 
-> 注意导入`config.cfg`配置为必须操作，尤其是后续重新编译镜像后，不能简单的替换文件夹的文件，否则会烧录失败
+1. 在烧写工具左侧空白处右键，单击导入配置。
 
-  1. 右击导入配置
+<img src=".\assets\image-20240416110550450.png" alt="image-20240416110550450" style="zoom:80%;" />
 
-     <img src=".\assets\image-20240416110550450.png" alt="image-20240416110550450" style="zoom:80%;" />
+2. 选择`OpenHarmony\config.cfg`文件（注意，开发工具里本身也有一个`config.cfg`，但我们要选择的不是这个，**而是系统镜像解压后目录里的`config.cfg`**。
 
-  2. 选中配置文件 `OpenHarmony\config.cfg`
+<img src=".\assets\image-20240416110804770.png" alt="image-20240416110804770" style="zoom:80%;" />
 
-     <img src=".\assets\image-20240416110804770.png" alt="image-20240416110804770" style="zoom:80%;" />
+3. 点击空白栏，逐一配置每个镜像文件对应的路径（也可以双击路径，手动修改路径）。
+   * 如，你的镜像解压目录为`D:\OHLab\OpenHarmony`，则第一行应该选择`D:\OHLab\OpenHarmony\MiniLoaderAll.bin`文件，其余各行均应选择相应的img文件。
 
-  3. 点击空白栏，逐一配置对应镜像路径(也可以双击路径，手动修改路径)
+> **这一步在干什么？**实际上，这一步就是在设置，我们要将哪些数据写入到开发板的哪些位置。例如，第一行代表了我们会将`MiniLoaderAll.bin`写入到开发板地址`0x00000000`处（这虽然看起来是个内存地址，但有可能对应了开发板上某个存储器的空间。开发板启动时，会按厂商设计，从某些对应地址读取启动所需要的数据和代码，因此，正确将系统写入到对应位置，就能成功安装系统。（当然，具体写入规则和镜像生成方式，就要参考厂商的文档啦。在本实验中，配置已经给大家写好啦！）
 
-     <img src=".\assets\image-20240416111036833.png" alt="image-20240416111036833" style="zoom:80%;" />
+<img src=".\assets\image-20240416111036833.png" alt="image-20240416111036833" style="zoom:80%;" />
 
-     <img src=".\assets\image-20240416111404005.png" alt="image-20240416111404005" style="zoom:80%;" />
+<img src=".\assets\image-20240416111404005.png" alt="image-20240416111404005" style="zoom:80%;" />
 
-     <img src=".\assets\image-20240416111714578.png" alt="image-20240416111714578" style="zoom:80%;" />
+<img src=".\assets\image-20240416111714578.png" alt="image-20240416111714578" style="zoom:80%;" />
 
-#### 3. 进入LOADER烧写模式
+#### 2.1.3.2. 进入LOADER烧写模式
 
-* 默认烧写工具是 `Maskrom` 模式
-
-  <img src=".\assets\image-20240416112106055.png" alt="image-20240416112106055" style="zoom:80%;" />
+* 默认烧写工具是 `MASKROM` 模式，烧写工具上状态栏会显示“发现一个MASKROM设备”，我们需要将设备进入`Loader`模式。
 
 * 进入 `LOADER` 烧写模式
 
-  1. 按住 `VOL-/RECOVERY` 按键（图中标注的①号键） 和 `RESET` 按钮（图中标注的②号键）不松开， 烧录工具此时显示“没有发现设备” 
+  1. 按住 `VOL-/RECOVERY` 按键（图中标注的①号键） 和 `RESET` 按钮（图中标注的②号键）不松开， 此时，烧录工具会显示“没有发现设备” 
 
-     <img src=".\assets\loader.png" alt="loader" style="zoom:80%;" />
+  2. 松开 `RESET` 键（②号键）， 烧录工具显示“发现一个 `LOADER` 设备” ， 说明此时已经进入烧写模式，可以松开`VOL-/RECOVERY`键。
 
-     <img src=".\assets\non-device.jpg" alt="non-device" style="zoom:80%;" />
+     <img src=".\assets\loader.png" alt="loader" style="zoom:60%;" /><img src=".\assets\non-device.jpg" alt="non-device" style="zoom:60%;" />
 
-  2. 松开 `RESET` 键， 烧录工具显示“发现一个 `LOADER` 设备” ， 说明此时已经进入烧写模式
+     
 
      <img src=".\assets\image-20240416113233886.png" alt="image-20240416113233886" style="zoom:80%;" />
 
-  3. 松开按键， 稍等几秒后点击执行进行烧录，如果烧写成功， 在工具界面右侧会显示下载完成
+* 进行烧录
 
-     <img src=".\assets\image-20240416113523492.png" alt="image-20240416113523492" style="zoom:80%;" />
+  当烧录工具显示“发现一个LOADER设备”后，可以点击“执行”按钮，进行烧录。烧录进度会显示在右侧。烧录大概需要几分钟，如果烧写成功， 最后在工具界面右侧会显示“下载完成”。此时，烧写即完成，可以断开烧写线了。（连着也无妨。）
 
-## 2.2 OH命令行工具hdc
+  烧写成功后，开发板会自动启动，并在约30s后，成功打开系统，系统和普通的手机系统类似，但只有很少的几个应用。另外，由于开发板性能较弱，系统可能稍微有些卡顿，这也是正常现象。大家可以自行体验。
+  
+  <img src=".\assets\image-20240416113523492.png" alt="image-20240416113523492" style="zoom:50%;" /><img src="./assets/OH安装后效果.jpg" style="zoom:22%;" />
 
-### 2.2.1 hdc概述
-
-* `hdc`（OpenHarmony Device Connector）是为开发人员提供的用于设备连接调试的命令行工具，该工具需支持部署在Windows/Linux/Mac等系统上与OpenHarmony设备（或模拟器）进行连接调试通信。简言之，hdc是OpenHarmony提供的用于开发人员调试硬件、应用的命令行工具，用在电脑与开发板之间的交互。适用于OpenHarmony应用、硬件开发及测试人员,是每个开发人员的必备、入门工具。
-
-### 2.2.2 环境准备
-
-* 支持运行环境：`windows 10、ubuntu 18.04`以上 `64bit` 版本（下面以Windows11为例）
-
-* 安装USB设备驱动：[见烧录部分](####1. 安装USB驱动)
-
-* `hdc`工具下载
-
-  1. 下载安装包[https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/HDC.zip](https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/HDC.zip)
-
-  2. 解压缩，并将其中的文件`hdc.exe`和`libusb_shared.dll`，复制到文件夹 `E:\OH\hdc_bin\` 目录下（可自定义目录名）
-
-  3. `hdc` 路径环境配置：在设置中找到高级系统设置，然后按照以下步骤操作。“高级系统设置”→高级→环境设置→系统环境变量中的 path→输入`E:\OH\hdc_bin\` →一路“确定”
-
-     <img src=".\assets\image-20240416151120103.png" alt="image-20240416151120103" style="zoom:80%;" />
-
-     <img src=".\assets\image-20240416151246106.png" alt="image-20240416151246106" style="zoom:80%;" />
-
-### 2.2.3 运行hdc
-
-* 打开`cmd`窗口，执行 `hdc shell` 就进入了命令交互界面。
-* 你也可以使用 PowerShell 或者其它 Windows 下的 Shell，用同样的方法使用`hdc`。
-
-<img src=".\assets\image-20240416151431461.png" alt="image-20240416151431461" style="zoom:80%;" />
-
-### 2.2.4 使用hdc安装应用
-在 2.1 节中我们成功为 DAYU200 开发板烧录了 OpenHarmony 5.0 标准系统镜像。启动后您可能会发现，这个初始系统非常“干净”，甚至没有预装“应用市场”或“浏览器”等常用工具。这导致我们暂时无法直接在开发板上访问网络资源或下载其他应用。
-
-本节将介绍如何解决这个问题：使用 hdc (HarmonyOS Device Connector) 工具从你的开发主机（电脑）将预先下载好的 HAP 应用包安装到开发板上。HAP (HarmonyOS Ability Package) 是 OpenHarmony 应用的安装包格式。
-
-1. 下载浏览器 HAP 包：[https://rec.ustc.edu.cn/share/f3d8ecf0-2a5b-11f0-b666-7b853ad445dc](https://rec.ustc.edu.cn/share/f3d8ecf0-2a5b-11f0-b666-7b853ad445dc)
-2. 确保您的 DAYU200 开发板已通过 USB Type-C 线连接到电脑,并且2.2.3中可以链接到shell。确认连接正常后，使用 hdc install 命令来安装您下载的 HAP 文件。请将下面命令中的 <您下载的HAP文件路径> 替换为你实际保存 HAP 文件的完整路径。
-```bash
-hdc install <下载的HAP文件路径>
-
-示例：
-$ hdc install D:\Downloads\Browser.hap
-[Info]App install path:D:\Downloads\Browser.hap, queuesize:0, msg:install bundle successfully.
-AppMod finish
-```
-3. 安装成功后，系统页面会显示应用的Logo，点击即可运行（由于应用需要联网，推荐使用Wifi联网后使用）
-
-通过这种 hdc 侧载安装的方式，我们可以为初始的 OpenHarmony 系统补充必要的工具或部署我们开发的应用程序，即使在没有应用市场的情况下也能进行有效的开发和测试。
-
-<div STYLE="page-break-after: always;"></div>
+> **什么是MASKROM？什么是LOADER？**可以认为是开发板厂商设计的开发板的不同状态。MASKROM类似一种只读模式，LOADER则是烧录模式。参考：[瑞芯微系列：系统烧录和登录系统 - 知乎](https://zhuanlan.zhihu.com/p/634585861)
 
 
-# 第三部分 安装DevEco Studio部署开发环境
+# 第三部分 安装应用开发环境并开发简单应用
 
-在前两部分，我们了解了移动操作系统、OpenHarmony 以及实验使用的 DAYU200 开发板，并完成了基础的系统烧录和 HAP 包安装。现在，我们需要搭建用于应用程序开发和 Native C++ 代码交叉编译的环境。这部分包含两个主要步骤：在 Windows 上安装集成开发环境 DevEco Studio（主要用于运行官方 Demo 和进行 HAP 应用开发），以及在 Ubuntu 上准备用于交叉编译 C++ 代码的 OpenHarmony Native SDK。
+在前两部分，我们了解了移动操作系统、OpenHarmony 以及实验使用的 DAYU200 开发板，并完成了基础的系统烧录。接下来，我们将安装官网为 OpenHarmony 和 HarmonyOS 提供的应用开发环境 DevEco Studio，并实际体验一个简单的 OH 应用开发流程。这部分包含两个主要步骤：
+
+* 在 Windows 上安装集成开发环境 DevEco Studio。
+* 将配置并编译官方的示例应用，并将示例应用运行在开发板上。
 
 ## 3.1 在 Windows 上安装 DevEco Studio
 DevEco Studio 是 HUAWE 推出的官方集成开发环境（IDE），用于 HarmonyOS 和 OpenHarmony 应用开发。它集成了代码编辑、编译、调试、应用签名、HAP 打包、模拟器/预览器以及 SDK 管理等功能。
 
-在本实验中的主要用途：
-
-- 运行和体验官方提供的 MindSpore Lite 端侧 AI 推理 Demo。
-- 通过Native c++进行AI应用的开发。
+> HAP 是 OpenHarmony 和 HarmonyOS 的应用格式，类似 Android 的 APK。
 
 ### 3.1.1 下载安装DevEco Studio
-1. 下载 DevEco Studio:https://developer.huawei.com/consumer/cn/deveco-studio/
-2. 安装DevEco Studio，安装过程较为简单，不再展开说明
+* 下载 DevEco Studio
+  * 下载地址：https://rec.ustc.edu.cn/share/dfbc3380-2b3c-11f0-aee2-27696db61006
+    * 选择`devecostudio-windows-5.0.11.100.zip`
+  * 你也可以在官方下载地址下载最新版：https://developer.huawei.com/consumer/cn/deveco-studio/
+    * 官方下载地址需要登录华为账号
+
+* 安装DevEco Studio，安装过程较为简单，选择默认配置即可。
 
 > 注意：DevEco Studio安装包体积较大，请确保网络连接稳定。
 >
+> 安装需要15GB左右空间，请选择合适的安装位置，保证空间足够。
+>
 > DevEco Studio 中文设置：https://developer.huawei.com/consumer/cn/forum/topic/0204171044047287810
-### 3.1.2 DevEco Studio的使用：项目创建
+* 安装完毕后，第一次打开 DevEco 时，提示 Import DevEco Studio Settings，此时选择Do not import settings即可。后续需要同意开发协议，单击同意即可。
+
+## 3.2 在 DevEco Studio 上开发应用
+
+本节我们将尝试使用 DevEco 创建第一个项目，并尝试将其运行在开发板上。
+
+> OpenHarmony 和 HarmonyOS 的应用通常使用 [ArkTS语言](https://docs.openharmony.cn/pages/v5.0/zh-cn/application-dev/arkts-utils/arkts-overview.md) 编写，OpenHarmony 和 HarmonyOS 提供的系统 API 也通常都是 ArkTS接口的（正如我们开发 Android 时离不开 Java 语言一样）。ArkTS 是基于 TypeScript 拓展的新语言（而 TypeScript 则是基于 JavaScript 拓展的强类型语言，套娃了）。
+>
+> 当然，为了减轻大家工作量，**本实验不涉及 ArkTS 具体语法内容**，感兴趣的同学可自行了解。为了尽可能使用大家熟悉的语言，我们的应用会使用 OpenHarmony 提供的 Native C++ 开发模式，该模式允许 ArkTS 和 C++ 互相交互，在 OpenHarmony 上运行 C++ 代码。
+
+### 3.2.1 DevEco Studio的使用：项目创建
+
 1. 通过如下两种方式，打开工程创建向导界面。
   - 如果当前未打开任何工程，可以在DevEco Studio的欢迎页，选择Create Project开始创建一个新NDK工程。
-  - 如果已经打开了工程，可以在菜单栏选择File > New > Create Project来创建一个新NDK工程。
-2. 根据工程创建向导，选择Native C++工程模板，然后单击Next。
-![创建项目](./assets/3.1.2/1.png)
-3. 在`Configure Your Project`页面可以修改`Project Name`与项目目录，然后单击Finish。（这里Project Name推荐修改为自己的学号）
 
-4. 项目目录主要文件说明
-  - entry：应用模块，编译构建生成一个HAP。
-    - src > main > cpp > types：用于存放C++的API接口描述文件
-    - src > main > cpp > types > libentry > index.d.ts：描述C++ API接口行为，如接口名、入参、返回参数等。
-    - src > main > cpp > CMakeLists.txt：CMake配置文件，提供CMake构建脚本。
-    - src > main > cpp > napi_init.cpp：定义C++ API接口的文件。
-    - src > main > ets > pages > Index.ets：用于存放页面的ArkTS源码。
-    - src > main > resources：用于存放应用所用到的资源文件，如图形、多媒体、模型文件等。
-5. 进入项目后，先安装OpenHarmony SDK,点击`File > Settings`找到OpenHarmony SDK，选择OpenHarmony SDK安装位置，勾选API Version 14中所有的选项，点击`Apply`，后续会自动下载并解压到相应目录
+  - 如果已经打开过工程，可以在菜单栏选择File > New > Create Project来创建一个新NDK工程。
+
+    > NDK: Native C++ Develop Kit，本地C++开发组件。总之就是为了让开发板能跑C++的神奇妙妙工具，下一阶段实验会进一步解释这是怎么回事。
+2. 根据工程创建向导，选择Native C++工程模板，然后单击Next。（如下图。）
+
+  ![创建项目](./assets/3.1.2/1.png)
+
+3. 在`Configure Your Project`页面可以修改`Project Name`、项目目录和其它选项，然后单击Finish。
+
+   * Project Name 就是项目名，推荐使用**自己的学号**（方便检查）。
+   * Save Location 是项目存储位置，大家可选择存放在自己喜欢的目录下。
+   * 其它选项默认即可。
+
+创建项目后，会进入项目开发界面，如下图，和其它IDE类似，开发界面主要分为三个部分：
+
+* 项目目录（图中①），显示项目中主要文件。
+* 编辑区（图中②），用来写代码。
+* 终端区域（图中③），显示各类信息，或者终端等。
+
+![DevEco](./assets/DevEco界面.png)
+
+
+
+### 3.2.2 DevEco Studio的使用：项目预览
+
+DevEco Studio内置了预览器，能预览我们开发的应用，以方便开发者开发，不需要每次修改代码后都实际将应用传输到设备中运行。由于 DevEco Studio 创建的项目本身就是完整可运行的，我们可以直接启动预览，来体验该应用的效果。
+
+为了启动预览，需要：
+
+1. 点击开发界面右上角，“设备”下拉框（绿色三角运行按钮的左侧的下拉框），选择“Previewer”，如下图。
+
+<img src="./assets/DevEco-preview.png" alt="image-20250511204310530" style="zoom:38%;" />
+
+2. 点击运行按钮（绿色三角形），选择`2in1`，点击OK。（这一步在选择设备类型，`phonoe`是手机，`tablet`是平板，`2in1`是两种皆可的，根据选择的不同，显示屏幕的比例会有区别。）
+
+由于编译和渲染预览所需时间较慢，这一步后需要等待约30~60秒。之后，预览会显示在开发界面右侧，如下图：
+
+![image-20250511205246282](./assets/DevEco-preview-hello.png)
+
+预览界面类似一个平板屏幕，上面有一行`Hello World`。你可以单击这行字，稍等片刻，内容会变为`Welcome`，如下图：
+
+<img src="./assets/image-20250511205539721.png" alt="image-20250511205539721" style="zoom: 33%;" />
+
+这就是我们创建的示例应用的功能。如果文字成功改变，你可以单击右上角停止按钮，结束预览。（红色正方形，在运行按钮右侧。）
+
+> 虽然我们不打算讲解 ArkTS 语法，但我们还是愿意稍微解释一下这个点击变换的效果是怎么实现的，以便感兴趣的同学了解。
+>
+> * 应用的主体逻辑在已经默认打开的`Index.ets`文件中。该文件主要部分是`Row`、`Column`、`Text`几个函数的嵌套，这几个函数定义了应用的界面（一行一列，中间有一段文本，文本内容是`this.message`，也就是`'Hello World'`。）
+> * 在`Text(this.message)`下，`.onClick`中定义了，这一行Text被点击后，将会执行的代码。
+>   * `this.message = 'Welcome';`一行，将`this.message`赋值为`Welcome`，所以，我们看到的文字改变了。
+> * 供感兴趣的同学思考：目前这个改变是单向的，如果我希望将应用效果改为每单击一次，就在`Welcome`和`Hello World`间变换一次，应该如何实现？
+>   * 提示：ArkTS当然也有`if`语句，语法和C语言一样。
+
+
+
+### 3.2.3 DevEco Studio的使用：将应用运行到开发板上
+
+为了将应用运行在开发板上，我们需要按和[2.1.2 开发板的连接](#2.1.2 开发板的连接)一节中相同方式，将电脑与开发板进行连接。
+
+正确连接后，再次点击右上角设备下拉框，可以看到设备列表中出现`OpenHarmony 3.2[....]`这样的选项（如下图）。该选项则为开发板所对应的设备。
+
+<img src="./assets/image-20250511211250931.png" alt="image-20250511211250931" style="zoom:33%;" />
+
+但选择该设备并直接运行时，IDE会提示错误如下：
+
+```
+compatibleSdkVersion and releaseType of the app do not match the apiVersion and releaseType on the device.
+```
+
+这是因为 DevEco Studio 默认创建的是运行于 HarmonyOS 的项目，而我们的设备运行的是 OpenHarmony。因此，我们需要进行相应设置，将项目编译为 OpenHarmony 应用。
+
+#### 3.2.3.1 安装 OpenHarmony SDK
+
+为了编译 OpenHarmony 项目，我们需要首先安装OpenHarmony SDK。步骤如下：
+
+1. 点击界面左上角`File > Settings`打开设置。
+2. 选择右侧 OpenHarmony SDK，在 Location 一栏中，选择希望的 OpenHarmony SDK 安装位置。
+   * OpenHarmony SDK大小较大（约5GB），请选择合适的安装位置。
+3. 勾选API Version 14中所有的选项，点击`Apply`，等待自动下载完毕并解压到相应目录。
+
+> SDK 是 Software Development Kit，软件开发组件，和前面的NDK一样，你可以理解为，用来编译OpenHarmony软件的妙妙小工具。
+
 ![安装OpenHarmony SDK](./assets/3.1.2/2.png)
-6. 登录华为账号用于对项目签名。点击`File > Project Structure > Project > Signing Configs`,界面勾选`Support HarmonyOS` 和 `Automatically generate signing`，等待自动签名完成即可,下图为成功登录后的结果
-![登录账号](./assets/3.1.2/3.png)
-7. **安装完毕SDK后**,修改项目配置文件`build-profile.json5`,修改内容如下所示(有些选项可能原本配置文件中不存在，直接添加即可)
-    ```text
-    # 修改前的内容
-            "compatibleSdkVersion": "5.0.2(14)",
-            "runtimeOS": "HarmonyOS",
-    # 修改后的内容
-            "compatibleSdkVersion": 14,
-            "compileSdkVersion": 14,
-            "targetSdkVersion": 14,
-            "runtimeOS": "OpenHarmony"
-    ```
-    ![修改配置文件](./assets/3.1.2/4.png)
-8. **安装完毕SDK后**,修改项目配置文件`entry/build-profile.json5`,修改内容如下所示
-    ```text
-    "abiFilters": ["armeabi-v7a","arm64-v8a"]
-    ```
-    ![修改配置文件](./assets/3.1.2/5.png)
-9. 在6和7中，修改配置文件时，在编辑界面有提示需要同步项目文件，直接点击`sync now`即可
+
+#### 3.2.3.2 修改项目配置文件
+
+1. 修改`build-profile.josn5`
+
+   **安装完毕SDK后**，在界面左侧项目目录中，打开**项目根目录下的**`build-profile.json5`，文件开头内容如下所示：
+
+   * 注意，`entry`目录下也有一个`build-profile.json5`，但两者内容不一样（我们接下来也要修改），不要搞混了。
+
+```json
+{
+  "app": {
+    "signingConfigs": [],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "targetSdkVersion": "5.0.5(17)",
+        "compatibleSdkVersion": "5.0.5(17)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+......
+```
+我们需要将其中第8、9、10三行内容，改为以下4行（注意，数字周围没有双引号。）：
+
+```json
+    "compatibleSdkVersion": 14,
+    "compileSdkVersion": 14,
+    "targetSdkVersion": 14,
+    "runtimeOS": "OpenHarmony"
+```
+
+修改后的文件如图，这几行分别定义了我们使用的设备操作系统是`OpenHarmony`，用来编译、生成的目标和兼容的SDK版本都是 14。
+
+![修改配置文件](./assets/3.1.2/4.png)
+
+
+
+> 还记得我们上一步安装的SDK版本吗？也是14。这个版本必须和设备系统上的版本一致，你可以认为，这是移动操作系统的“系统调用”的版本。（实际上是API版本，但某种意义上说，移动应用中，系统API的地位和其它系统中系统调用差不多，因为为了安全和隐私性考虑，移动应用没法直接调用大部分系统调用。）
+
+2. 修改`entry/build-profile.json5`
+
+接下来，在左侧界面项目目录里，打开`entry/build-profile.json5`，在第7行`cppFlags`后进行如下修改：
+
+修改前：
+
+```json
+    "externalNativeOptions": {
+      "path": "./src/main/cpp/CMakeLists.txt",
+      "arguments": "",
+      "cppFlags": "",
+    }
+```
+
+修改后：
+
+```json
+    "externalNativeOptions": {
+      "path": "./src/main/cpp/CMakeLists.txt",
+      "arguments": "",
+      "cppFlags": "",
+      "abiFilters": ["armeabi-v7a","arm64-v8a"]
+    }
+```
+
+即，添加一行`"abiFilters": ["armeabi-v7a","arm64-v8a"]`。该行定义了我们运行的处理器架构是`armeabi-v7a`和`arm64-v8a`。
+
+> 介绍开发板时，我们提到过，开发板处理器指令集是`armeabi-v7a`，那为什么还要加`arm64-v8a`？因为经过测试，不加这个好像应用跑不起来，我们也不知道原因。╮（╯＿╰）╭
+
+3. 同步项目设置
+
+修改完两个文件后，DevEco应该会出现如下图提示，说明项目没有同步。请点击Sync Now进行同步。
+
 ![sync](./assets/3.1.2/6.png)
-> 这里应该会有同学吐槽，为什么这么麻烦，下面将一一解释
+
+如果没有出现该提示，你也可以点击界面右上角`File`，选择`Sync and Refresh Project`手动同步。
+
+同步过程中可能出现如下`Sync Check`提示，这是因为OpenHarmony应用只支持`default`一种设备类型（而不是前面我们选择过的`phone`、`tablet`、`2in1`几种）。这里点击Yes即可。
+
+<img src="./assets/image-20250511214915860.png" alt="image-20250511214915860" style="zoom:33%;" />
+
+等待一段时间，如果没有错误提示，下方显示`Process finished with exit code 0`，则说明项目配置同步成功。
+
+> 同步是为了将正确的项目配置告诉 DevEco，让其能够按照配置正确编译我们的应用。
+
+#### 3.2.3.3 在开发板上运行应用
+
+在配置完上述所有内容后，我们终于可以实际在开发板上运行我们的应用了。和本节开始所述一样，**连接好开发板后**，在右上角下拉框中选择`OpenHarmony`开头的设备如下：
+
+<img src="./assets/image-20250511211250931.png" alt="image-20250511211250931" style="zoom:33%;" />
+
+然后，将项目调整为Debug模式，点击上述下拉框左侧的`entry`下拉框，选择开头图标是`H`的选项，如下图：
+
+<img src="./assets/image-20250511221121326.png" alt="image-20250511221121326" style="zoom:50%;" />
+
+> 这一步中，上方的entry选项代表`Release`即正式版应用，下方为`Debug`即调试版应用。调试版应用不需要正式签名，只能在开发过程中使用，正式版应用经过编译优化性能更好，也可以发布给他人，但需要登录华为账号后签名才能使用。参见[下一节](#3.2.3.4 对软件进行签名（可选）)的内容。
+
+然后，点击运行按钮（右侧绿色三角形），运行项目。应用会被自动安装到开发板上并运行。（运行中可能提示要求生成`debug signature`，如下，点击OK即可。）
+
+<img src="./assets/image-20250511221354600.png" alt="image-20250511221354600" style="zoom:33%;" />
+
+在多次运行应用时，软件可能由于版本不同，导致签名不匹配或者安装出错等，出现类似下方的提示。你可以点击`uninstall and reinstall the modules`来强制卸载开发板上已有的应用版本：
+
+![image-20250511221702724](./assets/image-20250511221702724.png)
+
+运行成功时，开发板会自动点亮，并自动运行程序，如下。（点击`Hello World`字体，也能成功变为`Welcome`）
+
+<img src="./assets/image-20250511221953571.png" alt="image-20250511221953571" style="zoom: 50%;" />
+
+#### 3.2.3.4 对软件进行签名（可选）
+
+> 该部分是可选的，也不包含任何分数。移动设备应用通常需要开发者进行“签名”，否则不允许发布和运行，以保证应用安全。这里的“签名”是密码学术语，同学们以后的课程中会学习到。
 >
-> 1. 在第五步中，为什么要下载SDK。什么是SDK？
->
->     SDK 是 “**S**oftware **D**evelopment **K**it” 的缩写，中文意思是“软件开发工具包”。你可以把它想象成一个包含了各种工具、零件和说明书的“工具箱”，专门用来帮助开发者为特定的软件平台（比如 OpenHarmony 系统、Android 系统或者 Windows 操作系统）或者特定的硬件设备（比如某种芯片或开发板）创建应用程序。
->
->     DevEco Studio 是一个集成开发环境 (IDE)，它本身提供了一个编写代码、管理项目和组织文件的“工作台”。但是，要让这个“工作台”能够真正用来开发 OpenHarmony 应用，它就需要 OpenHarmony 的“专属工具箱”——也就是 OpenHarmony SDK。
->
-> 2. 在第六步中，为什么要登录自己的华为账号？
->
->     用一句话来说，是为了打包Hap包（类似于Apk）。登录华为账号，即可说明这个应用是你开发的，不是其他人冒名顶替的，并且能确定在发布时没有被篡改过（部分同学在安装某些盗版软件的时候应该遇到过这个提示，但是往往选择了“无视风险继续安装”）
->
->
-> 3. 在第七步中，为什么要修改这些内容？
->
->     在第六步中修改的配置文件内容主要说明SDK的版本（不同的SDK版本可能适配的API不同，导致编译出现问题）以及运行时的操作系统（默认是Harmony，我们这里使用的是OpenHamrony）。
->
-> 4. 在第八步中，为什么要修改这些内容？
-> 
->     在第七步中修改的配置文件内容主要说明了ABI的过滤，也就是编译时需要支持的类型，这里我们选择支持32位和64位的ARM架构，因为我们的开发板采用的是ARM架构,并且是32位。（为什么不就写一个32位的，因为IDE不支持╮(╯▽╰)╭）
+> 签名是为了发布自己的应用，或者使用正式版应用。介绍本步骤是为了让大家了解完整的应用开发流程。没有该需求的同学可以跳过这一步。本步骤不占分数。
 
-### 3.1.3 DevEco Studio的使用：项目运行
-项目运行主要有两种方式:
-- 一种使用模拟器运行,适合纯逻辑代码，即不需要实际硬件运行的项目（这里表明AI推理Demo无法用第一种方式运行）.
-- 第二种直接通过开发板运行,适合需要实际硬件运行的项目，其将直接打包Hap包安装到开发板运行。
+1. 点击界面左上角`File > Project Structure` ，打开项目结构界面。
 
-下图中红色框即为模拟器运行，绿色框即为开发板运行（只有电脑链接开发板时才会显示）
-![选择runtime](./assets/3.1.2/7.png)
+2. 选择左侧`Project`，然后选择上方` Signing Configs`选项卡。
 
-通过3.1.2创建的项目可以通过模拟器运行，**后续提供的Demo无法使用模拟器运行**
-
-1. 选择运行方式（模拟器/开发板）
-2. 点击绿色三角形运行按钮，选择显示模型,随便选择一个,即可运行项目（项目有两个页面，运行时显示`Hello World`，点击`Hello World`后页面变成`Welcome`，在其背后会计算2+3的值并且输出到日志中），下面为点击`Hello World`后的结果
-![运行截图](./assets/3.1.2/8.png)
-3. 如果选择通过开发板运行，直接点击开发板上的`Hello World`即可。IDE会将软件安装到开发板上，回到开发板系统主页可以看到名为lable的图标。
-
-> 由于移动操作系统应用没有终端，不会将输出结果通过`printf`显示到终端上,所以调试一般通过日志得到(Lab2中曾接触过)。
-
-## 3.2 OpenHarmony 应用开发方式简介 (聚焦 Native C++)
-在 3.1 节中我们了解了可选的集成开发环境 DevEco Studio 的安装。无论我们是否在 Windows 上使用完整的 IDE 进行所有开发工作，理解 OpenHarmony 应用是如何构建的，以及我们实验中重点关注的 Native C++ 代码如何融入其中，都至关重要。
-
-本节将介绍 OpenHarmony 应用的整体开发流程，并引入一些核心概念，为后续的 Native C++ 实践（如交叉编译和集成 Llama.cpp）打下基础。
-
-### 3.2.1 OpenHarmony 应用的基本构成
-
-1. 应用包 (Application Package - HAP):
-
-- HAP是OpenHarmony应用编译、分发和安装的基本单位。一个HAP文件（以.hap为后缀）包含了应用代码、资源文件、第三方库和配置文件。你可以把它类比为Android的APK包或iOS的IPA包。
-
-- 一个应用可以由一个或多个HAP包组成，这些HAP包共同构成一个Bundle (应用束)。通常，一个Bundle对应用户在设备上看到的“一个应用”。
-
-2. Ability:
-
-- Ability是OpenHarmony应用最重要的、最核心的构成单元，代表了应用提供的一个特定功能或能力的抽象。 每个Ability都是可以独立运行和交互的实体。你可以把Ability看作是应用与系统或其他应用交互的“触点”。
-
-- OpenHarmony提供了多种类型的Ability，以满足不同的业务场景：
-  - Page Ability: 用于展示页面，提供用户界面。
-  - Service Ability: 用于提供后台服务，不直接与用户交互。
-  - Data Ability: 用于提供数据访问服务，通常用于与其他应用共享数据。
-
-### 3.2.2 开发方式概述
-OpenHarmony支持多种开发语言和方式：
-1. ArkTS/JS (主要UI和应用逻辑开发):
-
-  - OpenHarmony推荐使用ArkTS (一种基于TypeScript并对其进行扩展的语言) 配合其声明式的ArkUI框架来开发应用的UI界面和主要的上层业务逻辑。这种方式开发效率高，生态工具支持也比较完善，类似于其他现代移动平台上的主流UI开发范式。
-2. Native C/C++ (高性能模块、底层库、复用现有代码):
-
-- 对于性能要求极高、需要直接访问硬件资源、或者希望复用现有成熟C/C++代码库（例如游戏引擎、音视频编解码库、AI计算库等）的场景，OpenHarmony提供了完整的Native C/C++开发支持。
-
-- 这正是我们本次实验集成Llama.cpp所采用的方式。 Llama.cpp本身是用C++编写的高性能AI推理库，通过Native方式集成可以最大程度地发挥其性能。
-
-这两种方式并非互斥，一个复杂的应用通常会结合使用：用ArkTS/JS构建美观易用的用户界面和上层逻辑，用C/C++实现核心的高性能计算模块并通过特定机制（如NAPI）供上层调用。
-
-> OpenHarmony与Android应用开发方式及其相似，其中大部分概念在Android也有相同的概念。
+3. 在界面中勾选`Support HarmonyOS` ，此时，下方出现提示并提示`Failed to auto generate signing, please sign in first.`这是因为，如果要发布正式版的应用，需要登录华为账号，通过华为账号生成签名。如果你希望发布你的应用，或者使用Release版本的应用，请点击`Sign in`，在网页中登录。登录、签名成功后，界面类似下图。<img src="./assets/3.1.2/3.png" alt="登录账号" style="zoom:50%;" />
 
 <div STYLE="page-break-after: always;"></div>
 
@@ -459,81 +614,30 @@ OpenHarmony支持多种开发语言和方式：
 
 ## 4.1 实验内容
 
-1. 将提供的 Openharmony5.0 全量标准系统烧录到开发板中，**体验完整版 OpenHarmony 系统**。(参考[2.1 OH烧录](## 2.1 OH烧录))
+> 如果你一致跟随实验文档的内容完成到这里，那么前三点你已经完成了，你需要做的只有第4点。
 
-2. 尝试使用HDC安装提供的应用,下载链接：https://rec.ustc.edu.cn/share/dfbc3380-2b3c-11f0-aee2-27696db61006 ，名称为`OpenHarmony实验素材 > 第一阶段素材> ImageIdentificationDemo.hap`(参考[2.2 OH命令行工具hdc](## 2.2 OH命令行工具hdc))
-
-  > 在2.2.4中，提供了一个Hap包，用于去网络上找图片（通过开发板的截图功能可以存储到图库中）
-  > 
-  > 此处安装的Hap为图片识别Demo,点击Photo可以从图库中选择一张图片进行识别，效果如下所示
-  > <img src=".\assets\4.1\1.png" alt="image-20240416151431461" style="zoom:80%;" />
-3. 安装DevEco Studio，并尝试创建名为自己学号的空白Demo（例如PB23011000）在开发板运行。(参考[3.1 DevEco Studio的安装](## 3.1 在 Windows 上安装 DevEco Studio))
+1. 将提供的 Openharmony5.0 全量标准系统烧录到开发板中，**体验完整版 OpenHarmony 系统**。(参考[2.1 OpenHarmony烧录](#2.1 OpenHarmony 烧录)。)
+2. 安装DevEco Studio，创建第一个项目，并在Previewer中运行。（参考[3.1](#3.1 在 Windows 上安装 DevEco Studio)到[3.2.2](3.2.2 DevEco Studio的使用：项目预览)节。）
+3. 并尝试创建名为自己学号的空白Demo（例如PB23011000）在开发板运行。(参考[3.2.3 将应用运行到开发板上](#3.2.3 DevEco Studio的使用：将应用运行到开发板上))
+4. 将单击`Hello World`变成`Welcome`改为单击后**变成你的学号**，然后将该应用重新运行到开发板上。
+   * 提示：你需要修改`entry/src/main/ets/Index.ets`。修改很简单，你不需要知道ArkTS的语法。
+   * 该文件的大体逻辑参考[3.2.2 项目预览](#3.2.2 DevEco Studio的使用：项目预览)最后的介绍。**其实不参考也很简单啦**。
+   * 修改完成后，你需要重新参照[3.2.3.3 在开发板上运行应用](#3.2.3.3 在开发板上运行应用) 中的步骤，把应用再次跑到开发板上。
 
 
 ## 4.2 实验评分标准
 
-本次实验共 10 分，第一阶段满分为 5 分，奖励分 2 分，实验检查要求和评分标准如下：
+本次实验共 10 分，第一阶段满分为 4 分（如按时完成检查点，有额外的2分），实验检查要求和评分标准如下：
 
-1. 成功烧录Openharmony5.0 全量标准系统烧录到开发板(2')
-2. 成功通过HDC安装提供的应用并且可以使用(1')
-3. 成功安装DevEco Studio(1')
-4. 成功创建名为自己的学号的空白Demo在开发板运行(1')
+1. 成功烧录Openharmony5.0 全量标准系统烧录到开发板。（1分）
+2. 完成 DevEco Studio 的安装，并在成功在Previewer中运行项目。（1分）
+   * **检查点：**在2025年5月11日前完成前两个任务。可额外获得2分（不与阶段2叠加）。
+3. 成功将示例应用在开发板上运行（开发板上实现单击后`Hello World`变为`Welcome`）。（1分）
+4. 成功将修改后的应用在开发板上运行（开发板上实现单机后`Hello World`变为**你的学号**）。（1分）
 
-# 附录
-
-## 1. SCP 命令使用指南
-
-在使用虚拟机时，很常用的一项功能为在虚拟机和宿主机之间传输数据，在虚拟机平台上，我们可以使用平台自带的部分功能，比如共享文件夹，拖拽等功能。或者我们可以使用在线的云存储平台例如邮箱，睿课网盘等传输文件。本节将介绍一个命令行工具用于在宿主机和虚拟机之间传输数据，该工具为Windows和Linux自带工具，无需下载配置即可使用
-
-### 1.1 SCP 介绍
-
-scp 是 secure copy 的缩写, 是 linux 系统下基于 ssh 登陆进行安全的远程文件拷贝命令。在群文件中`实验技巧.PDF`中，我们介绍过如何通过ssh链接到虚拟机，但是没有说如何通过ssh在虚拟机和宿主机之间传输文件。下面的内容基于你已经了解了ssh如何连接虚拟机。
-
-### 1.2 SCP 使用方法
-
-scp可以在linux上使用，也可以在windows的命令行工具(cmd/powershell)中使用，使用`man scp`可以查看scp的具体用法。下面将在Windows上演示如何进行文件传输。
-
-#### 1.2.1 查看虚拟机ip地址(如果使用vlab，可以忽略该步骤)
-
-使用`ip addr`查看ip地址,一般来说，以192.168开头的ip为虚拟机的ip地址。
-
-在命令行(powershell/cmd)中使用`ping 192.168.xx.xx -c 3`可以查看是否可以连接到该地址，即是否可以连接到虚拟机.如果显示连接超时，则输入的ip地址不正确，请再次验证是否是该ip地址。
-
-```shell
-# ping 192.168.122.248 -c 3
-PING 192.168.122.248 (192.168.122.248) 56(84) bytes of data.
-64 bytes from 192.168.122.248: icmp_seq=1 ttl=64 time=0.650 ms
-64 bytes from 192.168.122.248: icmp_seq=2 ttl=64 time=0.485 ms
-64 bytes from 192.168.122.248: icmp_seq=3 ttl=64 time=0.498 ms
-
---- 192.168.122.248 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2055ms
-rtt min/avg/max/mdev = 0.485/0.544/0.650/0.074 ms
-```
-
-#### 1.2.2 使用scp进行文件传输
-
-假设我们现在有一个文件名为`helloworld.c`,该文件在windows桌面上，那么我们需要先将windows命令行使用`cd`命令到达桌面(Desktop)文件夹，也可以直接在桌面或者你的文件所在的目录右键->`从终端打开`。
-
-如果我们想把该文件传输到虚拟机上的家目录，则使用以下命令
-
-```shell
-scp ./helloworld.c user@192.168.xx.xx:~/
-```
-
-如果你想要传输一个文件夹（例如文件夹名称为`helloworld`）到家目录下的叫做`sample`文件夹中，则使用以下命令
-
-```shell
-scp -r ./helloworld user@192.168.xx.xx:~/sample/
-```
-
-反过来，如果我们想要从虚拟机上传输一个文件到宿主机，则将位置反过来即可,例如虚拟机家目录下有一个`helloworld.c`文件，我们想要传输到本地
-
-```shell
-scp user@192.168.xx.xx:~/hellowolrd.c ./
-```
-
-如果你使用的vlab，则可以不使用ip地址进行传输，直接将上面的`user@192.168.xx.xx`替换为`[用户名]@vlab.ustc.edu.cn `，并且在`scp`命令后添加`-i vlab-vmxxxx.pem `即可。（具体参数见自己的vlab网页显示）。当然如果使用vlab，更推荐使用vlab自带的文件传输功能。
+> 在5月11日前完成前两个任务，额外获得2分，但不与阶段二分数叠加。
+>
+> 即，如果你在本周完成阶段一所有任务，你将获得6分。但你仍需要完成完成阶段二所有任务，才能拿到本次实验的满分10分。
 
 
 

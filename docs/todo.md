@@ -10,4 +10,6 @@
 
 * 使用主题（Material for MkDocs）。
 * 增加转换为 PDF 的脚本（pandoc）。
+  * 可考虑其它转为PDF的方式，以统一语法和格式？例如[print-site](https://github.com/timvink/mkdocs-print-site-plugin)。
+  * 或者：[mkdocs-exporter](https://github.com/adrienbrignon/mkdocs-exporter)，后者好像好看一些。
 * 增加评论功能（[giscus](https://giscus.app/zh-CN)）。
