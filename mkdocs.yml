@@ -13,3 +13,13 @@ markdown_extensions:
   - markdown_gfm_admonition
   - pymdownx.details
   - pymdownx.superfences
+
+nav:
+  - 简介: index.md
+  - 实验一:
+    - "Part1 环境准备": vmlab/vmlab.md
+    - "Part2 实现Shell": shelllab/shellab.md
+    - "Part3 实现系统调用": syscalllab/syscalllab.md
+  - 实验二: malloclab/malloclab.md
+  - 实验三:
+    - "Part1 开源鸿蒙初探": ohlab/ohlab-part1.md
