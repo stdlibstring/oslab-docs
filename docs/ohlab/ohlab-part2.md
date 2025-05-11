@@ -439,11 +439,11 @@ build-ohos/install/lib/libllama.so: ELF 32-bit LSB shared object, ARM, EABI5 ver
 
 将llama.cpp的编译产物集成到Demo HAP中,我们使用在第一阶段创建的，名为你的学号的Demo。由于Llama.cpp的代码较为复杂，故本次实验不要求同学们理解其内部实现，只需要将其作为黑盒即可。
 
-我们会提供实现好的源代码，你只需要把文件夹替换掉。
+我们会提供实现好的源代码，你只需要把文件夹替换掉。(源代码中有编译好的64位库，所以你只需要编译32位的库即可，编译方式和3.1.2中相同)
 
 1. 下载提供好的源代码压缩包，解压，将原本创建的空白项目中的entry文件夹删除，将压缩包中的entry文件夹复制到项目根目录下。
 2. 在`entry/src/main/cpp`目录下创建`include`文件夹，将3.1.2中编译得到的头文件（.h文件）复制到该文件夹下
-3. 在`entry/libs`目录下创建`armeabi-v7a`文件夹，将3.1.2中编译得到的动态链接库（.so文件）复制到该文件夹下
+3. 在`entry/libs`目录下创建`armeabi-v7a`文件夹，将3.1.2中编译得到的32位动态链接库（.so文件）复制到该文件夹下
 4. 构建应用并且在开发板上运行,上面输入框可以输入提示词，效果如下所示:
 ![alt text](./assets/Llama效果.jpg)
 
@@ -506,7 +506,7 @@ free -m
 ```
 
 ### A.1 使用qwen2的0.5B模型
-> 如果你只是想要尝试以下，并不想自己构建，直接下载睿客网盘中第二阶段素材中的Demo即可（https://rec.ustc.edu.cn/share/dfbc3380-2b3c-11f0-aee2-27696db61006 中的`qwen-Demo.hap`）
+> 如果你只是想要尝试一下，并不想自己构建，直接下载睿客网盘中第二阶段素材中的Demo即可（https://rec.ustc.edu.cn/share/dfbc3380-2b3c-11f0-aee2-27696db61006 中的`qwen-Demo.hap`）
 1. 下载qwen2的0.5B模型，下载地址：https://huggingface.co/Qwen/Qwen2-0.5B-Instruct-GGUF/tree/main ，下载其中qwen2-0_5b-instruct-q4_0.gguf即可
 2. 将其放入`entry/src/main/resources/resfile`文件夹下
 3. 修改`entry/src/main/ets/pages/Index.ets`，修改其中的`modelName`变量为:
