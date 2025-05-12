@@ -1,17 +1,7 @@
-# Welcome to MkDocs
+# USTC 操作系统原理与设计 实验文档
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+本站展示中国科大操作系统原理与设计课的实验文档。目前只是把已有的文档直接放了上来，没有调整格式错误等。
 
-## Commands
+临时搭出来的网站，目前还很不完善，请大家包涵。
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
-
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+请以课程主页上的信息为准：[课程主页](http://staff.ustc.edu.cn/~ykli/os2025/)
