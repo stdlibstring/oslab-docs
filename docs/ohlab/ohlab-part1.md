@@ -633,7 +633,7 @@ compatibleSdkVersion and releaseType of the app do not match the apiVersion and 
 
 1. 成功烧录Openharmony5.0 全量标准系统烧录到开发板。（1分）
 2. 完成 DevEco Studio 的安装，并在成功在Previewer中运行项目。（1分）
-   * **检查点：**在2025年5月11日前完成前两个任务。可额外获得2分（不与阶段2叠加）。
+   * **检查点：**在2025年5月16日前完成前两个任务。可额外获得2分（不与阶段2叠加）。
 3. 成功将示例应用在开发板上运行（开发板上实现单击后`Hello World`变为`Welcome`）。（1分）
 4. 成功将修改后的应用在开发板上运行（开发板上实现单机后`Hello World`变为**你的学号**）。（1分）
 
