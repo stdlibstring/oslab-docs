@@ -61,11 +61,301 @@
 
 > 在计算机领域，在已经存在的库/软件基础上做改进甚至是被鼓励的。“不重复造轮子”是计算机领域的常被提及的原则。当然，“重复造轮子”本身是很好的学习过程，我们之前的实验也通过重新“制造” Shell、内存分配器，学习了操作系统相关知识。
 
-在本次实验中，我们就将直接使用著名的大模型推理框架 [llama.cpp](https://github.com/ggml-org/llama.cpp/tree/master)，来实现我们的大模型推理功能。首先，我们将学习如何使用一个典型的第三方库。
+在本次实验中，我们就将直接使用著名的大模型推理框架 [llama.cpp](https://github.com/ggml-org/llama.cpp/tree/master)，来实现我们的大模型推理功能。不过，在深入研究Llama.cpp之前，让我们首先在熟悉的Ubuntu系统上，学习一下什么是动态链接库，以及如何编译和使用一个像Llama.cpp这样的实际第三方库。
 
+## 1.1 什么是动态链接库 (Dynamic Link Libraries / Shared Libraries)？
+在软件开发中，“库 (Library)”是一系列预先编写好的、可重用代码的集合，它们提供了特定的功能，例如数学计算、文件操作、网络通信等。开发者可以在自己的程序中调用这些库提供的功能，而无需从头编写所有代码。
 
+链接库主要有两种形式：静态链接库和动态链接库。
 
+1. 静态链接库 (Static Libraries)：
 
+    - 在程序**编译链接**阶段，静态库的代码会被完整地复制并合并到最终生成的可执行文件中。
+    - **优点：** 程序部署简单，因为它不依赖外部库文件；所有代码都在一个文件里。
+    - **缺点：**
+        - 体积大： 如果多个程序都使用了同一个静态库，那么每个程序都会包含一份库代码的副本，导致总体磁盘占用和内存占用增加。
+        - 更新困难： 如果静态库更新了（比如修复了一个bug），所有使用了该库的程序都需要重新编译链接才能使用新版本的库。
+    - 在Linux中，静态库通常以 .a (archive) 为后缀。
+
+2. 动态链接库 (Dynamic Link Libraries / Shared Libraries)：
+
+    - 动态库的代码并**不会**在编译时复制到可执行文件中。相反，可执行文件中只包含了对库中函数和变量的引用（或称为“存根”）。
+    - 当程序运行时，操作系统会负责在内存中查找、加载所需的动态库，并将程序中的引用指向实际的库代码。
+    - **优点：**
+        - 代码共享，节省资源： 多个程序可以共享内存中同一份动态库的实例，减少了磁盘占用和物理内存的消耗。
+        - 独立更新： 动态库可以独立于使用它的程序进行更新。只要库的接口保持兼容，更新后的库可以被所有依赖它的程序自动使用，无需重新编译这些程序。
+        - 模块化： 使得大型软件可以被分解成多个更小、更易于管理的模块。
+    - **缺点：**
+        - 运行时依赖： 程序运行时必须能够找到并加载其依赖的动态库文件，否则无法运行（可能会出现“找不到.so文件”的错误）。
+        - 版本兼容性问题 (DLL Hell / SO Hell)： 如果不同程序依赖同一动态库的不同版本，且这些版本不兼容，可能会导致问题。
+    - 在Linux（包括Ubuntu）和OpenHarmony（标准系统）中，动态链接库通常以 .so (shared object) 为后缀。在Windows中，它们则以 .dll (dynamic-link library) 为后缀。
+
+**Llama.cpp 项目的核心部分就可以被编译成一个动态链接库 (libllama.so)，然后其提供的各种示例程序（如 main, simple 等）会调用这个库来实现具体功能。本次实验，我们将首先在Ubuntu上体验这个过程**
+
+## 1.2 使用 Llama.cpp 体验动态链接库的编译与使用 (Ubuntu环境)
+在上一节，我们了解了动态链接库的基本概念。现在，我们将以Llama.cpp为例，在Ubuntu环境下，一步步将其核心代码编译成一个动态链接库。Llama.cpp项目支持使用多种构建系统，其中CMake是一个强大且跨平台的选择，非常适合管理C++项目的编译。
+
+### 1.2.1 Llama.cpp 简介与源代码获取
+Llama.cpp 是一个用纯C/C++编写的开源项目，旨在高效地在多种硬件平台（包括CPU）上运行Llama系列以及其他架构的大型语言模型（LLM）。它的主要优势在于性能优化、支持模型量化（减小模型体积和内存占用）以及良好的跨平台兼容性，使其非常适合在资源相对受限的端侧设备上进行LLM推理。
+
+- 通过压缩包下载：
+1. 使用`wget`下载Llama.cpp压缩包
+
+    推荐链接: https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/llama.cpp.zip
+
+2. 解压Llama.cpp压缩包,解压后得到llama.cpp文件夹
+
+    ```sh
+    $ unzip llama.cpp.zip
+    ```
+
+- 第二种方式(通过git下载)：
+
+1. 安装git
+
+    ```sh
+    $ sudo apt-get install git
+    ```
+
+2. 下载Llama.cpp
+
+    ```sh
+    $ git clone https://github.com/ggml-org/llama.cpp.git
+    ```
+    这会在当前目录下创建一个名为 llama.cpp 的文件夹，其中包含所有源代码。
+
+### 1.2.2 Cmake简介
+CMake本身不是一个编译器，而是一个构建系统生成器。它读取名为CMakeLists.txt的配置文件（由项目开发者编写），并根据其中的指令为你当前的平台和工具链生成实际的构建脚本（例如Linux上的Makefiles或Ninja文件）。然后，你再使用这些生成的脚本来编译项目。
+> 我们曾在Lab1中学习过怎么使用makefile文件来进行自动化编译，Cmake就是自动产生Makefile的工具
+
+**优点：**
+
+- 跨平台： 同一份CMakeLists.txt通常可以在多个操作系统和编译器上工作。
+- 依赖管理： 能较好地处理项目内和项目间的依赖关系。
+- 灵活性： 支持复杂的构建配置和自定义选项。
+
+### 1.2.2 使用Cmake在 Ubuntu 上编译 Llama.cpp 动态链接库 (libllama.so)
+
+我们将采用“out-of-source build”（在源代码目录之外进行构建）的方式，这是一种良好的CMake实践，可以保持源代码目录的整洁。
+
+1. 创建并进入构建目录：
+
+    在llama.cpp的根目录下，执行：
+
+    ```Bash
+    mkdir build
+    cd build
+    ```
+2. 运行CMake配置项目：
+    此命令会告诉CMake分析上级目录（..，即llama.cpp的根目录）中的CMakeLists.txt文件，并为当前的Ubuntu系统（本地编译）配置构建参数。
+
+    ```Bash
+    # -DCMAKE_BUILD_TYPE=Release 通常用于生成优化后的版本
+    # -DLLAMA_BUILD_TESTS=OFF 和 -DLLAMA_BUILD_EXAMPLES=OFF 可以加快仅编译库的速度
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_CURL=OFF
+    ```
+
+    - ..: 指向llama.cpp的根目录（CMakeLists.txt所在的位置）。
+    - -DCMAKE_BUILD_TYPE=Release: 指定构建类型为Release，会开启优化，生成的库性能更好。如果需要调试，可以使用Debug。
+    - -DLLAMA_BUILD_TESTS=OFF 和 -DLLAMA_BUILD_EXAMPLES=OFF: 关闭测试和示例程序的编译，因为我们当前的目标只是生成libllama.so库文件，并且后续会单独编译我们自己的llama-Demo.cpp。
+
+    如果配置成功，终端会显示相关信息，并且build目录下会生成Makefile。
+
+3. 执行编译与安装：
+    在build目录下，执行以下命令：
+
+    a. 首先，编译 llama 库目标：
+
+    ```bash 
+    cmake --build . -j$(nproc)
+    ```
+    * --build . : 告诉CMake执行当前目录（即build目录）下的构建脚本。
+    * -j$(nproc): (可选) 使用所有可用的CPU核心并行编译，以加快速度。
+
+    b.  然后，执行安装命令：
+
+    此命令会将已编译好的目标（根据CMakeLists.txt中的install规则，包括libllama.so和头文件llama.h）安装到指定的 --prefix 下。
+    ```bash 
+    cmake --install . --prefix "install"
+    ```
+    * --install .: 执行当前构建目录中的安装规则。
+    * --prefix "install": 指定安装路径的前缀。因为我们当前在 `llama.cpp/build/` 目录下，这会在 `llama.cpp/build/` 内部创建一个名为 `install` 的子目录 (即 `llama.cpp/build/install/`)，并将库文件安装到 `llama.cpp/build/install/lib/`，头文件安装到 `llama.cpp/build/install/include/`。
+    ```Bash
+    cmake --build . -j$(nproc)
+    ```
+    或者可以直接使用：
+
+    ```Bash
+    make -j$(nproc)
+    ```
+    - --build . : 告诉CMake执行当前目录（即build目录）下的构建脚本。
+    - -j$(nproc): (可选) 使用所有可用的CPU核心并行编译，以加快速度。
+
+4. 查找并验证编译产物：
+    编译成功后，libllama.so 文件通常会生成在`llama.cpp/build/install/lib` 目录下。
+
+    ``` Bash
+    ls -l install/lib/libllama.so 
+    file install/lib/libllama.so
+    ```
+    file 命令的输出应该类似：libllama.so: ELF 64-bit LSB shared object, x86-64, version 1 (GNU/Linux), dynamically linked, ...，表明它是一个为当前Ubuntu x86-64架构编译的动态链接库。
+
+现在，我们已经拥有了在Ubuntu上本地编译好的libllama.so。
+
+### 1.2.3 在 Ubuntu 上编译 Llama.cpp 示例程序(llama-Demo.cpp)
+
+接下来，我们将编译提供的llama-Demo.cpp文件。这个程序是一个独立的C++应用，它将通过调用我们刚刚编译的libllama.so库来实现加载模型和执行推理的功能。（提供gguf模型文件与prompt，llama-Demo.cpp文件将提供的prompt续写生成一段话）
+
+#### 1.2.3.1 llama-Demo.cpp 工作流程
+
+llama-Demo.cpp的主要工作流程是：
+
+- 包含 llama.h 头文件以使用Llama.cpp库的API。
+    ```cpp
+    #include "llama.h"
+    ```
+- 解析命令行参数，获取模型文件路径、用户提示等。
+    ```cpp
+    int main(int argc, char **argv) {
+        // Parse command line arguments
+        ...
+    }
+    ```
+- 调用libllama.so中的函数，加载指定的GGUF模型。
+    ```cpp
+    llama_model* LoadModel(const std::string& model_path) {
+        // 调用llama.cpp中的接口获取模型参数
+        llama_model_params model_params = llama_model_default_params();
+        model_params.n_gpu_layers = 99; // number of layers to offload to the GPU
+        // 调用llama.cpp中的接口从模型文件加载模型
+        llama_model* model = llama_model_load_from_file(model_path.c_str(), model_params);
+        if (model == nullptr) {
+            fprintf(stderr, "%s: error: unable to load model\n", __func__);
+            exit(1);
+        }
+        return model;
+    }
+    ```
+- 对用户提示进行分词 (Tokenization)。
+    ```cpp
+    std::vector<llama_token> TokenizePrompt( const llama_vocab* vocab, const std::string& prompt) {
+        // 调用llama.cpp中的接口对提示进行分词
+        const int n_prompt = -llama_tokenize(vocab, prompt.c_str(), prompt.size(), nullptr, 0, true, true);
+        std::vector<llama_token> prompt_tokens(n_prompt);
+        if (llama_tokenize(vocab, prompt.c_str(), prompt.size(), prompt_tokens.data(), prompt_tokens.size(), true, true) < 0) {
+            fprintf(stderr, "%s: error: failed to tokenize the prompt\n", __func__);
+        }
+        return prompt_tokens;
+    }
+    ```
+- 初始化推理上下文 (Context) 和采样器 (Sampler)。
+    ```cpp
+    llama_context* InitializeContext(llama_model* model, int n_prompt, int n_predict) {
+        llama_context_params ctx_params = llama_context_default_params();
+        ......
+        return ctx;
+    }
+    llama_sampler * InitializeSampler(){
+        auto sparams = llama_sampler_chain_default_params();
+        ......
+        return smpl;
+    }
+    ```
+- 执行推理循环，逐个生成词元 (Token)，并将词元转换回文本输出。
+    ```cpp
+    void GenerateTokens(std::vector<llama_token>& prompt_tokens,llama_context* ctx,
+                            const llama_vocab* vocab,llama_sampler * smpl, int n_prompt, int n_predict){
+        // prepare a batch for the prompt
+        llama_batch batch = llama_batch_get_one(prompt_tokens.data(), n_prompt);
+        // 循环产生新的词元
+        llama_token new_token_id;
+        for (int n_pos = 0; n_pos + batch.n_tokens < n_prompt + n_predict; ) {
+            // evaluate the current batch with the transformer model
+            if (llama_decode(ctx, batch)) {
+                fprintf(stderr, "%s : failed to eval, return code %d\n", __func__, 1);
+            }
+            n_pos += batch.n_tokens;
+            // sample the next token
+            {
+                new_token_id = llama_sampler_sample(smpl, ctx, -1);
+                // is it an end of generation?
+                if (llama_vocab_is_eog(vocab, new_token_id)) {
+                    break;
+                }
+                char buf[128];
+                int n = llama_token_to_piece(vocab, new_token_id, buf, sizeof(buf), 0, true);
+                if (n < 0) {
+                    fprintf(stderr, "%s: error: failed to convert token to piece\n", __func__);
+                }
+                std::string s(buf, n);
+                printf("%s", s.c_str());
+                fflush(stdout);
+                // prepare the next batch with the sampled token
+                batch = llama_batch_get_one(&new_token_id, 1);
+            }
+        }
+    }
+    ```
+- 释放资源。
+    ```cpp
+    int main(int argc, char **argv) {
+        // Parse command line arguments
+        // 加载模型
+        // 对用户提示进行分词
+        // 初始化推理上下文和采样器
+        // 执行推理循环，逐个生成词元，并将词元转换回文本输出
+        // 释放资源
+        llama_sampler_free(smpl);
+        llama_context_free(ctx);
+        llama_model_free(model);
+    }
+    ```
+#### 1.2.3.2 编译llama-Demo.cpp
+假设您已将llama-Demo.cpp放到了一个工作目录，例如`~/oslab/llama-Demo.cpp`。并且，llama.cpp的源代码位于`~/oslab/llama.cpp/`，我们编译好的libllama.so位于`~/oslab/llama.cpp/build/install/lib`，得到的头文件位于``~/oslab/llama.cpp/build/install/include``。
+
+1. 下载llama-Demo.cpp并进入llama-Demo.cpp所在目录：
+
+2. 执行编译命令： 
+    ```Bash
+    g++ -o llama-Demo llama-Demo.cpp \
+    -I./llama.cpp/build/install/include \
+    -L./llama.cpp/build/install/lib \
+    -lllama \
+    -std=c++17
+    ```
+    参数解析：
+    - `-o llama-Demo`: 指定输出可执行文件的名称为llama-Demo。
+    - `-I./llama.cpp/build/install/include`: 指定头文件的搜索路径。
+    - `-L./llama.cpp/build/install/lib`: 指定库文件的搜索路径。
+    - `-lllama`: (小写L) 告诉链接器链接名为llama的库（即libllama.so）。
+    - `-std=c++17`: 指定C++标准版本为C++17。
+
+#### 1.2.3.3 运行llama-Demo
+
+1. 添加环境变量(意味着程序运行时从哪里找到动态链接库)
+    ```Bash
+    export LD_LIBRARY_PATH=~/oslab/llama.cpp/build/install/lib:$LD_LIBRARY_PATH
+    ```
+2. 使用wget下载模型文件,选择其一即可
+    ```Bash
+    # Tinystories模型，用于生成一个小故事，大小为668MB
+    wget https://hf-mirror.com/mradermacher/tinystories2-GGUF/resolve/main/tinystories2.Q4_K_M.gguf?download=true -O tinystories2.Q4_K_M.gguf
+    # qwen3.0-0.6B模型，用于通用任务,大小为379MB
+    wget https://hf-mirror.com/unsloth/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q4_K_M.gguf?download=true -O Qwen3-0.6B-Q4_K_M.gguf
+    ```
+3. 运行llama-Demo
+    ```sh
+    # `model.gguf`为模型文件路径，`n_predict`为生成的长度，`prompt`为用户输入的提示。
+    $ ./simple_app -m ./model.gguf [-n n_predict] [prompt]
+    ```
+
+如果执行成功应该能看到程序加载模型后，根据提示开始生成文本，这证明了llama-Demo成功调用了动态链接库libllama.so中的功能。示例输出如下所示：
+```bash
+    $ ./llama-Demo -m ./Qwen3-0.6B-Q4_K_M.gguf -n 128 "I'm a student from USTC, My student ID is PB23011000"
+    ... # 各种配置信息
+    I'm a student from USTC,My student ID is PB230110001, and I'm a student in the 2023-2024 academic year. I'm interested in studying in the field of Computer Science. I want to know if I can get a scholarship for the 2023-2024 academic year. I need to apply for the scholarship, and I need to provide the following information: my student ID, my name, my major, my academic year, and my current status. Please help me to fill out the application form. I need to know if I can get a scholarship for the 2023-2024 academic
+    ... # 性能信息
+```
 
 # 第一部分：端侧AI推理初探
 
