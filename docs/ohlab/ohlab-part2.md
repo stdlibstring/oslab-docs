@@ -1,4 +1,4 @@
-# 移动操作系统与端侧AI推理初探-端侧AI推理初探(part2)
+# 移动操作系统与端侧AI推理初探-端侧推理应用实现（Part2）
 
 ## 实验目的
 
@@ -8,8 +8,9 @@
 ## 实验环境
 
 - OS:
-  - 编译：Ubuntu 24.04.4 LTS
-
+  - 交叉编译：Ubuntu 24.04.4 LTS
+  - OH 应用开发：Windows
+  
 - Platform : VMware
 
 ## 实验时间安排
@@ -26,10 +27,45 @@
 
 ## 友情提示/为什么要做这个实验？
 
-- **本实验难度不高，目的是让大家了解当前移动操作系统以及移动应用开发方法，并尝试使用AI推理满足功能。**
-- 如果同学们遇到了问题，请先查询在线文档。在线文档地址：[https://docs.qq.com/sheet/DU1JrWXhKdFFpWVNR](https://docs.qq.com/sheet/DU1JrWXhKdFFpWVNR)
+- **本实验难度并不高，几乎没有代码上的要求，只是让大家了解完整的移动应用开发流程，并在此过程中，体会移动操作系统与我们之前使用的桌面/服务端操作系统的不同。**
+- 如果同学们遇到了问题，请先查询在线文档，也欢迎在文档内/群内/私聊助教提问。在线文档地址：[https://docs.qq.com/sheet/DU1JrWXhKdFFpWVNR](https://docs.qq.com/sheet/DU1JrWXhKdFFpWVNR)
+  - 为了提供足够的信息，方便助教助教更快更好地解答你的疑问，我们推荐你阅读（由LUG撰写的）[提问指南](https://lug.ustc.edu.cn/wiki/doc/howtoask/)。**当然，这并不是必须的，你可以随时提问，助教都会尽可能提供帮助。**
 
-<div STYLE="page-break-after: always;"></div>
+
+
+# 实验内容简介
+
+> 本节提供对本次实验的概览，让大家能更好地理解本次实验要做什么，目标是什么。实验的具体步骤可以参考本文档后面章节。
+
+本次实验中，我们将在提供的 DAYU200 开发板上，运行 OpenHarmony 操作系统，并开发能运行在该开发板上和 OpenHarmony 上的大模型推理应用。为了实现这个目标，需要依次完成以下几个任务：
+
+1. 将 OpenHarmony 系统安装到开发板上并运行。
+
+2. 安装并配置 OpenHarmony 应用的开发环境，成功开发并在开发板上运行一个示例应用。
+
+3. 完成大语言模型推理应用的开发，其中包括：
+
+   * 通过交叉编译，将大模型推理框架（Llama.cpp）编译为能够在开发板上使用的动态链接库。
+
+   * 调用上述库，完成应用，并运行在开发板上。
+
+在上一阶段中，我们已经完成了前两个目标。在这一阶段，我们将学习如何使用第三方库，并通过交叉编译，生成能在开发板上使用的动态链接库。最后，我们将调用编译好的动态链接库，在开发板上实现端侧推理功能。
+
+
+
+# 第一部分：第三方库的编译与使用
+
+我们本次实验的目标，是在开发板上实现大模型推理应用。然而，很明显，我们是操作系统课程，大部分同学也没有系统学习过人工智能和大语言模型的相关知识。要求大家在一周内学习并实现大语言模型推理，显然是不现实的。
+
+幸运的是，在计算机领域，我们可以常常可以使用前人已经完成的工作。甚至，对于开源软件，我们还能拿到软件源代码，只要遵守开源协议，我们就能对软件做出修改，增添功能，或者移植到我们想要的平台。
+
+> 在计算机领域，在已经存在的库/软件基础上做改进甚至是被鼓励的。“不重复造轮子”是计算机领域的常被提及的原则。当然，“重复造轮子”本身是很好的学习过程，我们之前的实验也通过重新“制造” Shell、内存分配器，学习了操作系统相关知识。
+
+在本次实验中，我们就将直接使用著名的大模型推理框架 [llama.cpp](https://github.com/ggml-org/llama.cpp/tree/master)，来实现我们的大模型推理功能。首先，我们将学习如何使用一个典型的第三方库。
+
+
+
+
 
 # 第一部分：端侧AI推理初探
 
@@ -105,6 +141,8 @@ AI推理框架是一套专门设计用来简化和优化在各种硬件平台上
 
 可以把推理框架想象成一个高度专业的“引擎室管理员”，它知道如何最高效地启动和运行一个复杂的“AI引擎”（即训练好的模型），并确保它在特定的“船只”（即你的硬件设备）上表现最佳。
 
+
+
 ## 1.5 端侧 AI (On-Device AI)推理 与应用开发简介
 
 ### 1.5.1 什么是端侧AI推理？
@@ -131,7 +169,7 @@ AI推理框架是一套专门设计用来简化和优化在各种硬件平台上
 
 ### 1.5.4 端侧AI应用开发流程（简化版）
 
-1. 选择或训练AI模型： 根据应用需求选择合适的预训练模型（例如，是图像分类、目标检测、还是自然语言理解）。在本次实验中，我们直接使用已经训练好的TinyStory模型。
+1. 选择或训练AI模型： 根据应用需求选择合适的预训练模型（例如，是图像分类、目标检测、还是自然语言理解）。在本次实验中，我们直接使用已经训练好的TinyStories模型。
 2. 优化与量化： 对模型进行量化（如INT8量化），减小模型大小，提高在端侧设备上的运行效率。
 3. 应用集成与开发：
   - 在你的应用程序代码中（对于Llama.cpp，我们将在C++层面操作），调用推理框架提供的API：
@@ -350,15 +388,13 @@ Llama.cpp 是一个用C/C++编写的、用于高效运行Llama系列大型语言
     $ git clone https://github.com/ggml-org/llama.cpp.git
     ```
     这会在当前目录下创建一个名为 llama.cpp 的文件夹，其中包含所有源代码。
-3. 注意事项：如果你使用git从llama的github主页下载，需要修改以下文件
-- llama.cpp/tools/mtmd/clip.cpp的1813行，修改为
-   ```cpp
-   /*.mem_size =*/ static_cast<size_t>((gguf_get_n_tensors(ctx_gguf.get()) + 1) * ggml_tensor_overhead()),
-   ```
- - llama.cpp/tools/export-lora/export-lora.cpp的151行，修改为
-   ```cpp
-   /*.mem_size   =*/ static_cast<size_t>(gguf_get_n_tensors(base_model.ctx_gguf)*ggml_tensor_overhead()),
-   ```
+
+
+
+
+
+
+
 ### 3.1.2 CMake 与交叉编译简介
 #### 1.CMake 是什么？
 CMake 是一个开源的、跨平台的构建系统生成器。它本身不直接编译代码，而是读取名为 CMakeLists.txt 的项目配置文件，然后根据这些配置生成特定构建工具（如 Makefile文件）所需的构建脚本。开发者只需编写一次 CMakeLists.txt，就可以在不同平台和编译器上生成相应的构建方案。
@@ -372,21 +408,23 @@ CMake 对交叉编译提供了优秀的支持，主要通过`工具链文件 (To
 
 幸运的是，OpenHarmony SDK 通常会提供预设好的工具链文件，极大地简化了我们的交叉编译配置。
 
-
 ### 3.1.2 使用 CMake 交叉编译 Llama.cpp (本实验选用)
 
-1. **定义 OpenHarmony SDK 路径 (重要！)**：
-在终端中，首先定义一个指向你的 OpenHarmony Native SDK 在 Linux 环境下的根目录的环境变量。请将 <你的OHOS SDK Linux Native部分的根路径> 替换为你 SDK 的实际路径。
-    ```bash
-    # 示例路径，请务必根据您的实际情况修改！！！
-    export OHOS_SDK_LINUX_NATIVE_ROOT="/home/kon/native" 
+TODO：这里写成脚本。
 
-    # 验证路径 (可选)
-    echo "OpenHarmony SDK Linux Native Root: ${OHOS_SDK_LINUX_NATIVE_ROOT}"
-    ls "${OHOS_SDK_LINUX_NATIVE_ROOT}/build-tools/cmake/bin/cmake" || echo "SDK bundled CMake not found!"
-    ls "${OHOS_SDK_LINUX_NATIVE_ROOT}/build/cmake/ohos.toolchain.cmake" || echo "OHOS Toolchain file not found!"
-    ```
-确保 `OHOS_SDK_LINUX_NATIVE_ROOT` 变量设置正确，并且其下的 CMake 和工具链文件存在。
+1. **定义 OpenHarmony SDK 路径 (重要！)**：
+    在终端中，首先定义一个指向你的 OpenHarmony Native SDK 在 Linux 环境下的根目录的环境变量。请将 <你的OHOS SDK Linux Native部分的根路径> 替换为你 SDK 的实际路径。
+
+   ```bash
+   # 示例路径，请务必根据您的实际情况修改！！！
+   export OHOS_SDK_LINUX_NATIVE_ROOT="/home/kon/native" 
+    
+   # 验证路径 (可选)
+   echo "OpenHarmony SDK Linux Native Root: ${OHOS_SDK_LINUX_NATIVE_ROOT}"
+   ls "${OHOS_SDK_LINUX_NATIVE_ROOT}/build-tools/cmake/bin/cmake" || echo "SDK bundled CMake not found!"
+   ls "${OHOS_SDK_LINUX_NATIVE_ROOT}/build/cmake/ohos.toolchain.cmake" || echo "OHOS Toolchain file not found!"
+   ```
+    确保 `OHOS_SDK_LINUX_NATIVE_ROOT` 变量设置正确，并且其下的 CMake 和工具链文件存在。
 
 2. 使用OpenHarmony SDK生成编译文件:
     ```sh
@@ -394,18 +432,19 @@ CMake 对交叉编译提供了优秀的支持，主要通过`工具链文件 (To
         -B build-ohos \
         -DCMAKE_TOOLCHAIN_FILE=${OHOS_SDK_LINUX_NATIVE_ROOT}/build/cmake/ohos.toolchain.cmake \
         -DOHOS_ARCH=armeabi-v7a \
+        -DCMAKE_CXX_FLAGS="-Wno-c++11-narrowing" \
         -DGGML_NATIVE=OFF \
         -DGGML_OPENMP=OFF \
         -DLLAMA_BUILD_TESTS=OFF \
         -DLLAMA_CURL=OFF \
-        -DCMAKE_BUILD_TYPE=Debug
+        -DCMAKE_BUILD_TYPE=Release 
     ```
     几个比较重要的参数说明：
     - `${OHOS_SDK_LINUX_NATIVE_ROOT}/build-tools/cmake/bin/cmake`: 指定使用 OpenHarmony SDK 中自带的 CMake 可执行文件。这有助于保证与 SDK 工具链的兼容性。
     - `-B build-ohos32`: 指定 CMake 生成构建文件的目录为 build-ohos（如果目录不存在，CMake 会创建它）。这是“out-of-source”构建，是一个好习惯，可以保持源代码目录的整洁。
     - `-DCMAKE_TOOLCHAIN_FILE=${OHOS_SDK_LINUX_NATIVE_ROOT}/build/cmake/ohos.toolchain.cmake`: 这是交叉编译的核心配置。 它告诉 CMake 使用 OpenHarmony SDK 提供的工具链文件。这个文件内部定义了交叉编译器、Sysroot路径、目标架构等信息。
     - `-DOHOS_ARCH=armeabi-v7a`: 这个参数传递给 ohos.toolchain.cmake 文件，用于指定目标CPU架构为 armeabi-v7a (ARM 32位架构)。
-
+    
 3. 编译Llama.cpp生成动态链接库与头文件:
     ```sh
     ${OHOS_SDK_LINUX_NATIVE_ROOT}/build-tools/cmake/bin/cmake  --build build-ohos --config Debug -j
@@ -460,7 +499,7 @@ build-ohos/install/lib/libllama.so: ELF 32-bit LSB shared object, ARM, EABI5 ver
 
 ## 4.2 实验评分标准
 
-本次实验共 10 分，第二阶段满分为 5 分，实验检查要求和评分标准如下：
+本次实验共 10 分，第二阶段满分为 6 分，实验检查要求和评分标准如下：
 
 1. 成功交叉编译llama.cpp得到32位动态链接库和头文件(2')
 4. 成功将llama.cpp的编译产物集成到Demo HAP中,并且成功运行(3')
