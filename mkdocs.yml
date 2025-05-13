@@ -23,3 +23,5 @@ nav:
   - 实验二: malloclab/malloclab.md
   - 实验三:
     - "Part1 开源鸿蒙初探": ohlab/ohlab-part1.md
+    - "Part2 端侧推理应用实现": ohlab/ohlab-part2.md
+    - "附录": ohlab/appendix.md
