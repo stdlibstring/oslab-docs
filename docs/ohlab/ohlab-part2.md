@@ -90,7 +90,7 @@
         - 版本兼容性问题 (DLL Hell / SO Hell)： 如果不同程序依赖同一动态库的不同版本，且这些版本不兼容，可能会导致问题。
     - 在Linux（包括Ubuntu）和OpenHarmony（标准系统）中，动态链接库通常以 .so (shared object) 为后缀。在Windows中，它们则以 .dll (dynamic-link library) 为后缀。
 
-**Llama.cpp 项目的核心部分就可以被编译成一个动态链接库 (libllama.so)，然后其提供的各种示例程序（如 main, simple 等）会调用这个库来实现具体功能。本次实验，我们将首先在Ubuntu上体验这个过程**
+**Llama.cpp 项目的核心部分就可以被编译成一个动态链接库 (libllama.so)，然后其提供的各种示例程序（如 main, Llama-Demo等）会调用这个库来实现具体功能。本次实验，我们将首先在Ubuntu上体验这个过程**
 
 ## 1.2 使用 Llama.cpp 体验动态链接库的编译与使用 (Ubuntu环境)
 在上一节，我们了解了动态链接库的基本概念。现在，我们将以Llama.cpp为例，在Ubuntu环境下，一步步将其核心代码编译成一个动态链接库。Llama.cpp项目支持使用多种构建系统，其中CMake是一个强大且跨平台的选择，非常适合管理C++项目的编译。
@@ -101,8 +101,10 @@ Llama.cpp 是一个用纯C/C++编写的开源项目，旨在高效地在多种�
 - 通过压缩包下载：
 1. 使用`wget`下载Llama.cpp压缩包
 
-    推荐链接: https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/llama.cpp.zip
-
+    ```sh
+    $ cd ~/oslab
+    $ wget https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/llama.cpp.zip
+    ```
 2. 解压Llama.cpp压缩包,解压后得到llama.cpp文件夹
 
     ```sh
@@ -138,26 +140,18 @@ CMake本身不是一个编译器，而是一个构建系统生成器。它读取
 
 我们将采用“out-of-source build”（在源代码目录之外进行构建）的方式，这是一种良好的CMake实践，可以保持源代码目录的整洁。
 
-1. 创建并进入构建目录：
-
-    在llama.cpp的根目录下，执行：
-
-    ```Bash
-    mkdir build
-    cd build
-    ```
-2. 运行CMake配置项目：
-    此命令会告诉CMake分析上级目录（..，即llama.cpp的根目录）中的CMakeLists.txt文件，并为当前的Ubuntu系统（本地编译）配置构建参数。
+1. 运行CMake配置项目：
+    确保您当前位于 llama.cpp 的根目录下。执行以下命令：
 
     ```Bash
-    # -DCMAKE_BUILD_TYPE=Release 通常用于生成优化后的版本
-    # -DLLAMA_BUILD_TESTS=OFF 和 -DLLAMA_BUILD_EXAMPLES=OFF 可以加快仅编译库的速度
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_CURL=OFF
+    cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_CURL=OFF
     ```
-
-    - ..: 指向llama.cpp的根目录（CMakeLists.txt所在的位置）。
-    - -DCMAKE_BUILD_TYPE=Release: 指定构建类型为Release，会开启优化，生成的库性能更好。如果需要调试，可以使用Debug。
-    - -DLLAMA_BUILD_TESTS=OFF 和 -DLLAMA_BUILD_EXAMPLES=OFF: 关闭测试和示例程序的编译，因为我们当前的目标只是生成libllama.so库文件，并且后续会单独编译我们自己的llama-Demo.cpp。
+    - `-S .`: (Source Directory) 指定CMake的源代码顶级目录为当前目录 (.)。
+    - `-B build`: (Build Directory) 指定CMake生成构建系统文件以及后续编译产物的目录为当前目录下的 build 子目录。如果 build 目录不存在，CMake会自动创建它。
+    - `..`: 指向llama.cpp的根目录（CMakeLists.txt所在的位置）。
+    - `-DCMAKE_BUILD_TYPE=Release`: 指定构建类型为Release，会开启优化，生成的库性能更好。如果需要调试，可以使用Debug。
+    - `-DLLAMA_BUILD_TESTS=OFF 和 -DLLAMA_BUILD_EXAMPLES=OFF`: 关闭测试和示例程序的编译，因为我们当前的目标只是生成libllama.so库文件，并且后续会单独编译我们自己的llama-Demo.cpp。
+    - `-DLLAMA_CURL=OFF`: 可以关闭curl依赖.
 
     如果配置成功，终端会显示相关信息，并且build目录下会生成Makefile。
 
@@ -167,29 +161,21 @@ CMake本身不是一个编译器，而是一个构建系统生成器。它读取
     a. 首先，编译 llama 库目标：
 
     ```bash 
-    cmake --build . -j$(nproc)
+    # 其实际上执行make命令
+    cmake --build build -j$(nproc)
     ```
-    * --build . : 告诉CMake执行当前目录（即build目录）下的构建脚本。
-    * -j$(nproc): (可选) 使用所有可用的CPU核心并行编译，以加快速度。
+    * `--build build` : 告诉CMake执行目录（即build目录）下的构建脚本。
+    * `-j$(nproc)`: (可选) 使用所有可用的CPU核心并行编译，以加快速度。
 
     b.  然后，执行安装命令：
 
     此命令会将已编译好的目标（根据CMakeLists.txt中的install规则，包括libllama.so和头文件llama.h）安装到指定的 --prefix 下。
     ```bash 
-    cmake --install . --prefix "install"
+    # 实际上cmake会将命令转换为make install命令
+    cmake --install build --prefix "build/install"
     ```
-    * --install .: 执行当前构建目录中的安装规则。
-    * --prefix "install": 指定安装路径的前缀。因为我们当前在 `llama.cpp/build/` 目录下，这会在 `llama.cpp/build/` 内部创建一个名为 `install` 的子目录 (即 `llama.cpp/build/install/`)，并将库文件安装到 `llama.cpp/build/install/lib/`，头文件安装到 `llama.cpp/build/install/include/`。
-    ```Bash
-    cmake --build . -j$(nproc)
-    ```
-    或者可以直接使用：
-
-    ```Bash
-    make -j$(nproc)
-    ```
-    - --build . : 告诉CMake执行当前目录（即build目录）下的构建脚本。
-    - -j$(nproc): (可选) 使用所有可用的CPU核心并行编译，以加快速度。
+    * `--install build`: 执行构建目录`build`中的安装规则。
+    * `--prefix "build/install"`: 指定安装路径的前缀。因为我们当前在 `llama.cpp` 目录下，这会在 `build/` 内部创建一个名为 `install` 的子目录 (即 `llama.cpp/build/install/`)，并将库文件安装到 `llama.cpp/build/install/lib/`，头文件安装到 `llama.cpp/build/install/include/`。
 
 4. 查找并验证编译产物：
     编译成功后，libllama.so 文件通常会生成在`llama.cpp/build/install/lib` 目录下。
@@ -206,115 +192,14 @@ CMake本身不是一个编译器，而是一个构建系统生成器。它读取
 
 接下来，我们将编译提供的llama-Demo.cpp文件。这个程序是一个独立的C++应用，它将通过调用我们刚刚编译的libllama.so库来实现加载模型和执行推理的功能。（提供gguf模型文件与prompt，llama-Demo.cpp文件将提供的prompt续写生成一段话）
 
-#### 1.2.3.1 llama-Demo.cpp 工作流程
-
-llama-Demo.cpp的主要工作流程是：
-
-- 包含 llama.h 头文件以使用Llama.cpp库的API。
-    ```cpp
-    #include "llama.h"
-    ```
-- 解析命令行参数，获取模型文件路径、用户提示等。
-    ```cpp
-    int main(int argc, char **argv) {
-        // Parse command line arguments
-        ...
-    }
-    ```
-- 调用libllama.so中的函数，加载指定的GGUF模型。
-    ```cpp
-    llama_model* LoadModel(const std::string& model_path) {
-        // 调用llama.cpp中的接口获取模型参数
-        llama_model_params model_params = llama_model_default_params();
-        model_params.n_gpu_layers = 99; // number of layers to offload to the GPU
-        // 调用llama.cpp中的接口从模型文件加载模型
-        llama_model* model = llama_model_load_from_file(model_path.c_str(), model_params);
-        if (model == nullptr) {
-            fprintf(stderr, "%s: error: unable to load model\n", __func__);
-            exit(1);
-        }
-        return model;
-    }
-    ```
-- 对用户提示进行分词 (Tokenization)。
-    ```cpp
-    std::vector<llama_token> TokenizePrompt( const llama_vocab* vocab, const std::string& prompt) {
-        // 调用llama.cpp中的接口对提示进行分词
-        const int n_prompt = -llama_tokenize(vocab, prompt.c_str(), prompt.size(), nullptr, 0, true, true);
-        std::vector<llama_token> prompt_tokens(n_prompt);
-        if (llama_tokenize(vocab, prompt.c_str(), prompt.size(), prompt_tokens.data(), prompt_tokens.size(), true, true) < 0) {
-            fprintf(stderr, "%s: error: failed to tokenize the prompt\n", __func__);
-        }
-        return prompt_tokens;
-    }
-    ```
-- 初始化推理上下文 (Context) 和采样器 (Sampler)。
-    ```cpp
-    llama_context* InitializeContext(llama_model* model, int n_prompt, int n_predict) {
-        llama_context_params ctx_params = llama_context_default_params();
-        ......
-        return ctx;
-    }
-    llama_sampler * InitializeSampler(){
-        auto sparams = llama_sampler_chain_default_params();
-        ......
-        return smpl;
-    }
-    ```
-- 执行推理循环，逐个生成词元 (Token)，并将词元转换回文本输出。
-    ```cpp
-    void GenerateTokens(std::vector<llama_token>& prompt_tokens,llama_context* ctx,
-                            const llama_vocab* vocab,llama_sampler * smpl, int n_prompt, int n_predict){
-        // prepare a batch for the prompt
-        llama_batch batch = llama_batch_get_one(prompt_tokens.data(), n_prompt);
-        // 循环产生新的词元
-        llama_token new_token_id;
-        for (int n_pos = 0; n_pos + batch.n_tokens < n_prompt + n_predict; ) {
-            // evaluate the current batch with the transformer model
-            if (llama_decode(ctx, batch)) {
-                fprintf(stderr, "%s : failed to eval, return code %d\n", __func__, 1);
-            }
-            n_pos += batch.n_tokens;
-            // sample the next token
-            {
-                new_token_id = llama_sampler_sample(smpl, ctx, -1);
-                // is it an end of generation?
-                if (llama_vocab_is_eog(vocab, new_token_id)) {
-                    break;
-                }
-                char buf[128];
-                int n = llama_token_to_piece(vocab, new_token_id, buf, sizeof(buf), 0, true);
-                if (n < 0) {
-                    fprintf(stderr, "%s: error: failed to convert token to piece\n", __func__);
-                }
-                std::string s(buf, n);
-                printf("%s", s.c_str());
-                fflush(stdout);
-                // prepare the next batch with the sampled token
-                batch = llama_batch_get_one(&new_token_id, 1);
-            }
-        }
-    }
-    ```
-- 释放资源。
-    ```cpp
-    int main(int argc, char **argv) {
-        // Parse command line arguments
-        // 加载模型
-        // 对用户提示进行分词
-        // 初始化推理上下文和采样器
-        // 执行推理循环，逐个生成词元，并将词元转换回文本输出
-        // 释放资源
-        llama_sampler_free(smpl);
-        llama_context_free(ctx);
-        llama_model_free(model);
-    }
-    ```
-#### 1.2.3.2 编译llama-Demo.cpp
-假设您已将llama-Demo.cpp放到了一个工作目录，例如`~/oslab/llama-Demo.cpp`。并且，llama.cpp的源代码位于`~/oslab/llama.cpp/`，我们编译好的libllama.so位于`~/oslab/llama.cpp/build/install/lib`，得到的头文件位于``~/oslab/llama.cpp/build/install/include``。
+#### 1.2.3.1 下载并编译llama-Demo.cpp
+假设我们已经将llama-Demo.cpp放到了一个工作目录，例如`~/oslab/llama-Demo.cpp`。并且，llama.cpp的源代码位于`~/oslab/llama.cpp/`，我们编译好的libllama.so位于`~/oslab/llama.cpp/build/install/lib`，得到的头文件位于``~/oslab/llama.cpp/build/install/include``。
 
 1. 下载llama-Demo.cpp并进入llama-Demo.cpp所在目录：
-
+    ```Bash
+    cd ~/oslab/
+    wget https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/llama-Demo.cpp
+    ```
 2. 执行编译命令： 
     ```Bash
     g++ -o llama-Demo llama-Demo.cpp \
@@ -325,28 +210,35 @@ llama-Demo.cpp的主要工作流程是：
     ```
     参数解析：
     - `-o llama-Demo`: 指定输出可执行文件的名称为llama-Demo。
-    - `-I./llama.cpp/build/install/include`: 指定头文件的搜索路径。
-    - `-L./llama.cpp/build/install/lib`: 指定库文件的搜索路径。
+    - `-I./llama.cpp/build/install/include`: 指定头文件的搜索路径(相对路径)。
+    - `-L./llama.cpp/build/install/lib`: 指定库文件的搜索路径(相对路径)。
     - `-lllama`: (小写L) 告诉链接器链接名为llama的库（即libllama.so）。
     - `-std=c++17`: 指定C++标准版本为C++17。
 
-#### 1.2.3.3 运行llama-Demo
+#### 1.2.3.2 运行llama-Demo
 
 1. 添加环境变量(意味着程序运行时从哪里找到动态链接库)
+
     ```Bash
+    # 注意修改lib的路径
     export LD_LIBRARY_PATH=~/oslab/llama.cpp/build/install/lib:$LD_LIBRARY_PATH
     ```
+    - export: 用于设置环境变量。
+    - LD_LIBRARY_PATH: 一个环境变量，用于指定动态链接库的搜索路径。
+    - ~/oslab/llama.cpp/build/install/lib: 指定的库文件路径。
+    - $LD_LIBRARY_PATH: 保留原有的LD_LIBRARY_PATH值，以避免覆盖其他可能已设置的库路径。
+
 2. 使用wget下载模型文件,选择其一即可
     ```Bash
     # Tinystories模型，用于生成一个小故事，大小为668MB
-    wget https://hf-mirror.com/mradermacher/tinystories2-GGUF/resolve/main/tinystories2.Q4_K_M.gguf?download=true -O tinystories2.Q4_K_M.gguf
+    wget https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/tinystories2.Q4_K_M.gguf
     # qwen3.0-0.6B模型，用于通用任务,大小为379MB
-    wget https://hf-mirror.com/unsloth/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q4_K_M.gguf?download=true -O Qwen3-0.6B-Q4_K_M.gguf
+    wget https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/Qwen3-0.6B-Q4_K_M.gguf
     ```
 3. 运行llama-Demo
     ```sh
-    # `model.gguf`为模型文件路径，`n_predict`为生成的长度，`prompt`为用户输入的提示。
-    $ ./simple_app -m ./model.gguf [-n n_predict] [prompt]
+    # `model.gguf`为模型文件路径，当前假设模型文件与可执行文件在同一目录下，`n_predict`为生成的长度，`prompt`为用户输入的提示。
+    $ ./llama-Demo -m ./model.gguf [-n n_predict] [prompt]
     ```
 
 如果执行成功应该能看到程序加载模型后，根据提示开始生成文本，这证明了llama-Demo成功调用了动态链接库libllama.so中的功能。示例输出如下所示：
@@ -357,6 +249,81 @@ llama-Demo.cpp的主要工作流程是：
     ... # 性能信息
 ```
 
+#### 1.2.3.3 llama-Demo.cpp 工作流程
+
+llama-Demo.cpp的主要工作流程(main函数)如下,具体的函数实现细节详见源代码或附录B
+
+- 包含 llama.h 头文件以使用Llama.cpp库的API。
+    ```cpp
+    #include "llama.h"
+    ```
+- 解析命令行参数，获取模型文件路径、用户提示以及输出的长度设置。
+    ```cpp
+    int main(int argc, char **argv) {
+        std::string prompt = "Hello world";
+        std::string model_path;
+        int n_predict = 128; //  Default number of tokens to predict
+        // Parse command line arguments
+        ParseArgs(argc, argv, model_path, prompt, n_predict);
+        ...
+    }
+    ```
+- 加载指定的GGUF模型，并且获取词汇表。
+    ```cpp
+    int main(int argc, char **argv){
+        ...
+        // initialize the model
+        llama_model* model = LoadModel(model_path);
+        //get vocab
+        const llama_vocab * vocab = llama_model_get_vocab(model);
+        ...
+    }
+    ```
+- 对用户提示进行分词 (Tokenization)。
+    ```cpp
+    int main(int argc, char **argv){
+        ...
+        // tokenize the prompt
+        std::vector<llama_token> prompt_tokens = TokenizePrompt(vocab, prompt);
+        ...
+    }
+    ```
+- 初始化推理上下文 (Context) 和采样器 (Sampler)。
+    ```cpp
+    int main(int argc, char **argv){
+        ...
+        // initialize the context
+        int n_prompt = prompt_tokens.size(); // number of prompt
+        llama_context * ctx = InitializeContext(model, n_prompt, n_predict);
+        // initialize the sampler
+        llama_sampler * smpl = InitializeSampler();
+        ...
+    }
+    ```
+- 执行推理循环，逐个生成词元 (Token)，并将词元转换回文本输出。
+    ```cpp
+    int main(int argc, char **argv){
+        ...
+        // generate tokens
+        GenerateTokens(prompt_tokens, ctx, vocab, smpl, n_prompt, n_predict);
+        ...
+    }
+    ```
+- 打印性能信息并且释放资源。
+    ```cpp
+    int main(int argc, char **argv) {
+        // print performance
+        fprintf(stderr, "\n");
+        llama_perf_sampler_print(smpl);
+        llama_perf_context_print(ctx);
+        fprintf(stderr, "\n");
+
+        // free the resources
+        llama_sampler_free(smpl);
+        llama_free(ctx);
+        llama_model_free(model);
+    }
+    ```
 # 第一部分：端侧AI推理初探
 
 欢迎来到实验的AI探索部分！在本部分，我们将初步接触人工智能（AI）在端侧设备（如我们的DAYU200开发板）上进行推理的概念和实践。由于大家可能之前没有系统学习过AI，我们会从最基本的概念开始。（由于我们是操作系统课程，所以不会很详细(°°)～）
@@ -844,3 +811,150 @@ free -m
     ```
 4. 重新构建应用运行即可（由于加载模型时间过长，可能会存在appfreeze导致应用闪退，这是正常现象，真正感兴趣联系助教）效果如下所示：
 ![alt text](./assets/效果图.jpg)
+
+## 附录B: llama-Demo.cpp代码说明
+本附录旨在简要介绍实验中提供的 llama-Demo.cpp 示例程序。这个程序是一个基于命令行的C++应用，它调用 Llama.cpp 库（即我们编译的 libllama.so）来加载一个大型语言模型（LLM），并根据用户输入的提示（prompt）进行文本推理生成。
+
+理解这个示例程序的工作流程有助于我们了解如何通过API与第三方库进行交互，以实现复杂的功能。
+
+### 主要函数说明
+以下是对 llama-Demo.cpp 中关键函数功能的简要说明。为简洁起见，部分实现细节将用 ... 表示。
+
+- 头文件导入
+    ```cpp
+    #include "llama.h" // 引入Llama.cpp库的公共头文件
+
+    #include <cstdio>   // 用于标准输入输出，如printf
+    #include <cstring>  // 用于字符串操作，如strcmp
+    #include <string>   // 用于std::string类
+    #include <vector>   // 用于std::vector类
+    ```
+- 打印程序使用方法与命令行参数解析
+    ```cpp
+    // 打印程序使用方法
+    static void print_usage(int, char ** argv) {
+        ...
+    }
+
+    // 解析命令行参数
+    void ParseArgs(int argc, char** argv, 
+                std::string& model_path, std::string& prompt, int& n_predict){
+                    ...
+    }
+    ```
+- 加载GGUF模型文件
+    ```cpp
+    llama_model* LoadModel(const std::string& model_path) {
+        // 设置模型加载参数
+        llama_model_params model_params = llama_model_default_params();
+        // model_params.n_gpu_layers = 0; // 可设置GPU层数，0表示纯CPU。代码中是99，表示尝试全GPU。
+        model_params.n_gpu_layers = 99; 
+        // 加载模型
+        llama_model* model = llama_model_load_from_file(model_path.c_str(), model_params);
+        if (model == nullptr) {
+            fprintf(stderr, "%s: error: unable to load model from '%s'\n", __func__, model_path.c_str());
+            exit(1); // 加载失败则退出
+        }
+        printf("Model loaded successfully: %s\n", model_path.c_str());
+        return model;
+    }
+    ```
+-  对用户提示进行分词 (Tokenization)。
+    ```cpp
+    std::vector<llama_token> TokenizePrompt(const llama_vocab* vocab, const std::string& prompt) {
+        // 先估算最大token数量，然后实际进行分词
+        // llama_tokenize的参数: vocab, 输入字符串, 长度, 输出buffer, buffer大小, 是否加BOS, 是否特殊处理
+        // ... (如代码中所示，先调用一次获取长度，再调用一次填充) ...
+        const int n_tokens_estimated = -llama_tokenize(vocab, prompt.c_str(), prompt.size(), nullptr, 0, true, true);
+        std::vector<llama_token> prompt_tokens(n_tokens_estimated);
+        int n_tokens_actual = llama_tokenize(vocab, prompt.c_str(), prompt.size(), prompt_tokens.data(), prompt_tokens.size(), true, true);
+
+        if (n_tokens_actual < 0 || n_tokens_actual > n_tokens_estimated ) { // 出错或数量不对
+            fprintf(stderr, "%s: error: failed to tokenize the prompt or size mismatch\n", __func__);
+            exit(1);
+        }
+        prompt_tokens.resize(n_tokens_actual); // 调整为实际token数
+        return prompt_tokens;
+    }
+    ```
+- 初始化上下文与采样器
+    ```cpp
+    // 初始化推理上下文(context)
+    llama_context* InitializeContext(llama_model* model, int n_prompt_tokens, int n_predict) {
+        llama_context_params ctx_params = llama_context_default_params();
+        // 设置上下文窗口大小，必须能容纳提示和生成的最大token数
+        ctx_params.n_ctx = n_prompt_tokens + n_predict; 
+        ctx_params.n_batch = n_prompt_tokens; // 初始批处理大小可以设为提示的长度
+        // ... 
+        ctx_params.no_perf = false; // 开启性能计数
+
+        llama_context* ctx = llama_init_from_model(model, ctx_params);
+        if (ctx == nullptr) {
+            fprintf(stderr, "%s: error: unable to create Llama context\n", __func__);
+            exit(1);
+        }
+        return ctx;
+    }
+
+    // 初始化采样器(sampler)
+    llama_sampler* InitializeSampler() {
+        auto sparams = llama_sampler_chain_default_params();
+        sparams.no_perf = false; // 开启性能计数
+        // ... (可以修改sparams来调整采样策略，例如温度、top_k, top_p等) ...
+        llama_sampler* smpl = llama_sampler_chain_init(sparams);
+        if (smpl == nullptr) {
+            fprintf(stderr, "%s: error: Failed to create sampler chain\n", __func__);
+            exit(1);
+        }
+        // 向采样链中添加一个贪心采样器 (总是选择概率最高的token)
+        // 也可以添加其他采样器，如 llama_sampler_init_top_k(), llama_sampler_init_top_p() 等
+        llama_sampler_chain_add(smpl, llama_sampler_init_greedy());
+        return smpl;
+    }
+    ```
+- 文本生成函数
+    ```cpp
+    void GenerateTokens(std::vector<llama_token>& prompt_tokens, llama_context* ctx,
+                        const llama_vocab* vocab, llama_sampler* smpl, 
+                        int n_prompt /*初始提示token数*/, int n_predict /*要生成的最大token数*/) {
+
+        // 1. 准备包含提示的初始批处理 (batch)
+        llama_batch batch = llama_batch_get_one(prompt_tokens.data(), n_prompt, 0, 0); 
+        int n_current_pos = 0; // 当前序列中已处理（解码）的token数量
+
+        // 2. 主生成循环
+        // 循环直到达到预测长度，或者遇到序列结束符(EOG)，或者解码失败
+        // 代码中循环条件是: n_pos + batch.n_tokens < n_prompt + n_predict
+        // 这里的n_pos在代码中是外部循环变量，与batch.n_tokens结合控制总长度。
+        for (int n_pos = 0; n_pos + batch.n_tokens < n_prompt + n_predict; ) {
+            // 2a. 解码当前批次 (处理tokens)
+            // 第一次循环时，batch中是完整的prompt；后续循环时，batch中是上一步生成的单个token。
+            if (llama_decode(ctx, batch) != 0) { // 返回0代表成功
+                fprintf(stderr, "%s : failed to eval tokens, return code %d\n", __func__, 1);
+                break; 
+            }
+            n_pos += batch.n_tokens; // 更新已处理的token总数
+
+            // 2b. 从模型输出中采样下一个token
+            llama_token new_token_id = llama_sampler_sample(smpl, ctx, -1); // -1表示从当前上下文最后一个有效token的logits采样
+
+            // 2c. 检查是否是生成结束标记 (End Of Generation)
+            if (llama_vocab_is_eog(vocab, new_token_id)) {
+                // printf("\n[EOG]"); // 遇到结束符，停止生成
+                break;
+            }
+
+            // 2d. 将新生成的token转换为文本并打印
+            char buf[128];
+            int n = llama_token_to_piece(vocab, new_token_id, buf, sizeof(buf), 0, true);
+            if (n < 0) {
+                fprintf(stderr, "%s: error: failed to convert token to piece\n", __func__);
+            }
+            std::string s(buf, n);
+            printf("%s", s.c_str());
+            fflush(stdout);
+            // 2e. 准备下一个批处理，只包含新生成的token，用于下一次迭代
+            batch = llama_batch_get_one(&new_token_id, 1);
+        }
+    }
+    ```
