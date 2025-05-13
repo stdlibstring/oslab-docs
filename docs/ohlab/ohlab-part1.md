@@ -342,9 +342,9 @@ OpenHarmony 是 HarmonyOS（华为鸿蒙操作系统）的开源基础版本。�
 
 * 进入 `LOADER` 烧写模式
 
-  1. 按住 `VOL-/RECOVERY` 按键（图中标注的①号键） 和 `RESET` 按钮（图中标注的②号键）不松开， 此时，烧录工具会显示“没有发现设备” 
+  1. 按住 `VOL+/RECOVERY` 按键（图中标注的①号键） 和 `RESET` 按钮（图中标注的②号键）不松开， 此时，烧录工具会显示“没有发现设备” 
 
-  2. 松开 `RESET` 键（②号键）， 烧录工具显示“发现一个 `LOADER` 设备” ， 说明此时已经进入烧写模式，可以松开`VOL-/RECOVERY`键。
+  2. 松开 `RESET` 键（②号键）， 烧录工具显示“发现一个 `LOADER` 设备” ， 说明此时已经进入烧写模式，可以松开`VOL+/RECOVERY`键。
 
      <img src=".\assets\loader.png" alt="loader" style="zoom:60%;" /><img src=".\assets\non-device.jpg" alt="non-device" style="zoom:50%;" />
 
