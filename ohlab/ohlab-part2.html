@@ -20,7 +20,7 @@
     
     
       
-        <title>移动操作系统与端侧AI推理初探-端侧AI推理初探(part2) - USTC OS Docs</title>
+        <title>移动操作系统与端侧AI推理初探-端侧推理应用实现（Part2） - USTC OS Docs</title>
       
     
     
@@ -62,7 +62,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ai-aipart2" class="md-skip">
+        <a href="#ai-part2" class="md-skip">
           跳转至
         </a>
       
@@ -98,7 +98,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              移动操作系统与端侧AI推理初探-端侧AI推理初探(part2)
+              移动操作系统与端侧AI推理初探-端侧推理应用实现（Part2）
             
           </span>
         </div>
@@ -491,7 +491,7 @@
 
 
 
-<h1 id="ai-aipart2">移动操作系统与端侧AI推理初探-端侧AI推理初探(part2)</h1>
+<h1 id="ai-part2">移动操作系统与端侧AI推理初探-端侧推理应用实现（Part2）</h1>
 <h2 id="_1">实验目的</h2>
 <ul>
 <li>了解AI的基础概念，了解什么是端侧AI推理</li>
@@ -500,8 +500,9 @@
 <h2 id="_2">实验环境</h2>
 <ul>
 <li>OS:</li>
+<li>交叉编译：Ubuntu 24.04.4 LTS</li>
 <li>
-<p>编译：Ubuntu 24.04.4 LTS</p>
+<p>OH 应用开发：Windows</p>
 </li>
 <li>
 <p>Platform : VMware</p>
@@ -520,294 +521,100 @@
 </ul>
 <h2 id="_4">友情提示/为什么要做这个实验？</h2>
 <ul>
-<li><strong>本实验难度不高，目的是让大家了解当前移动操作系统以及移动应用开发方法，并尝试使用AI推理满足功能。</strong></li>
-<li>如果同学们遇到了问题，请先查询在线文档。在线文档地址：<a href="https://docs.qq.com/sheet/DU1JrWXhKdFFpWVNR">https://docs.qq.com/sheet/DU1JrWXhKdFFpWVNR</a></li>
+<li><strong>本实验难度并不高，几乎没有代码上的要求，只是让大家了解完整的移动应用开发流程，并在此过程中，体会移动操作系统与我们之前使用的桌面/服务端操作系统的不同。</strong></li>
+<li>如果同学们遇到了问题，请先查询在线文档，也欢迎在文档内/群内/私聊助教提问。在线文档地址：<a href="https://docs.qq.com/sheet/DU1JrWXhKdFFpWVNR">https://docs.qq.com/sheet/DU1JrWXhKdFFpWVNR</a></li>
+<li>为了提供足够的信息，方便助教助教更快更好地解答你的疑问，我们推荐你阅读（由LUG撰写的）<a href="https://lug.ustc.edu.cn/wiki/doc/howtoask/">提问指南</a>。<strong>当然，这并不是必须的，你可以随时提问，助教都会尽可能提供帮助。</strong></li>
 </ul>
-<div STYLE="page-break-after: always;"></div>
-
-<h1 id="ai">第一部分：端侧AI推理初探</h1>
-<p>欢迎来到实验的AI探索部分！在本部分，我们将初步接触人工智能（AI）在端侧设备（如我们的DAYU200开发板）上进行推理的概念和实践。由于大家可能之前没有系统学习过AI，我们会从最基本的概念开始。（由于我们是操作系统课程，所以不会很详细(°°)～）</p>
-<h2 id="11-ai">1.1 人工智能（AI）原理简介</h2>
-<p>你可能经常听到“人工智能”或“AI”这个词，它听起来可能很复杂，但其核心思想其实并不难理解。</p>
-<h3 id="111">1.1.1 什么是人工智能？</h3>
-<p>简单来说，人工智能的目标是让计算机能够像人一样思考、学习、决策和解决问题。我们希望机器能够执行那些通常需要人类智能才能完成的任务，比如识别图像、理解语言、下棋、驾驶汽车等。</p>
-<h3 id="112-machine-learning-ml-ai">1.1.2 机器学习 (Machine Learning, ML) - AI的核心驱动力</h3>
-<p>目前实现AI最主要和最成功的方法之一是机器学习 (ML)。与传统编程中我们明确告诉计算机每一步该怎么做不同，机器学习的核心思想是让计算机从数据中“学习”。</p>
-<ul>
-<li>打个比方： 想象一下教一个小孩识别猫。你不会去精确描述猫的每一根胡须或毛发的数学模型，而是会给她看很多猫的图片（这些图片就是“数据”）。通过观察足够多的例子，小孩的大脑会自己总结出猫的共同特征（比如有尖耳朵、胡须、特定的脸型等——这就是“学习”或“训练模型”的过程）。之后，当你给她看一张新的、她以前没见过的猫的图片时，她也能认出来（这就是“预测”或“推理”）。</li>
-<li>机器学习就是让计算机做类似的事情：我们给计算机提供大量的数据（比如成千上万张标记为“猫”或“狗”的图片），并使用特定的算法，让计算机自动从这些数据中找出规律和模式，形成一个“模型 (Model)”。</li>
-</ul>
-<h3 id="113-deep-learning-dl-">1.1.3 深度学习 (Deep Learning, DL) - 更强大的机器学习</h3>
-<p>深度学习是机器学习的一个分支，它使用一种叫做“人工神经网络 (Artificial Neural Networks)”的复杂数学结构，特别是包含许多层（所以叫“深度”）的神经网络。这些网络的设计灵感来源于人脑神经元的连接方式。深度学习在处理复杂数据（如图像、语音、自然语言文本）方面表现得尤其出色，近年来许多AI的突破都得益于深度学习。我们本次实验接触的语言模型就是一种基于深度学习的大语言模型。</p>
-<p>总而言之，AI（尤其是通过机器学习和深度学习）使计算机能够通过分析数据来学习和做出智能的响应，而不仅仅是执行预先编程好的指令。</p>
-<h2 id="12-ai-inference">1.2 什么是 AI 推理 (Inference)？</h2>
-<p>在机器学习（包括深度学习）的生命周期中，通常有两个主要阶段：</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>助教的话：</p>
+<p>本实验虽然没有代码，但涉及到很多背景知识。同学们做实验时难免会遇到不太理解的地方，没关系，按步骤跟着做即可，很多知识/工具，在你未来的学习中还会遇到很多次，慢慢理解即可。</p>
+<p>助教们本来是希望尽可能写清楚背景知识，让大家能完全理解。</p>
+</div>
+<h1 id="_5">实验内容简介</h1>
+<blockquote>
+<p>本节提供对本次实验的概览，让大家能更好地理解本次实验要做什么，目标是什么。实验的具体步骤可以参考本文档后面章节。</p>
+</blockquote>
+<p>本次实验中，我们将在提供的 DAYU200 开发板上，运行 OpenHarmony 操作系统，并开发能运行在该开发板上和 OpenHarmony 上的大模型推理应用。为了实现这个目标，需要依次完成以下几个任务：</p>
 <ol>
 <li>
-<p><strong>训练 (Training)</strong>：</p>
+<p>将 OpenHarmony 系统安装到开发板上并运行。</p>
 </li>
 <li>
-<p>这是“学习”的阶段，就像前面例子里小孩看图识猫，或者学生备考学习知识的过程。</p>
-</li>
-<li>在这个阶段，我们会用海量的标注数据（例如，数百万张图片及其对应的标签，或者TB级的文本数据）来“喂”给一个初始的、未学习的AI模型。</li>
-<li>通过特定的学习算法，模型会调整其内部参数，以使其能够对输入数据做出正确的响应（例如，正确分类图片，或理解文本的含义）。</li>
-<li>训练过程通常需要非常强大的计算资源（如高性能GPU集群）和很长的时间（几天、几周甚至几个月）。</li>
-<li>
-<p>训练的最终产出是一个“训练好的模型 (Trained Model)” ——可以把它看作是包含了从数据中学到的所有知识和规律的“大脑”文件。</p>
+<p>安装并配置 OpenHarmony 应用的开发环境，成功开发并在开发板上运行一个示例应用。</p>
 </li>
 <li>
-<p><strong>推理 (Inference)</strong>：</p>
+<p>完成大语言模型推理应用的开发，其中包括：</p>
 </li>
 <li>
-<p>这是“使用”或“应用”的阶段，就像小孩识别一张新的猫图片，或者学生运用所学知识解答考试题目。</p>
+<p>通过交叉编译，将大模型推理框架（Llama.cpp）编译为能够在开发板上使用的动态链接库。</p>
 </li>
-<li>在这个阶段，我们把新的、未曾见过的数据（例如，用户上传的一张照片，或者用户输入的一段文字）输入到已经训练好的模型中。</li>
-<li>模型会利用它在训练阶段学到的知识和规律，对这些新数据进行处理，并给出一个预测、判断或输出（例如，识别出照片中的物体，或者根据输入的文字生成一段新的文字）。</li>
-<li>推理过程通常比训练过程快得多，对计算资源的要求也低得多，使其可以在计算能力相对较弱的设备上运行。</li>
+<li>
+<p>调用上述库，完成应用，并运行在开发板上。</p>
+</li>
 </ol>
-<p>本实验的核心在于“推理”：我们将使用一个已经训练好的型语言模型 (TinyStory/Qwen)，并在我们的DAYU200开发板上运行它，让它对我们输入的文本进行处理并生成回应。我们不涉及模型的训练过程。</p>
-<h2 id="13-ai-inference-framework">1.3 什么是 AI 推理框架 (Inference Framework)？</h2>
-<p>当你有了一个训练好的AI模型后，要在实际设备上高效地运行它进行推理，直接操作原始模型文件可能会非常复杂和低效。这时，AI推理框架就派上了用场。</p>
-<p>AI推理框架是一套专门设计用来简化和优化在各种硬件平台上部署和执行已训练模型进行推理的软件工具包或库。</p>
-<p>它的主要作用包括：</p>
-<ul>
-<li>模型加载与解析： 能够读取和理解不同格式的训练好的模型文件（例如，TensorFlow产生的.pb文件，PyTorch的.pt文件，MindSpore的.ms文件，或者像Llama.cpp使用的.gguf格式）。</li>
-<li>性能优化： 针对目标硬件（如CPU、GPU、NPU——DAYU200上就有NPU）进行深度优化，以加快推理速度、减少内存占用和降低功耗。这可能包括图优化、算子融合、量化、使用特定硬件加速指令等技术。</li>
-<li>硬件抽象： 为上层应用提供统一的API接口，屏蔽底层不同硬件的差异。开发者不需要针对每种硬件都写一套不同的代码。</li>
-<li>跨平台支持： 很多框架支持将模型部署到多种操作系统（Windows, Linux, Android, iOS, OpenHarmony等）和多种硬件架构上。</li>
-<li>易用性： 简化了模型部署的流程，让应用开发者可以更容易地将AI能力集成到自己的应用中。</li>
-</ul>
-<h2 id="14">1.4 我们实验中接触到的推理工具/框架：</h2>
-<ul>
-<li>
-<p>Llama.cpp: https://github.com/ggml-org/llama.cpp</p>
-</li>
-<li>
-<p>这是一个非常优秀的开源项目，专门用于在CPU上高效运行Llama系列及其他大型语言模型 (LLM)。</p>
-</li>
-<li>它的主要特点是用纯C/C++编写，追求极致的性能和最小的依赖，非常适合交叉编译到各种端侧设备和嵌入式系统上（比如我们的DAYU200）。</li>
-<li>它支持多种量化技术，可以将原本非常庞大的LLM模型压缩到几GB甚至几百MB，同时尽量保持较好的性能，使得在普通PC和资源受限的设备上运行LLM成为可能。</li>
-<li>
-<p>在本次实验中，我们将把Llama.cpp编译成一个库，并在OpenHarmony应用中调用它来实现语言模型的推理。</p>
-</li>
-<li>
-<p>MindSpore Lite：</p>
-</li>
-<li>
-<p>这是华为昇思MindSpore AI计算框架的轻量化版本，专门用于在端侧设备和物联网设备上进行高效推理。</p>
-</li>
-<li>我们会提供一个使用MindSpore Lite的Demo。MindSpore Lite支持多种硬件后端（CPU、GPU、以及华为自研的NPU），能够加载MindSpore训练出的模型（.ms格式）以及转换自其他框架（如TensorFlow Lite、ONNX）的模型。</li>
-<li>它提供了Java和C++等多种语言的API，方便开发者在Android、iOS、OpenHarmony等系统上集成AI能力。</li>
-</ul>
-<p>可以把推理框架想象成一个高度专业的“引擎室管理员”，它知道如何最高效地启动和运行一个复杂的“AI引擎”（即训练好的模型），并确保它在特定的“船只”（即你的硬件设备）上表现最佳。</p>
-<h2 id="15-ai-on-device-ai">1.5 端侧 AI (On-Device AI)推理 与应用开发简介</h2>
-<h3 id="151-ai">1.5.1 什么是端侧AI推理？</h3>
-<p>“端侧AI” (On-Device AI 或 Edge AI) 指的是直接在终端用户设备（如智能手机、平板电脑、智能手表、物联网设备、或者我们实验中的DAYU200开发板）上本地执行AI模型的推理过程，而不是将数据发送到远程的云服务器进行处理。</p>
+<p>在上一阶段中，我们已经完成了前两个目标。在这一阶段，我们将学习如何使用第三方库，并通过交叉编译，生成能在开发板上使用的动态链接库。最后，我们将调用编译好的动态链接库，在开发板上实现端侧推理功能。</p>
+<h1 id="_6">第一部分：第三方库的编译与使用</h1>
+<p>我们本次实验的目标，是在开发板上实现大模型推理应用。然而，很明显，我们是操作系统课程，大部分同学也没有系统学习过人工智能和大语言模型的相关知识。要求大家在一周内学习并实现大语言模型推理，显然是不现实的。</p>
 <blockquote>
-<p>这也是我们课题组的一个研究方向，欢迎感兴趣的同学联系<a href="http://staff.ustc.edu.cn/~ykli/">李永坤老师</a>，然后加入我们(●'◡'●)</p>
+<p>相信很多同学已经使用过了一些主流的大模型（如国内的 DeepSeek、豆包、千问，国外的 ChatGPT、Claude、Gemini等）和使用这些大模型开发的工具和应用（如 Github Copilot 等）。但大家对大模型的原理可能还不太了解。虽然本实验不涉及大模型的具体原理，但我们还是写了一篇简短的介绍，感兴趣的同学可以阅读<a href="#附录A: 大模型推理与 llama.cpp 简介">附录A</a>。</p>
+<p>大模型系统的优化也是我们课题组近年的研究方向之一，欢迎感兴趣的同学联系<a href="http://staff.ustc.edu.cn/~ykli/">李永坤老师</a>，加入我们。(●'◡'●)</p>
 </blockquote>
-<h3 id="152-ai">1.5.2 端侧AI推理的优势</h3>
-<ul>
-<li>低延迟 (Low Latency)： 数据处理在本地进行，无需网络传输，响应速度更快，对于需要实时反馈的应用（如实时语音识别、动态手势识别）至关重要。</li>
-<li>隐私保护 (Privacy Protection)： 敏感数据（如个人照片、录音）无需上传到云端，保留在用户本地设备上，更好地保护了用户隐私。</li>
-<li>离线可用 (Offline Capability)： 即使在没有网络连接或网络不稳定的情况下，AI功能依然可以正常使用。</li>
-<li>节省带宽与成本 (Bandwidth &amp; Cost Saving)： 减少了大量数据上传下载所需的网络带宽，也可能降低了对云端计算资源的依赖，从而节省成本。</li>
-</ul>
+<p>幸运的是，在计算机领域，我们可以常常可以使用前人已经完成的工作。甚至，对于开源软件，我们还能拿到软件源代码，只要遵守开源协议，我们就能对软件做出修改，增添功能，或者移植到我们想要的平台。</p>
 <blockquote>
-<p>其实最主要的是省钱💴还有隐私保护。</p>
+<p>在计算机领域，在已经存在的库/软件基础上做改进甚至是被鼓励的。“不重复造轮子”是计算机领域的常被提及的原则。当然，“重复造轮子”本身是很好的学习过程，我们之前的实验也通过重新“制造” Shell、内存分配器，学习了操作系统相关知识。</p>
 </blockquote>
-<h3 id="153-ai">1.5.3 端侧AI推理的挑战：</h3>
-<ul>
-<li>资源限制： 端侧设备的计算能力（CPU、GPU、NPU性能）、内存、存储空间以及电池续航都远不如云服务器。</li>
-<li>模型大小与效率： 需要对AI模型进行高度优化和压缩（如量化），使其能够在资源受限的设备上高效运行，同时尽量不损失太多精度。</li>
-</ul>
-<blockquote>
-<p>在本次实验中，我们将体验到量化对模型大小和性能的影响,也会体会到内存和计算能力带来的限制。</p>
-</blockquote>
-<h3 id="154-ai">1.5.4 端侧AI应用开发流程（简化版）</h3>
-<ol>
-<li>选择或训练AI模型： 根据应用需求选择合适的预训练模型（例如，是图像分类、目标检测、还是自然语言理解）。在本次实验中，我们直接使用已经训练好的TinyStory模型。</li>
-<li>优化与量化： 对模型进行量化（如INT8量化），减小模型大小，提高在端侧设备上的运行效率。</li>
-<li>应用集成与开发：</li>
-<li>在你的应用程序代码中（对于Llama.cpp，我们将在C++层面操作），调用推理框架提供的API：</li>
-<li>加载优化后的模型文件。</li>
-<li>准备输入数据（例如，对图像进行预处理，或将用户文本编码成模型需要的格式）。</li>
-<li>执行推理，获取模型输出。</li>
-<li>对模型输出进行后处理，并呈现给用户或用于后续逻辑。</li>
-</ol>
-<blockquote>
-<p>在本次实验中，我们将会提供完整的推理代码，同学们只需要编译出推理框架Llama.cpp的动态链接库放到项目代码中即可，如果你对推理的具体逻辑感兴趣，也可以阅读源代码来调整应用的逻辑。</p>
-</blockquote>
-<div STYLE="page-break-after: always;"></div>
-
-<h1 id="_5">第二部分 交叉编译</h1>
-<h2 id="21-ubuntu-openharmony-native-sdk">2.1 在 Ubuntu 上准备 OpenHarmony Native SDK</h2>
-<p>本次实验的核心任务之一是交叉编译 C++ 代码库（Llama.cpp）。这个过程需要在 Linux 环境下进行，并且需要一套特定的交叉编译工具链和 OpenHarmony 系统库/头文件（统称为 Native SDK 或 Toolchain）。这套工具运行在您的 Ubuntu 系统上，但其编译产生的目标代码是运行在 DAYU200 (arm32 架构) 上的 OpenHarmony 系统。</p>
+<p>在本次实验中，我们就将直接使用著名的大模型推理框架 <a href="https://github.com/ggml-org/llama.cpp/tree/master">llama.cpp</a>，来实现我们的大模型推理功能。不过，在深入研究Llama.cpp之前，让我们首先在熟悉的Ubuntu系统上，学习一下什么是动态链接库，以及如何编译和使用一个像Llama.cpp这样的实际第三方库。</p>
+<h2 id="11-dynamic-link-libraries-shared-libraries">1.1 什么是动态链接库 (Dynamic Link Libraries / Shared Libraries)？</h2>
+<p>在软件开发中，“库 (Library)”是一系列预先编写好的、可重用代码的集合，它们提供了特定的功能，例如数学计算、文件操作、网络通信等。开发者可以在自己的程序中调用这些库提供的功能，而无需从头编写所有代码。</p>
+<p>链接库主要有两种形式：静态链接库和动态链接库。</p>
 <ol>
 <li>
-<p>使用wget下载OpenHarmony Native SDK</p>
-<p>下载地址:https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/native-linux-x64-5.0.3.135-Release.zip</p>
+<p>静态链接库 (Static Libraries)：</p>
+<ul>
+<li>在程序<strong>编译链接</strong>阶段，静态库的代码会被完整地复制并合并到最终生成的可执行文件中。</li>
+<li><strong>优点：</strong> 程序部署简单，因为它不依赖外部库文件；所有代码都在一个文件里。</li>
+<li><strong>缺点：</strong><ul>
+<li>体积大： 如果多个程序都使用了同一个静态库，那么每个程序都会包含一份库代码的副本，导致总体磁盘占用和内存占用增加。</li>
+<li>更新困难： 如果静态库更新了（比如修复了一个bug），所有使用了该库的程序都需要重新编译链接才能使用新版本的库。</li>
+</ul>
+</li>
+<li>在Linux中，静态库通常以 .a (archive) 为后缀。</li>
+</ul>
 </li>
 <li>
-<p>解压，注意解压目录，后续需要使用
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>unzip<span class="w"> </span>native-linux-x64-5.0.3.135-Release.zip
-</code></pre></div></p>
+<p>动态链接库 (Dynamic Link Libraries / Shared Libraries)：</p>
+<ul>
+<li>动态库的代码并<strong>不会</strong>在编译时复制到可执行文件中。相反，可执行文件中只包含了对库中函数和变量的引用（或称为“存根”）。</li>
+<li>当程序运行时，操作系统会负责在内存中查找、加载所需的动态库，并将程序中的引用指向实际的库代码。</li>
+<li><strong>优点：</strong><ul>
+<li>代码共享，节省资源： 多个程序可以共享内存中同一份动态库的实例，减少了磁盘占用和物理内存的消耗。</li>
+<li>独立更新： 动态库可以独立于使用它的程序进行更新。只要库的接口保持兼容，更新后的库可以被所有依赖它的程序自动使用，无需重新编译这些程序。</li>
+<li>模块化： 使得大型软件可以被分解成多个更小、更易于管理的模块。</li>
+</ul>
+</li>
+<li><strong>缺点：</strong><ul>
+<li>运行时依赖： 程序运行时必须能够找到并加载其依赖的动态库文件，否则无法运行（可能会出现“找不到.so文件”的错误）。</li>
+<li>版本兼容性问题 (DLL Hell / SO Hell)： 如果不同程序依赖同一动态库的不同版本，且这些版本不兼容，可能会导致问题。</li>
+</ul>
+</li>
+<li>在Linux（包括Ubuntu）和OpenHarmony（标准系统）中，动态链接库通常以 .so (shared object) 为后缀。在Windows中，它们则以 .dll (dynamic-link library) 为后缀。</li>
+</ul>
 </li>
 </ol>
-<blockquote>
-<p>这里估计又会有疑问，在3.1步中明明下载过SDK，为什么这里还需要下载SDK?</p>
-<p>最主要原因为Linux和Windows使用的链接库不同，在开发板运行的OpenHarmony的内核是Linux，所以我们需要在Linux上编译出链接库使用，并且我们这里只使用了Native SDK，即编译CPP程序需要的工具，而在3.1步中，我们还下载了编译前端的SDK</p>
-</blockquote>
-<h2 id="22">2.2 交叉编译应用过程</h2>
-<blockquote>
-<p>❗注意：本部分采用mylib演示步骤，与实验检查要求需要编译的应用不一样，请仔细阅读实验评分标准。</p>
-</blockquote>
-<p>在前面的步骤中，我们已经在 Ubuntu 系统上准备了 OpenHarmony Native SDK，其中包含了针对 DAYU200 开发板（arm32架构）的交叉编译工具链和系统库。现在，我们将深入理解什么是交叉编译，并实践一个简单的交叉编译过程。</p>
-<h3 id="220">2.2.0 什么是交叉编译</h3>
-<p><strong>编译 (Compilation)</strong> 大家可能比较熟悉，它是指将人类可读的源代码（如 C、C++、Java 代码）转换成计算机处理器能够直接执行的机器码（可执行文件或库文件）的过程。这个过程通常由编译器在本机完成，例如，在你的 x86 架构的 Windows 电脑上用 Visual Studio 编译一个 Windows 程序，或者在你的 x86 架构的 Ubuntu 系统上用 GCC 编译一个 Linux 程序。这种在当前系统架构下编译出可运行于当前系统架构的程序的方式，我们称之为<strong>本地编译 (Native Compilation)</strong>。</p>
-<p><strong>交叉编译 (Cross-Compilation)</strong> 则有所不同。它是指：<strong>在一个特定的硬件架构和操作系统（我们称之为“宿主机”或“Host”）上，编译产生能够运行在另一个不同硬件架构和/或操作系统（我们称之为“目标机”或“Target”）上的可执行代码的过程。</strong></p>
-<ul>
-<li><strong>宿主机 (Host)</strong>: 通常是开发者使用的、计算能力较强的计算机，例如我们实验中使用的运行 Ubuntu 24.04 的 虚拟机Vmware。</li>
-<li><strong>目标机 (Target)</strong>: 是我们希望最终运行我们程序的设备，例如我们实验中使用的运行 OpenHarmony 的 DAYU200 开发板，其处理器是 ARMv7a(armeabi32) 架构。</li>
-</ul>
-<h3 id="221">2.2.1 为什么需要交叉编译</h3>
-<p>在嵌入式系统和移动设备开发中，交叉编译非常普遍且必要，主要原因包括：</p>
-<ol>
-<li>目标机资源受限： 像 DAYU200 这样的开发板或许多嵌入式设备，其处理器性能、内存大小、存储空间都远不如桌面PC。在这些设备上直接进行大型项目（如操作系统内核、复杂的 C++ 应用如 Llama.cpp）的编译会非常缓慢，甚至因资源不足而无法完成。</li>
-<li>目标机缺乏开发环境： 很多目标设备可能没有安装编译器、链接器、库文件等完整的开发工具链。它们被设计为运行特定应用，而不是进行软件开发。(OpenHarmony中没有开发工具链)</li>
-<li>开发效率和便利性： 开发者通常更习惯在功能强大、工具齐全的PC上进行代码编写、调试和项目管理。交叉编译使得开发者可以在熟悉的开发环境中为资源受限或环境不同的目标设备构建软件。</li>
-<li>特定架构需求： 有些软件就是为特定非主流架构设计的，开发者可能没有该架构的物理机器用于本地编译。</li>
-</ol>
-<h3 id="222-dayu200">2.2.2 交叉编译示例：为 DAYU200 编译和使用动态链接库</h3>
-<p>在此示例中，我们将创建一个简单的动态链接库，并将其放入3.1部分的Demo，编译运行。
-环境假设：</p>
-<ul>
-<li>宿主机1： Vmware上的Ubuntu 24.04 (x86_64)</li>
-<li>宿主机2： Windows 10/11 (x86_64)</li>
-<li>目标机： DAYU200 开发板 (arm32)，运行 OpenHarmony 5.0 标准系统</li>
-<li>OpenHarmony Native SDK 路径： ~/native (请根据您的实际解压路径调整)</li>
-<li>交叉编译器路径 (示例): ~/native/llvm/bin/armv7-unknown-linux-ohos-clang++</li>
-<li>
-<p>在宿主机1(Ubuntu) 上创建源代码文件：
-   打开终端，创建一个名为<code>mylib.cpp</code>的文件，在该文件中编写一个简单的减法函数如下：</p>
-<p><div class="highlight"><pre><span></span><code><span class="c1">// 使用 extern &quot;C&quot; 可以防止 C++ 编译器的名称修饰 (name mangling),</span>
-<span class="c1">// 使得这些函数更容易被 C 语言或其他语言调用, 或者在不同 C++ 编译器间保持一致性。</span>
-<span class="c1">// 对于纯 C++ 内部使用, 且主程序也用同一编译器编译时, 这并非总是必需, 但作为库导出是一种良好实践。</span>
-<span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="nf">minus_numbers_in_lib</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="kt">double</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
-2. 为库创建头文件(mylib.h):</p>
-<p>在同一文件夹创建<code>mylib.h</code>，声明库中的函数:</p>
-<p><div class="highlight"><pre><span></span><code><span class="cp">#ifndef MYLIB_H</span>
-<span class="cp">#define MYLIB_H</span>
-
-<span class="cp">#ifdef __cplusplus</span>
-<span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="p">{</span>
-<span class="cp">#endif</span>
-
-<span class="c1">// 声明库中导出的函数</span>
-<span class="kt">double</span><span class="w"> </span><span class="n">minus_numbers_in_lib</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="kt">double</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
-
-<span class="cp">#ifdef __cplusplus</span>
-<span class="p">}</span>
-<span class="cp">#endif</span>
-
-<span class="cp">#endif </span><span class="c1">// MYLIB_H</span>
-</code></pre></div>
-3. 将源代码交叉编译为动态链接库 (.so 文件):</p>
-<p>执行以下命令将 mylib.cpp 编译成名为 libmylib.so 的32位和64位动态链接库。</p>
-<p><strong>请务必将命令中的 SDK 路径替换为实际的路径。</strong>
-<div class="highlight"><pre><span></span><code><span class="c1"># 进入源代码所在目录 (如果不在该目录)</span>
-<span class="c1"># cd &lt;your_source_code_directory&gt;</span>
-
-<span class="c1"># 执行交叉编译命令,分别编译32位和64位动态链接库</span>
-$<span class="w"> </span>~/native/llvm/bin/armv7-unknown-linux-ohos-clang++<span class="w"> </span>mylib.cpp<span class="w"> </span>-o<span class="w"> </span>libmylib32.so<span class="w"> </span>-shared<span class="w"> </span>-fPIC
-$<span class="w"> </span>~/native/llvm/bin/aarch64-unknown-linux-ohos-clang++<span class="w"> </span>mylib.cpp<span class="w"> </span>-o<span class="w"> </span>libmylib64.so<span class="w"> </span>-shared<span class="w"> </span>-fPIC
-</code></pre></div>
-如果命令执行成功，当前目录下会生成名为 libmylib32.so和libmylib64.so 的文件。
-3. 在宿主机1上验证生成的文件类型：</p>
-<p>我们可以使用<code>file</code>命令来查看生成的可执行文件的信息：
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>file<span class="w"> </span>libmylib64.so
-<span class="w">    </span>libmylib64.so:<span class="w"> </span>ELF<span class="w"> </span><span class="m">64</span>-bit<span class="w"> </span>LSB<span class="w"> </span>shared<span class="w"> </span>object,<span class="w"> </span>ARM<span class="w"> </span>aarch64,<span class="w"> </span>version<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>SYSV<span class="o">)</span>,<span class="w"> </span>dynamically<span class="w"> </span>linked,<span class="w"> </span>with<span class="w"> </span>debug_info,<span class="w"> </span>not<span class="w"> </span>stripped
-$<span class="w"> </span>file<span class="w"> </span>libmylib32.so
-<span class="w">    </span>libmylib32.so:<span class="w"> </span>ELF<span class="w"> </span><span class="m">32</span>-bit<span class="w"> </span>LSB<span class="w"> </span>shared<span class="w"> </span>object,<span class="w"> </span>ARM,<span class="w"> </span>EABI5<span class="w"> </span>version<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>SYSV<span class="o">)</span>,<span class="w"> </span>dynamically<span class="w"> </span>linked,<span class="w"> </span>with<span class="w"> </span>debug_info,<span class="w"> </span>not<span class="w"> </span>stripped
-</code></pre></div>
-注意输出中的 ARM EABI5 version 1，这表明它是一个为 ARM 32位架构编译的动态链接库，并且是为 OpenHarmony 系统准备的。这个文件不能在你的 x86_64 Ubuntu 宿主机上直接运行。如果你尝试使用，系统会报错（例如 cannot execute binary file: Exec format error）。
-4. 将动态链接库从宿主机1下载到宿主机2：即从虚拟机传输文件到Windows。（可以使用虚拟机的增强功能，共享文件夹，睿客网盘，邮箱等方式）</p>
-</li>
-</ul>
-<h3 id="223">2.2.3 交叉编译运行</h3>
-<blockquote>
-<p>注意，从这一步开始将在宿主机2上操作。</p>
-</blockquote>
-<p>首先，请参照第一部分实验文档3.1的<code>在 Windows 上安装 DevEco Studio</code>一节下载和配置DevEco Studio，并且创建好Demo文件。</p>
-<ol>
-<li>在entry文件夹下创建<code>armeabi-v7a</code>文件夹
-<img alt="create folder" src="assets/3.2.3/1.png" /></li>
-<li>将3.2.2中编译的libmylib32.so文件复制到<code>armeabi-v7a</code>文件夹下，将libmylib64.so文件复制到<code>arm64-v8a</code>文件夹下
-<img alt="alt text" src="assets/3.2.3/2.png" /></li>
-<li>修改<code>entry\src\main\cpp\CMakeLists.txt</code>文件，添加以下内容
-    <div class="highlight"><pre><span></span><code><span class="c"># 在文件末尾添加以下内容</span>
-<span class="c"># 添加动态链接库</span>
-<span class="nb">if</span><span class="p">(</span><span class="s">OHOS_ARCH</span><span class="w"> </span><span class="s">STREQUAL</span><span class="w"> </span><span class="s">arm64-v8a</span><span class="p">)</span>
-<span class="w">    </span><span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">entry</span><span class="w"> </span><span class="s">PUBLIC</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_CURRENT_SOURCE_DIR</span><span class="o">}</span><span class="s">/../../../libs/</span><span class="o">${</span><span class="nv">OHOS_ARCH</span><span class="o">}</span><span class="s">/libmylib64.so</span><span class="p">)</span>
-<span class="nb">elseif</span><span class="p">(</span><span class="s">OHOS_ARCH</span><span class="w"> </span><span class="s">STREQUAL</span><span class="w"> </span><span class="s">armeabi-v7a</span><span class="p">)</span>
-<span class="w">    </span><span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">entry</span><span class="w"> </span><span class="s">PUBLIC</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_CURRENT_SOURCE_DIR</span><span class="o">}</span><span class="s">/../../../libs/</span><span class="o">${</span><span class="nv">OHOS_ARCH</span><span class="o">}</span><span class="s">/libmylib32.so</span><span class="p">)</span>
-<span class="nb">else</span><span class="p">()</span>
-<span class="w">    </span><span class="nb">message</span><span class="p">(</span><span class="s">FATAL_ERROR</span><span class="w"> </span><span class="s2">&quot;unrecognized ${OHOS_ARCH}&quot;</span><span class="p">)</span>
-<span class="nb">endif</span><span class="p">()</span>
-</code></pre></div></li>
-<li>创建<code>entry\src\main\cpp\mylib.h</code>文件，将3.2.2中创建的<code>mylib.h</code>文件复制到该文件夹下</li>
-<li>完成前四步后，现在就可以使用我们编译的动态链接库了。我们可以修改<code>entry\src\main\cpp\napi_init.cpp</code>文件，添加以下内容
-<img alt="alt text" src="assets/3.2.3/3.png" /></li>
-<li>再次编译运行(<strong>必须在开发板上运行!</strong>)即可看到修改后的结果
-<img alt="alt text" src="assets/3.2.3/4.png" /></li>
-</ol>
-<blockquote>
-<p>回答一下2.2.2和2.2.3中可能存在的疑问</p>
-<p>Q: 为什么需要编译两种架构（32位和64位）的动态链接库？</p>
-<p>A: DAYU200开发板运行的OpenHarmony为32位架构，所以32位的动态链接库是必须的，但是IDE要求我们同时提供32位和64位的动态链接库（详见第一部分3.1.2的问题4），所以我们也需要编译64位的动态链接库。</p>
-<p>Q: 为什么要修改CmakeLists.txt文件？CmakeLists.txt文件是做什么的？</p>
-<p>A: CmakeLists.txt文件是CMake的配置文件，用于指定项目的编译选项、依赖库等信息。在本实验中，我们通过修改CmakeLists.txt文件，将我们编译的动态链接库添加到项目中。</p>
-<p>Q: 为什么必须要在开发板运行修改后的程序？为什么不能使用Previewer预览？</p>
-<p>A: 因为在5.0.3.906的DevEco Studio中，已经无法在预览器中查看native shared library的引用效果。╮(╯▽╰)╭（其实如果可以编译，就算没有运行，大概率也不会报错）
-</p>
-</blockquote>
-<h3 id="224-llamacpp">2.2.4 展望：交叉编译 Llama.cpp</h3>
-<p>编译 Llama.cpp 的过程与我们刚刚完成的动态库示例在概念上是高度一致的：</p>
-<ol>
-<li>Llama.cpp 核心代码会被交叉编译成多个动态链接库 (通常是 libllama.so，libgguf.so等)。这对应我们示例中的 libmylib.so。编译时同样需要 -shared 和 -fPIC 选项。（但是由于使用cmake编译，这些选项被隐藏了）</li>
-<li>Llama.cpp 项目会提供多个头文件 (通常为 llama.h，gguf.h等)。这对应我们示例中的 mylib.h。</li>
-<li>使用时，需要把编译好的 libllama.so 等动态链接库放到项目目录中，并确保可执行程序能够找到 libllama.so等链接库。</li>
-</ol>
-<p>Llama.cpp 的编译通常CMake构建系统管理，这些工具会自动处理源文件列表、编译选项、链接步骤等。我们的任务将是正确配置这些构建系统，使其使用我们为 OpenHarmony 准备的交叉编译工具链</p>
-<blockquote>
-<p>在实验中，我们提供了助教已经完成的代码，所以不要求大家了解怎么编写相关代码，我们需要同学们自行编译出llama相关的动态链接库，并且放入到项目目录可以运行即可。</p>
-</blockquote>
-<div STYLE="page-break-after: always;"></div>
-
-<h1 id="native-c-llamacpp">第三部分：Native C++ 交叉编译与 Llama.cpp 集成实践</h1>
-<p>在前面的章节中，我们已经：
-- 2.1节中在Ubuntu上准备好了OpenHarmony Native SDK，明确了交叉编译工具链的路径。
-- 2.2节通过一个简单的动态链接库示例，理解并实践了基本的交叉编译流程。</p>
-<p>现在，我们将运用这些知识和工具，来完成本次实验的核心任务之一：下载并交叉编译著名的开源大语言模型推理库——Llama.cpp。</p>
-<blockquote>
-<p>Llama.cpp是一个项目名称，并不是一个c++源码文件</p>
-</blockquote>
-<h2 id="31-llamacpp">3.1 Llama.cpp 的下载与交叉编译</h2>
-<p>Llama.cpp 是一个用C/C++编写的、用于高效运行Llama系列大型语言模型的推理引擎。它以其高性能、低资源占用和良好的可移植性而闻名，非常适合在包括端侧设备在内的多种平台上运行。</p>
-<h3 id="311-llamacpp">3.1.1 Llama.cpp的下载</h3>
+<p><strong>Llama.cpp 项目的核心部分就可以被编译成一个动态链接库 (libllama.so)，然后其提供的各种示例程序（如 main, Llama-Demo等）会调用这个库来实现具体功能。本次实验，我们将首先在Ubuntu上体验这个过程</strong></p>
+<h2 id="12-llamacpp-ubuntu">1.2 使用 Llama.cpp 体验动态链接库的编译与使用 (Ubuntu环境)</h2>
+<p>在上一节，我们了解了动态链接库的基本概念。现在，我们将以Llama.cpp为例，在Ubuntu环境下，一步步将其核心代码编译成一个动态链接库。Llama.cpp项目支持使用多种构建系统，其中CMake是一个强大且跨平台的选择，非常适合管理C++项目的编译。</p>
+<h3 id="121-llamacpp">1.2.1 Llama.cpp 简介与源代码获取</h3>
+<p>Llama.cpp 是一个用纯C/C++编写的开源项目，旨在高效地在多种硬件平台（包括CPU）上运行Llama系列以及其他架构的大型语言模型（LLM）。它的主要优势在于性能优化、支持模型量化（减小模型体积和内存占用）以及良好的跨平台兼容性，使其非常适合在资源相对受限的端侧设备上进行LLM推理。</p>
 <ul>
 <li>通过压缩包下载：</li>
 <li>
 <p>使用<code>wget</code>下载Llama.cpp压缩包</p>
-<p>推荐链接: https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/llama.cpp.zip</p>
-</li>
-<li>
-<p>解压Llama.cpp压缩包,解压后得到llama.cpp文件夹</p>
+<p><div class="highlight"><pre><span></span><code>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>~/oslab
+$<span class="w"> </span>wget<span class="w"> </span>https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/llama.cpp.zip
+</code></pre></div>
+2. 解压Llama.cpp压缩包,解压后得到llama.cpp文件夹</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>unzip<span class="w"> </span>llama.cpp.zip
 </code></pre></div>
 </li>
@@ -823,162 +630,499 @@ $<span class="w"> </span>file<span class="w"> </span>libmylib32.so
 <p>下载Llama.cpp</p>
 <p><div class="highlight"><pre><span></span><code>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ggml-org/llama.cpp.git
 </code></pre></div>
-这会在当前目录下创建一个名为 llama.cpp 的文件夹，其中包含所有源代码。
-3. 注意事项：如果你使用git从llama的github主页下载，需要修改以下文件
-- llama.cpp/tools/mtmd/clip.cpp的1813行，修改为
-   <div class="highlight"><pre><span></span><code><span class="cm">/*.mem_size =*/</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">((</span><span class="n">gguf_get_n_tensors</span><span class="p">(</span><span class="n">ctx_gguf</span><span class="p">.</span><span class="n">get</span><span class="p">())</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">ggml_tensor_overhead</span><span class="p">()),</span>
-</code></pre></div>
- - llama.cpp/tools/export-lora/export-lora.cpp的151行，修改为
-   <div class="highlight"><pre><span></span><code><span class="cm">/*.mem_size   =*/</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">gguf_get_n_tensors</span><span class="p">(</span><span class="n">base_model</span><span class="p">.</span><span class="n">ctx_gguf</span><span class="p">)</span><span class="o">*</span><span class="n">ggml_tensor_overhead</span><span class="p">()),</span>
-</code></pre></div></p>
-<h3 id="312-cmake">3.1.2 CMake 与交叉编译简介</h3>
-<h4 id="1cmake">1.CMake 是什么？</h4>
-<p>CMake 是一个开源的、跨平台的构建系统生成器。它本身不直接编译代码，而是读取名为 CMakeLists.txt 的项目配置文件，然后根据这些配置生成特定构建工具（如 Makefile文件）所需的构建脚本。开发者只需编写一次 CMakeLists.txt，就可以在不同平台和编译器上生成相应的构建方案。</p>
-<blockquote>
-<p>我们曾在Lab1中学习过怎么使用makefile文件来进行自动化编译，Cmake就是自动产生Makefile的工具</p>
-</blockquote>
-<h4 id="2-cmake">2. 为什么使用 CMake 进行交叉编译？</h4>
-<p>CMake 对交叉编译提供了优秀的支持，主要通过<code>工具链文件 (Toolchain File)</code> 来实现。工具链文件是一个特殊的 CMake 脚本，它告诉 CMake 关于目标平台的所有信息：</p>
+这会在当前目录下创建一个名为 llama.cpp 的文件夹，其中包含所有源代码。</p>
 </li>
-<li>
-<p>要使用的C和C++交叉编译器路径。</p>
-</li>
-<li>目标系统的名称、版本和处理器架构。</li>
-<li>其他特定于目标平台的编译和链接选项。</li>
 </ul>
-<p>幸运的是，OpenHarmony SDK 通常会提供预设好的工具链文件，极大地简化了我们的交叉编译配置。</p>
-<h3 id="312-cmake-llamacpp">3.1.2 使用 CMake 交叉编译 Llama.cpp (本实验选用)</h3>
+<h3 id="122-cmake">1.2.2 Cmake简介</h3>
+<p>CMake本身不是一个编译器，而是一个构建系统生成器。它读取名为 <code>CMakeLists.txt</code> 的配置文件（由项目开发者编写），并根据其中的指令为你当前的平台和工具链生成实际的构建脚本（例如Linux上的Makefiles或Ninja文件）。然后，你再使用这些生成的脚本来编译项目。</p>
+<blockquote>
+<p>我们曾在Lab1中学习过怎么使用makefile文件来进行自动化编译。当我们的项目很复杂时，手写 Makefile 也会变得非常麻烦，而且不方便动态修改。这时候，我们就可以通过编写 <code>CMakeLists.txt</code> 来让 CMake 帮我们自动生成 Makefile。（当然，CMake 本身也可能变得很复杂，于是，还有一些简化 CMakeLists 编写的工具，套娃了。）</p>
+</blockquote>
+<p><strong>优点：</strong></p>
+<ul>
+<li>跨平台： 同一份CMakeLists.txt通常可以在多个操作系统和编译器上工作。</li>
+<li>依赖管理： 能较好地处理项目内和项目间的依赖关系。</li>
+<li>灵活性： 支持复杂的构建配置和自定义选项。</li>
+</ul>
+<h3 id="122-cmake-ubuntu-llamacpp-libllamaso">1.2.2 使用Cmake在 Ubuntu 上编译 Llama.cpp 动态链接库 (libllama.so)</h3>
+<p>我们将采用“out-of-source build”（在源代码目录之外进行构建）的方式，这是一种良好的CMake实践，可以保持源代码目录的整洁。</p>
+<blockquote>
+<p>简单说，就是把编译过程的中间文件，和最后生成的结果，都放在单独的目录下。</p>
+<p>虽然如上一节所言，CMake不仅能生成Makefile，但为了简洁起见，以下都暂时认为，CMake就是用来生成（和调用）Makefile的工具，这也是CMake最常见的用法。</p>
+</blockquote>
 <ol>
 <li>
-<p><strong>定义 OpenHarmony SDK 路径 (重要！)</strong>：
-在终端中，首先定义一个指向你的 OpenHarmony Native SDK 在 Linux 环境下的根目录的环境变量。请将 &lt;你的OHOS SDK Linux Native部分的根路径&gt; 替换为你 SDK 的实际路径。
-    <div class="highlight"><pre><span></span><code><span class="c1"># 示例路径，请务必根据您的实际情况修改！！！</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">OHOS_SDK_LINUX_NATIVE_ROOT</span><span class="o">=</span><span class="s2">&quot;/home/kon/native&quot;</span><span class="w"> </span>
-
-<span class="c1"># 验证路径 (可选)</span>
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;OpenHarmony SDK Linux Native Root: </span><span class="si">${</span><span class="nv">OHOS_SDK_LINUX_NATIVE_ROOT</span><span class="si">}</span><span class="s2">&quot;</span>
-ls<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">OHOS_SDK_LINUX_NATIVE_ROOT</span><span class="si">}</span><span class="s2">/build-tools/cmake/bin/cmake&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;SDK bundled CMake not found!&quot;</span>
-ls<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">OHOS_SDK_LINUX_NATIVE_ROOT</span><span class="si">}</span><span class="s2">/build/cmake/ohos.toolchain.cmake&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;OHOS Toolchain file not found!&quot;</span>
+<p>运行CMake配置项目：
+    确保您当前位于 llama.cpp 的根目录下。执行以下命令：</p>
+<p><div class="highlight"><pre><span></span><code>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release<span class="w"> </span>-DLLAMA_BUILD_TESTS<span class="o">=</span>OFF<span class="w"> </span>-DLLAMA_BUILD_EXAMPLES<span class="o">=</span>OFF<span class="w"> </span>-DLLAMA_CURL<span class="o">=</span>OFF
 </code></pre></div>
-确保 <code>OHOS_SDK_LINUX_NATIVE_ROOT</code> 变量设置正确，并且其下的 CMake 和工具链文件存在。</p>
+命令的核心是<code>cmake -S . -B build</code>，意思是从当前目录（<code>.</code>）读取配置（也就是<code>CMakeLists.txt</code>文件），在<code>build</code>目录下生成一个<code>Makefile</code>，剩余的部分规定了一些具体的编译选项。
+具体而言，每个参数的意义是：</p>
+<ul>
+<li><code>-S .</code>: (Source Directory) 指定CMake的从当前目录（<code>.</code>）读取配置，以生成相应的<code>Makefile</code>。</li>
+<li><code>-B build</code>: (Build Directory)  指定CMake生成构建系统文件以及后续编译产物的目录为当前目录下的 <code>build</code> 子目录（简单说，把生成结果全部放在<code>build</code>目录下）。如果 <code>build</code> 目录不存在，CMake 会自动创建它。</li>
+<li><code>-DCMAKE_BUILD_TYPE=Release</code>: 指定构建类型为Release，会开启优化（例如，为<code>gcc</code>添加<code>-O2</code>等优化选项），生成的库性能更好。如果需要调试，可以使用Debug。</li>
+<li><code>-DLLAMA_BUILD_TESTS=OFF</code> 和 <code>-DLLAMA_BUILD_EXAMPLES=OFF</code>: 这两个参数是库的编译选项。CMakeLists 允许库作者提供自定义选项，让使用者根据自己的需求进行选择。这两个选项的意思分别是“不编译测试”以及“不编译示例程序”，因为我们当前的目标只是生成<code>libllama.so</code>库文件，并且后续会单独编译我们自己的llama-Demo.cpp。</li>
+<li><code>-DLLAMA_CURL=OFF</code>：也是一个编译选项，意义是不使用<code>CURL</code>库。（有时候，库可以根据是否有其它某些库，来提供不同的功能。这里我们为了避免安装更多的依赖，关闭该选项。）</li>
+</ul>
+<p>如果配置成功，终端会显示相关信息，并且build目录下会生成<code>Makefile</code>（和其他一些文件）。</p>
 </li>
 <li>
-<p>使用OpenHarmony SDK生成编译文件:
-    <div class="highlight"><pre><span></span><code><span class="si">${</span><span class="nv">OHOS_SDK_LINUX_NATIVE_ROOT</span><span class="si">}</span>/build-tools/cmake/bin/cmake<span class="w"> </span><span class="se">\</span>
+<p>执行编译与安装：
+    在build目录下，执行以下命令：</p>
+<p>a. 首先，编译 llama 库目标：</p>
+<p><div class="highlight"><pre><span></span><code>cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>-j<span class="k">$(</span>nproc<span class="k">)</span>
+</code></pre></div>
+* <code>--build build</code> : 告诉CMake执行目录（即build目录）下的构建脚本。
+* <code>-j$(nproc)</code>: (可选) 使用所有可用的CPU核心并行编译，以加快速度。</p>
+<blockquote>
+<p>实际上，<code>cmake --build build</code>会让cmake进入<code>build</code>目录，然后自动调用<code>make</code>。</p>
+</blockquote>
+<p>b.  然后，执行安装命令：</p>
+<p>此命令会将已编译好的目标（根据CMakeLists.txt中的install规则，包括libllama.so和头文件llama.h）安装到指定的 --prefix 下。
+<div class="highlight"><pre><span></span><code>cmake<span class="w"> </span>--install<span class="w"> </span>build<span class="w"> </span>--prefix<span class="w"> </span><span class="s2">&quot;build/install&quot;</span>
+</code></pre></div>
+* <code>--install build</code>: 执行构建目录<code>build</code>中的安装规则。
+* <code>--prefix "build/install"</code>: 指定安装路径的前缀。因为我们当前在 <code>llama.cpp</code> 目录下，这会在 <code>build/</code> 内部创建一个名为 <code>install</code> 的子目录 (即 <code>llama.cpp/build/install/</code>)，并将库文件安装到 <code>llama.cpp/build/install/lib/</code>，头文件安装到 <code>llama.cpp/build/install/include/</code>。</p>
+<blockquote>
+<p>实际上，<code>cmake --install build</code>会让cmake进入<code>build</code>目录，然后帮助我们调用<code>make install</code>，并添加合适的参数，将编译好的文件复制到指定位置。</p>
+</blockquote>
+</li>
+<li>
+<p>查找并验证编译产物：
+    编译成功后，libllama.so 文件通常会生成在<code>llama.cpp/build/install/lib</code> 目录下。</p>
+<p><div class="highlight"><pre><span></span><code>ls<span class="w"> </span>-l<span class="w"> </span>install/lib/libllama.so<span class="w"> </span>
+file<span class="w"> </span>install/lib/libllama.so
+</code></pre></div>
+file 命令的输出应该类似：<code>libllama.so: ELF 64-bit LSB shared object, x86-64, version 1 (GNU/Linux), dynamically linked, ...</code>，表明它是一个为当前Ubuntu x86-64架构编译的动态链接库。</p>
+</li>
+</ol>
+<p>现在，我们已经拥有了在Ubuntu上本地编译好的libllama.so。</p>
+<blockquote>
+<p>如果你仔细观察，会发现<code>build/install</code>目录下生成了三个子目录，分别是<code>bin</code>、<code>lib</code>和<code>include</code>。实际上，三个目录都是编译后的产物，每个目录存放的内容如下：</p>
+<p><code>bin</code>：一些编译好的可执行文件，用于将模型转换为llama.cpp需要的格式等。在调用库时用不到。</p>
+<p><code>lib</code>：实际上编译出的动态链接库。编译出的<code>.so</code>文件其实不止一个，每个都包含了一些函数，它们相互之间可能还会调用。因此，需要用到所有这些<code>.so</code>文件，才能正常使用库。（由于所有需要的库文件都在该目录，下一步中，我们会将把该目录指定为需要查找的存放动态链接库的目录。）</p>
+<p><code>include</code>：在写代码时，我们必须要<code>#include</code>合适的头文件，来告诉我们可以使用哪些函数。该目录就是存放 llama.cpp 所提供的头文件，这些头文件内定义的函数，与生成的<code>.so</code>文件里的函数是对应的。因此，我们可以通过<code>#include</code>这些头文件，来使用<code>.so</code>文件里的对应函数。</p>
+</blockquote>
+<h3 id="123-ubuntu-llamacpp-llama-democpp">1.2.3 在 Ubuntu 上编译 Llama.cpp 示例程序(llama-Demo.cpp)</h3>
+<p>接下来，我们将编译提供的llama-Demo.cpp文件。这个程序是一个独立的C++应用，它将通过调用我们刚刚编译的libllama.so库来实现加载模型和执行推理的功能。（提供gguf模型文件与prompt，llama-Demo.cpp文件将提供的prompt续写生成一段话）</p>
+<blockquote>
+<p>在实际工作流程中，该<code>llama-Demo.cpp</code>文件就是由同学们编写的，用来调用llama库的代码。（而llama库则是直接从网上下载的，他人提供的库。）然而，考虑到实验难度，在本次实验中，助教帮大家写好了这个文件。</p>
+<p>同学们可能会问，如果是自己使用时，我怎么知道要怎么调用库中的函数，用哪个函数呢？这就要阅读库所附带的文档了。通常，库作者同时会提供一个库的说明（或者示例程序），通过阅读这些说明，能够学习到库的用法。例如，llama.cpp的示例程序可以在源码中的<code>examples</code>目录下找到。助教的<code>llama-Demo.cpp</code>就是按照其中的<code>simple/simple.cpp</code>修改得到的。</p>
+</blockquote>
+<h4 id="1231-llama-democpp">1.2.3.1 下载并编译llama-Demo.cpp</h4>
+<p>假设我们已经将llama-Demo.cpp放到了一个工作目录，例如<code>~/oslab/llama-Demo.cpp</code>。并且，llama.cpp的源代码位于<code>~/oslab/llama.cpp/</code>，我们编译好的libllama.so位于<code>~/oslab/llama.cpp/build/install/lib</code>，得到的头文件位于<code>~/oslab/llama.cpp/build/install/include</code>。</p>
+<ol>
+<li>下载llama-Demo.cpp并进入llama-Demo.cpp所在目录：
+    <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>~/oslab/
+wget<span class="w"> </span>https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/llama-Demo.cpp
+</code></pre></div></li>
+<li>
+<p>执行编译命令： 
+    <div class="highlight"><pre><span></span><code>g++<span class="w"> </span>-o<span class="w"> </span>llama-Demo<span class="w"> </span>llama-Demo.cpp<span class="w"> </span><span class="se">\</span>
+-I./llama.cpp/build/install/include<span class="w"> </span><span class="se">\</span>
+-L./llama.cpp/build/install/lib<span class="w"> </span><span class="se">\</span>
+-lllama<span class="w"> </span><span class="se">\</span>
+-std<span class="o">=</span>c++17
+</code></pre></div>
+    参数解析：</p>
+<ul>
+<li><code>-o llama-Demo</code>: 指定输出可执行文件的名称为llama-Demo。</li>
+<li><code>-I./llama.cpp/build/install/include</code>: 指定头文件的搜索路径(相对路径)。</li>
+<li><code>-L./llama.cpp/build/install/lib</code>: 指定库文件的搜索路径(相对路径)。</li>
+<li><code>-lllama</code>: (小写L) 告诉链接器链接名为llama的库（即libllama.so）。（你可以把<code>-lllama</code>断句为<code>-l</code>和<code>llama</code>，虽然它们必须要连着写。意思是链接（link）llama 库。看到这句话的编译器会自动寻找名字为<code>libllama.so</code>或<code>.a</code>的文件，并从中寻找函数的实现。）</li>
+<li><code>-std=c++17</code>: 指定C++标准版本为C++17。</li>
+</ul>
+<blockquote>
+<p>从这一步的参数中也可以看出，C/C++中使用第三方库需要两类文件：<strong>头文件</strong>和<strong>库文件</strong>。头文件定义了函数的接口，库文件内存放了函数的实现（机器码）。</p>
+</blockquote>
+</li>
+</ol>
+<h4 id="1232-llama-demo">1.2.3.2 运行llama-Demo</h4>
+<ol>
+<li>
+<p>添加环境变量(意味着程序运行时从哪里找到动态链接库)</p>
+<p><div class="highlight"><pre><span></span><code><span class="c1"># 注意修改lib的路径</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>~/oslab/llama.cpp/build/install/lib:<span class="nv">$LD_LIBRARY_PATH</span>
+</code></pre></div>
+- <code>export</code>: 用于设置环境变量。
+- <code>LD_LIBRARY_PATH</code>: 一个环境变量，用于指定动态链接库的搜索路径。
+- <code>~/oslab/llama.cpp/build/install/lib</code>: 指定的库文件路径。指向了我们刚刚生成的库的路径。存放了需要的所有<code>.so</code>文件。
+- <code>:$LD_LIBRARY_PATH</code>: 保留原有的<code>LD_LIBRARY_PATH</code>值。（在环境变量中，我们常常用<code>:</code>来连接多个路径。例如，当我们要查找两个路径<code>./a</code>和<code>./b</code>时，会写成<code>./a:./b</code>。这里用冒号连接了原来的<code>LD_LIBRARY_PATH</code>，意思是查找完提供的路径，还要查找原来环境变量中的路径。）
+  - 为什么还要查找原来的路径呢？实际上任何C/C++程序都会自动链接一些库文件。比如标准库，里面提供了类似<code>printf</code>之类的语言自带函数。</p>
+</li>
+<li>
+<p>使用wget下载模型文件,选择其一即可
+    <div class="highlight"><pre><span></span><code><span class="c1"># Tinystories模型，用于生成一个小故事，大小为668MB</span>
+wget<span class="w"> </span>https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/tinystories2.Q4_K_M.gguf
+<span class="c1"># qwen3.0-0.6B模型，用于通用任务,大小为379MB</span>
+wget<span class="w"> </span>https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/Qwen3-0.6B-Q4_K_M.gguf
+</code></pre></div></p>
+</li>
+<li>
+<p>运行llama-Demo
+    <div class="highlight"><pre><span></span><code><span class="c1"># `model.gguf`为模型文件路径，当前假设模型文件与可执行文件在同一目录下，`n_predict`为生成的长度，`prompt`为用户输入的提示，程序会根据提示续写出一段话。</span>
+$<span class="w"> </span>./llama-Demo<span class="w"> </span>-m<span class="w"> </span>./model.gguf<span class="w"> </span><span class="o">[</span>-n<span class="w"> </span>n_predict<span class="o">]</span><span class="w"> </span><span class="o">[</span>prompt<span class="o">]</span>
+</code></pre></div></p>
+</li>
+</ol>
+<p>如果执行成功应该能看到程序加载模型后，根据提示开始生成文本，这证明了llama-Demo成功调用了动态链接库libllama.so中的功能。示例输出如下所示：
+<div class="highlight"><pre><span></span><code><span class="w">    </span>$<span class="w"> </span>./llama-Demo<span class="w"> </span>-m<span class="w"> </span>./Qwen3-0.6B-Q4_K_M.gguf<span class="w"> </span>-n<span class="w"> </span><span class="m">128</span><span class="w"> </span><span class="s2">&quot;I&#39;m a student from USTC, My student ID is PB23011000&quot;</span>
+<span class="w">    </span>...<span class="w"> </span><span class="c1"># 各种配置信息</span>
+<span class="w">    </span>I<span class="s1">&#39;m a student from USTC,My student ID is PB230110001, and I&#39;</span>m<span class="w"> </span>a<span class="w"> </span>student<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span><span class="m">2023</span>-2024<span class="w"> </span>academic<span class="w"> </span>year.<span class="w"> </span>I<span class="err">&#39;</span>m<span class="w"> </span>interested<span class="w"> </span><span class="k">in</span><span class="w"> </span>studying<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>field<span class="w"> </span>of<span class="w"> </span>Computer<span class="w"> </span>Science.<span class="w"> </span>I<span class="w"> </span>want<span class="w"> </span>to<span class="w"> </span>know<span class="w"> </span><span class="k">if</span><span class="w"> </span>I<span class="w"> </span>can<span class="w"> </span>get<span class="w"> </span>a<span class="w"> </span>scholarship<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span><span class="m">2023</span>-2024<span class="w"> </span>academic<span class="w"> </span>year.<span class="w"> </span>I<span class="w"> </span>need<span class="w"> </span>to<span class="w"> </span>apply<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>scholarship,<span class="w"> </span>and<span class="w"> </span>I<span class="w"> </span>need<span class="w"> </span>to<span class="w"> </span>provide<span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>information:<span class="w"> </span>my<span class="w"> </span>student<span class="w"> </span>ID,<span class="w"> </span>my<span class="w"> </span>name,<span class="w"> </span>my<span class="w"> </span>major,<span class="w"> </span>my<span class="w"> </span>academic<span class="w"> </span>year,<span class="w"> </span>and<span class="w"> </span>my<span class="w"> </span>current<span class="w"> </span>status.<span class="w"> </span>Please<span class="w"> </span><span class="nb">help</span><span class="w"> </span>me<span class="w"> </span>to<span class="w"> </span>fill<span class="w"> </span>out<span class="w"> </span>the<span class="w"> </span>application<span class="w"> </span>form.<span class="w"> </span>I<span class="w"> </span>need<span class="w"> </span>to<span class="w"> </span>know<span class="w"> </span><span class="k">if</span><span class="w"> </span>I<span class="w"> </span>can<span class="w"> </span>get<span class="w"> </span>a<span class="w"> </span>scholarship<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span><span class="m">2023</span>-2024<span class="w"> </span>academic
+<span class="w">    </span>...<span class="w"> </span><span class="c1"># 性能信息</span>
+</code></pre></div></p>
+<h4 id="1233-llama-democpp">1.2.3.3 llama-Demo.cpp 工作流程</h4>
+<p>这一节中，我们将简要的介绍<code>llama-Demo.cpp</code>的代码。由于AI推理实际上是个涉及多个函数调用的复杂过程，我们并不会非常完整地介绍代码中的每一个细节，同学们也不需要完全理解本节的介绍，只需要知道<strong>这份代码通过调用llama.cpp库中提供的函数，实现了运行下载的GGUF模型，并续写用户提供的提示词的功能</strong>。</p>
+<p>你可以在<a href="#附录C: llama-Demo.cpp代码说明">附录C</a>中找到更细节的说明。</p>
+<blockquote>
+<p>如果你还想了解更多，可以参考llama.cpp源码中<code>include/llama.h</code>中的注释，<code>examples/</code>中的样例程序，以及<a href="[ggml-org/llama.cpp: LLM inference in C/C++](https://github.com/ggml-org/llama.cpp)">llama.cpp 的Github仓库</a>。</p>
+</blockquote>
+<p>llama-Demo.cpp的主要工作流程如下：</p>
+<ul>
+<li>
+<p>包含 llama.h 头文件以使用Llama.cpp库的API。
+    <div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;llama.h&quot;</span>
+</code></pre></div></p>
+<blockquote>
+<p>整份代码中，所有以小写<code>llama_</code>开头的函数，都是<code>llama.h</code>中定义的函数。这种统一的命名格式是库作者的良好习惯，能有效避免和其它库的函数出现命名冲突。</p>
+</blockquote>
+</li>
+<li>
+<p>调用<code>ParseArgs</code>函数，解析命令行参数，获取模型文件路径、用户提示以及输出的长度设置。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">prompt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Hello world&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">model_path</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">n_predict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">128</span><span class="p">;</span><span class="w"> </span><span class="c1">//  Default number of tokens to predict</span>
+<span class="w">    </span><span class="c1">// Parse command line arguments</span>
+<span class="w">    </span><span class="n">ParseArgs</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">,</span><span class="w"> </span><span class="n">model_path</span><span class="p">,</span><span class="w"> </span><span class="n">prompt</span><span class="p">,</span><span class="w"> </span><span class="n">n_predict</span><span class="p">);</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div>
+</li>
+<li>
+<p>加载指定的GGUF模型，并且获取词汇表。其中<code>LoadModel</code>函数中，又调用了多个<code>llama_</code>的库中函数，实现模型加载，并返回模型指针（<code>llama_model</code>类型也是<code>llama.h</code>中定义的）。</p>
+<blockquote>
+<p>GGUF是llama.cpp使用的模型格式。不同框架可能使用不同模型格式。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">){</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="c1">// initialize the model</span>
+<span class="w">    </span><span class="n">llama_model</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LoadModel</span><span class="p">(</span><span class="n">model_path</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">//get vocab</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">llama_vocab</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">vocab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">llama_model_get_vocab</span><span class="p">(</span><span class="n">model</span><span class="p">);</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div>
+</li>
+<li>
+<p>对用户提示进行分词 (Tokenization)。</p>
+<blockquote>
+<p>“tokenization” 通常是大语言模型处理的第一步，和传统NLP的分词不同，它实际上是把文本转成一个个向量组成的列表，每个“词元”(token)对应一个向量。</p>
+<p><code>std::vector</code>是C++中提供的一种“容器”，你可以认为是长度可以变化的数组，和上面说的向量也不是一回事。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">){</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="c1">// tokenize the prompt</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">llama_token</span><span class="o">&gt;</span><span class="w"> </span><span class="n">prompt_tokens</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TokenizePrompt</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span><span class="w"> </span><span class="n">prompt</span><span class="p">);</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div>
+</li>
+<li>
+<p>初始化推理上下文 (Context) 和采样器 (Sampler)。</p>
+<blockquote>
+<p>也是模型推理中需要的步骤。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">){</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="c1">// initialize the context</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">n_prompt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">prompt_tokens</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="c1">// number of prompt</span>
+<span class="w">    </span><span class="n">llama_context</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">InitializeContext</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n_prompt</span><span class="p">,</span><span class="w"> </span><span class="n">n_predict</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// initialize the sampler</span>
+<span class="w">    </span><span class="n">llama_sampler</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">smpl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">InitializeSampler</span><span class="p">();</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div>
+</li>
+<li>
+<p>执行推理循环，逐个生成词元 (Token)，并将词元转换回文本输出。</p>
+<blockquote>
+<p><code>GenerateTokens</code>函数里是个循环，每循环一次生成一个词元（token）。我们平时网上用大模型，会发现模型输出是一个个词往外吐的，这并不是网页为了好看做的美化，而是因为大模型真的是一个个词生成输出的。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">){</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="c1">// generate tokens</span>
+<span class="w">    </span><span class="n">GenerateTokens</span><span class="p">(</span><span class="n">prompt_tokens</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="n">vocab</span><span class="p">,</span><span class="w"> </span><span class="n">smpl</span><span class="p">,</span><span class="w"> </span><span class="n">n_prompt</span><span class="p">,</span><span class="w"> </span><span class="n">n_predict</span><span class="p">);</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div>
+</li>
+<li>
+<p>打印性能信息并且释放资源。</p>
+<blockquote>
+<p>又调用了好多 llama.cpp 中的函数。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="c1">// print performance</span>
+<span class="w">    </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">llama_perf_sampler_print</span><span class="p">(</span><span class="n">smpl</span><span class="p">);</span>
+<span class="w">    </span><span class="n">llama_perf_context_print</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+<span class="w">    </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// free the resources</span>
+<span class="w">    </span><span class="n">llama_sampler_free</span><span class="p">(</span><span class="n">smpl</span><span class="p">);</span>
+<span class="w">    </span><span class="n">llama_free</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+<span class="w">    </span><span class="n">llama_model_free</span><span class="p">(</span><span class="n">model</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+</li>
+</ul>
+<h1 id="_7">第二部分 通过交叉编译跨架构生成库文件</h1>
+<h2 id="21">2.1 交叉编译的概念</h2>
+<p>在第一部分，我们在 Ubuntu 内体验了如何使用第三方库编写程序，然而，要在移动设备（在本次实验中，也就是我们的开发板）上使用第三方库，还没有那么简单，我们还需要解决两个关键问题：</p>
+<ol>
+<li>移动设备处理器的体系结构与主机不同，编译出来的库无法直接使用。</li>
+<li>移动设备应用开发模式（如开发语言）不同，需要跨语言调用。</li>
+</ol>
+<p>在这一部分中， 我们将通过<strong>交叉编译</strong>技术解决第一个问题，而第二个问题则留到下一部分讨论。</p>
+<p>首先，我们需要理解，为什么处理器体系结构（包括指令集）不同，会给第三方库的使用带来问题。在上一部分中，我们知道，Linux 中第三方库会被编译为<code>.so</code>格式的动态链接库。可以想象，为了正常调用，<code>.so</code>文件里实际上<strong>存储了库函数执行所需的机器码</strong>（当然，还包括一些其它信息）。不同指令集的机器码不一样，因此，为 <code>x86_64</code> 指令集编译的库文件自然没法用于ARM架构的硬件上（即使上面都运行着Linux内核）。</p>
+<p>因此，为了让开发板能使用 llama.cpp 库，我们需要用我们的电脑，编译出使用 ARM （具体而言，<code>armeabi-v7a</code>）架构的动态库。而这种“在一种体系结构的平台上，编译出另一种体系结构平台上可执行代码”的过程，就被称为<strong>交叉编译</strong>。（例如，从使用<code>x86_64</code>的我们的电脑上，编译出使用的<code>armeabi-v7a</code>的开发板能执行的动态库。）</p>
+<blockquote>
+<p><strong>为什么不在开发板上编译？</strong></p>
+<p>看了上面的介绍，同学们可能还有疑问。既然主机和开发板架构不同，那我们直接使用开发板编译不就可以了吗？为什么一定要在主机上完成交叉和编译呢？</p>
+<p>实际上，在嵌入式系统和移动设备开发中，交叉编译非常普遍且必要，主要原因包括：</p>
+<ol>
+<li><strong>目标机资源受限</strong>： 像 DAYU200 这样的开发板或许多嵌入式设备，其处理器性能、内存大小、存储空间都远不如桌面PC（例如，有些嵌入式设备只有几MB内存）。在这些设备上直接进行大型项目（如操作系统内核、复杂的 C++ 应用如 Llama.cpp）的编译会非常缓慢，甚至因资源不足而无法完成。</li>
+<li><strong>目标机缺乏开发环境</strong>： 很多目标设备可能没有安装编译器、链接器、库文件等完整的开发工具链。它们被设计为运行特定应用，而不是进行软件开发。(OpenHarmony中没有开发工具链)</li>
+<li><strong>开发效率和便利性</strong>： 开发者通常更习惯在功能强大、工具齐全的PC上进行代码编写、调试和项目管理。交叉编译使得开发者可以在熟悉的开发环境中为资源受限或环境不同的目标设备构建软件。</li>
+<li><strong>特定架构需求：</strong> 有些软件就是为特定非主流架构设计的，开发者可能没有该架构的物理机器用于本地编译。（我开发一个跨平台库，难道还需要把世界上所有存在的架构的计算机都买一台吗？）</li>
+</ol>
+</blockquote>
+<h2 id="22-openharmony-native-sdk">2.2 准备交叉编译所需的工具（OpenHarmony Native SDK）</h2>
+<p>本次实验的核心任务之一是交叉编译 C++ 代码库（Llama.cpp）。这个过程需要在 Linux 环境下进行，并且需要一套特定的交叉编译工具链和 OpenHarmony 系统库/头文件（统称为 Native SDK 或 Toolchain）。这套工具运行在您的 Ubuntu 系统上，但其编译产生的目标代码是运行在 DAYU200 (arm32 架构) 上的 OpenHarmony 系统。</p>
+<ol>
+<li>
+<p>使用wget下载OpenHarmony Native SDK</p>
+<p>下载地址：https://git.ustc.edu.cn/KONC/oh_lab/-/raw/main/native-linux-x64-5.0.3.135-Release.zip</p>
+</li>
+</ol>
+<p>备用地址：https://rec.ustc.edu.cn/share/dfbc3380-2b3c-11f0-aee2-27696db61006 （选择<code>第二阶段素材 -&gt; native-linux-x64.zip</code>）</p>
+<ol>
+<li>解压，注意解压目录，后续需要使用（我们后续假设解压路径是<code>~/ohlab/</code>）
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>unzip<span class="w"> </span>native-linux-x64-5.0.3.135-Release.zip
+</code></pre></div></li>
+</ol>
+<blockquote>
+<p>这里估计又会有疑问，在3.1步中明明下载过SDK，为什么这里还需要下载SDK?</p>
+<p>最主要原因为Linux和Windows使用的链接库不同，在开发板运行的OpenHarmony的内核是Linux，所以我们需要在Linux上编译出链接库使用，并且我们这里只使用了Native SDK，即编译CPP程序需要的工具，而在3.1步中，我们还下载了编译前端的SDK。</p>
+<p>还有同学可能会好奇，这个“Native SDK”里，到底<strong>包含了什么</strong>呢？</p>
+<p>实际上，这里的 SDK （也即第一阶段所说的妙妙小工具），包含了一系列编译所需要的工具、库文件、配置等等。例如<code>gcc</code>这样的编译器；<code>make</code>, <code>cmake</code>这样的配置工具；<code>libstdc++.so</code>（标准C++库）这样的库文件等。这些工具、文件都是为特定架构生成的，因此与 Ubuntu 中我们用<code>apt</code>安装的那些不一样。OH 的 SDK 还包含了用于鸿蒙系统的编译配置，我们下面也会使用到。</p>
+</blockquote>
+<h2 id="23">2.3 交叉编译应用过程</h2>
+<p>在前面的步骤中，我们了解了交叉编译的概念，并在 Ubuntu 系统上准备了 OpenHarmony Native SDK，其中包含了针对 DAYU200 开发板（arm32架构）的交叉编译工具链和系统库。现在，我们将实践一个简单的交叉编译过程，同样，我们以之后将会使用的 llama.cpp 为例。</p>
+<h3 id="231-sdk-cmake">2.3.1 使用 SDK 中的 CMake 进行交叉编译</h3>
+<h4 id="2311-sdkcmakemakefile">2.3.1.1 使用SDK中的<code>cmake</code>生成<code>Makefile</code></h4>
+<p>在第一阶段中，我们演示了使用<code>cmake</code>编译 llama.cpp 的过程。实际上，交叉编译的过程几乎一样，我们只需要将编译使用的<code>cmake</code>，换成刚刚下载的 <code>SDK</code> 中的 <code>cmake</code>即可。具体而言，步骤如下：</p>
+<ol>
+<li>确认你的 SDK 的路径，以及其中<code>cmake</code>的位置。</li>
+</ol>
+<p>假设你的 SDK 路径为 <code>~/ohlab/native-linux-x64-5.0.3.135-Release</code>，你应该可以在该目录下<code>./native/build-tools/cmake/bin/</code>处找到<code>cmake</code>程序。例如，运行如下指令（注意替换路径）：</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>~/ohlab/native-linux-x64-5.0.3.135-Release
+./native/build-tools/cmake/bin/cmake<span class="w"> </span>--version
+</code></pre></div>
+<p>可以得到类似输出：</p>
+<div class="highlight"><pre><span></span><code>cmake<span class="w"> </span>version<span class="w"> </span><span class="m">3</span>.28.2
+
+CMake<span class="w"> </span>suite<span class="w"> </span>maintained<span class="w"> </span>and<span class="w"> </span>supported<span class="w"> </span>by<span class="w"> </span>Kitware<span class="w"> </span><span class="o">(</span>kitware.com/cmake<span class="o">)</span>.
+</code></pre></div>
+<ol>
+<li>进入你的<code>llama.cpp</code>源码路径。</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>llama.cpp<span class="w">  </span><span class="c1"># 请自行修改路径</span>
+</code></pre></div>
+<ol>
+<li>使用 SDK 中的 <code>cmake</code> 编译 <code>llama.cpp</code>。</li>
+</ol>
+<p>该过程和第一部分类似，只是需要将<code>cmake</code>命令，换成前面确认过的，SDK中的<code>cmake</code>的路径，并增加一些额外配置。</p>
+<p>由于完整路径可能很长，我们可以通过定义环境变量来避免重复书写完整路径，如下：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 定义环境变量，注意将改行改成你自己的路径，请使用绝对路径以避免出错。</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">OHOS_SDK_ROOT</span><span class="o">=</span><span class="s2">&quot;/home/[username]/ohlab/native-linux-x64-5.0.3.135-Release&quot;</span>
+
+<span class="c1"># 使用对应的cmake编译文件（以下是一个命令，&#39;\&#39;在bash中表示命令没写完，下一行可以继续写。这条命令太长了，分行写看起来好看。你想写在同一行也是可以的。注意&#39;\&#39;字符后面不能有空格。）</span>
+<span class="si">${</span><span class="nv">OHOS_SDK_ROOT</span><span class="si">}</span>/build-tools/cmake/bin/cmake<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-S<span class="w"> </span>.<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-B<span class="w"> </span>build-ohos<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-DCMAKE_TOOLCHAIN_FILE<span class="o">=</span><span class="si">${</span><span class="nv">OHOS_SDK_LINUX_NATIVE_ROOT</span><span class="si">}</span>/build/cmake/ohos.toolchain.cmake<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-DCMAKE_TOOLCHAIN_FILE<span class="o">=</span><span class="si">${</span><span class="nv">OHOS_SDK_ROOT</span><span class="si">}</span>/build/cmake/ohos.toolchain.cmake<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-DOHOS_ARCH<span class="o">=</span>armeabi-v7a<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-DCMAKE_CXX_FLAGS<span class="o">=</span><span class="s2">&quot;-Wno-c++11-narrowing&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-DGGML_NATIVE<span class="o">=</span>OFF<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-DGGML_OPENMP<span class="o">=</span>OFF<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-DLLAMA_BUILD_TESTS<span class="o">=</span>OFF<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-DLLAMA_CURL<span class="o">=</span>OFF<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Debug
+<span class="w">    </span>-DLLAMA_CURL<span class="o">=</span>OFF
 </code></pre></div>
-    几个比较重要的参数说明：</p>
+<p>这一步和 <a href="#1.2.2 使用Cmake在 Ubuntu 上编译 Llama.cpp 动态链接库 (libllama.so)">1.2.2</a>节第二步类似，但明显，我们命令长了很多，添加了许多选项。</p>
+<blockquote>
+<p>回顾一下，1.2.2节的命令是：</p>
+<p><code>cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_CURL=OFF</code></p>
+</blockquote>
+<p>我们来具体分析一下命令发生了哪些变化：</p>
 <ul>
-<li><code>${OHOS_SDK_LINUX_NATIVE_ROOT}/build-tools/cmake/bin/cmake</code>: 指定使用 OpenHarmony SDK 中自带的 CMake 可执行文件。这有助于保证与 SDK 工具链的兼容性。</li>
-<li><code>-B build-ohos32</code>: 指定 CMake 生成构建文件的目录为 build-ohos（如果目录不存在，CMake 会创建它）。这是“out-of-source”构建，是一个好习惯，可以保持源代码目录的整洁。</li>
-<li><code>-DCMAKE_TOOLCHAIN_FILE=${OHOS_SDK_LINUX_NATIVE_ROOT}/build/cmake/ohos.toolchain.cmake</code>: 这是交叉编译的核心配置。 它告诉 CMake 使用 OpenHarmony SDK 提供的工具链文件。这个文件内部定义了交叉编译器、Sysroot路径、目标架构等信息。</li>
-<li><code>-DOHOS_ARCH=armeabi-v7a</code>: 这个参数传递给 ohos.toolchain.cmake 文件，用于指定目标CPU架构为 armeabi-v7a (ARM 32位架构)。</li>
+<li><code>${OHOS_SDK_ROOT}/build-tools/cmake/bin/cmake</code>: 我们使用了一个完整的路径名（<code>${OHOS_SDK_ROOT}</code>会被替换成我们通过<code>export</code>定义的变量），指定使用 OpenHarmony SDK 中自带的 CMake 可执行文件，而不是直接使用<code>cmake</code>命令。</li>
+<li><code>-B build-ohos32</code>: 类似<code>-B build</code>，只是这次将编译的中间文件和结果放在<code>build-ohos32</code>而不是<code>build</code>目录下，方便我们查找。</li>
+<li><code>-DCMAKE_TOOLCHAIN_FILE=${OHOS_SDK_ROOT}/build/cmake/ohos.toolchain.cmake</code>: <strong>该参数是交叉编译的核心。</strong><code>-DCMAKE_TOOLCHAIN_FILE</code>会让<code>cmake</code>从指定的文件里读取用到的工具的位置（例如编译器<code>gcc</code>，和<code>make</code>等）。后面的文件是SDK中已经写好的，编译到OpenHarmony的特定配置，它指定了使用 SDK 中的<code>gcc</code>进行编译。</li>
+<li><code>-DOHOS_ARCH=armeabi-v7a</code>: 这个参数用于指定目标CPU架构为 <code>armeabi-v7a</code> (ARM 32位架构)。上一个参数的文件内会读取该参数。</li>
+<li><code>-DCMAKE_CXX_FLAGS="-Wno-c++11-narrowing"</code>：这个参数为GCC添加了一个编译标志，告诉GCC允许范围缩小的强制类型转换。（这是因为我们目标架构是32位的，llama.cpp没考虑这种情况，存在一些把64位整数转换成32位的情况。不加这个参数会导致编译错误。）</li>
+<li><code>-DGGML_NATIVE=OFF</code>、<code>-DGGML_OPENMP=OFF</code>：这俩也是编译选项，我们又关了一些东西，因为开发板上没有特定的依赖库。（我们几乎把所有能关的选项都关了。）</li>
 </ul>
-</li>
-<li>
-<p>编译Llama.cpp生成动态链接库与头文件:
-    <div class="highlight"><pre><span></span><code><span class="si">${</span><span class="nv">OHOS_SDK_LINUX_NATIVE_ROOT</span><span class="si">}</span>/build-tools/cmake/bin/cmake<span class="w">  </span>--build<span class="w"> </span>build-ohos<span class="w"> </span>--config<span class="w"> </span>Debug<span class="w"> </span>-j
-<span class="si">${</span><span class="nv">OHOS_SDK_LINUX_NATIVE_ROOT</span><span class="si">}</span>/build-tools/cmake/bin/cmake<span class="w"> </span>--install<span class="w"> </span>build-ohos<span class="w"> </span>--prefix<span class="w"> </span><span class="s2">&quot;build-ohos/install&quot;</span>
-</code></pre></div></p>
-</li>
-<li>
-<p>查找编译产物：</p>
-<p>编译成功后，生成的库文件和可执行文件通常位于构建目录 (build-ohos) 下的特定子目录中：</p>
+<p>如果命令成功运行，那和之前一样<code>build-ohos32</code>下会生成<code>Makefile</code>。（和上一阶段类似。）</p>
+<h4 id="2312">2.3.1.2 生成并“安装”库文件</h4>
+<p>这个过程和上一阶段类似，只是把<code>cmake</code>换成了<code>SDK</code>中的<code>cmake</code>罢了。</p>
+<ol>
+<li>编译Llama.cpp生成动态链接库与头文件:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="si">${</span><span class="nv">OHOS_SDK_ROOT</span><span class="si">}</span>/build-tools/cmake/bin/cmake<span class="w">  </span>--build<span class="w"> </span>build-ohos<span class="w"> </span>--config<span class="w"> </span>Release<span class="w"> </span>-j
+<span class="si">${</span><span class="nv">OHOS_SDK_ROOT</span><span class="si">}</span>/build-tools/cmake/bin/cmake<span class="w"> </span>--install<span class="w"> </span>build-ohos<span class="w"> </span>--prefix<span class="w"> </span><span class="s2">&quot;build-ohos/install&quot;</span>
+</code></pre></div>
+<p>（注意，这一次，我们把生成的库文件和头文件，安装到了<code>build-ohos/install</code>里。）</p>
+<ol>
+<li>查找编译产物：</li>
+</ol>
+<p>编译成功后，生成的库文件和可执行文件位于刚刚指定的安装目录里，如：</p>
 <ul>
-<li>动态链接库 libllama.so 可能位于：build-ohos/install/lib。</li>
-<li>头文件可能位于：build-ohos32/install/include。 请检查这些常见位置。例如：
+<li>动态链接库 libllama.so 可能位于：<code>build-ohos/install/lib</code>。</li>
+<li>头文件可能位于：<code>build-ohos32/install/include</code>。 请检查这些常见位置。例如：</li>
+</ul>
 <div class="highlight"><pre><span></span><code><span class="c1"># ls -l build-ohos32/install/lib</span>
 cmake<span class="w">  </span>libggml-base.so<span class="w">  </span>libggml-cpu.so<span class="w">  </span>libggml.so<span class="w">  </span>libllama.so<span class="w">  </span>libllava_shared.so<span class="w">  </span>libmtmd_shared.so<span class="w">  </span>pkgconfig
 <span class="c1"># ls -l build-ohos32/install/include</span>
 ggml-alloc.h<span class="w">   </span>ggml-blas.h<span class="w">  </span>ggml-cpp.h<span class="w">  </span>ggml-cuda.h<span class="w">  </span>ggml-kompute.h<span class="w">  </span>ggml-opt.h<span class="w">  </span>ggml-sycl.h<span class="w">    </span>gguf.h<span class="w">       </span>llama.h<span class="w"> </span>ggml-backend.h<span class="w">  </span>ggml-cann.h<span class="w">  </span>ggml-cpu.h<span class="w">  </span>ggml.h<span class="w">       </span>ggml-metal.h<span class="w">    </span>ggml-rpc.h<span class="w">  </span>ggml-vulkan.h<span class="w">  </span>llama-cpp.h
-</code></pre></div></li>
-</ul>
-</li>
-<li>
-<p>验证编译产物
-在Ubuntu宿主机上，使用 file 命令检查生成的 libllama.so 文件，确认它的架构：
+</code></pre></div>
+<ol>
+<li>验证编译产物</li>
+</ol>
+<p>为了确认我们确实交叉编译出了32位 ARM架构的库文件，我们可以使用 <code>file</code> 命令检查生成的 <code>libllama.so</code> 文件，确认它的架构：</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># 在Ubuntu宿主机上，使用 file 命令检查生成的 libllama.so 和 main 文件，确认它们的架构：</span>
 $<span class="w"> </span>file<span class="w"> </span>build-ohos/install/lib/libllama.so
 build-ohos/install/lib/libllama.so:<span class="w"> </span>ELF<span class="w"> </span><span class="m">32</span>-bit<span class="w"> </span>LSB<span class="w"> </span>shared<span class="w"> </span>object,<span class="w"> </span>ARM,<span class="w"> </span>EABI5<span class="w"> </span>version<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>SYSV<span class="o">)</span>,<span class="w"> </span>dynamically<span class="w"> </span>linked,<span class="w"> </span>BuildID<span class="o">[</span>sha1<span class="o">]=</span>9b36a4f7b3365492d0c566681e81b6aebaafcb8d,<span class="w"> </span>with<span class="w"> </span>debug_info,<span class="w"> </span>not<span class="w"> </span>stripped
 </code></pre></div>
-输出应明确指出它们是为 <code>ARM32</code> 架构(例如上面的<code>ARM,EABI5</code>)</p>
+<p>输出应明确指出它们是为 <code>ARM32</code> 架构（例如上面的<code>ARM,EABI5</code>）。</p>
+<p>完成这些步骤后，你已经成功将 llama.cpp 交叉编译为可以在目标设备（ 架构为armeabi-v7a 的 OpenHarmony 系统）上运行的库了。<strong>真不容易，恭喜你！</strong></p>
+<p>下一阶段，我们会尝试在应用开发中，使用这个编译好的库。</p>
+<h1 id="llamacpp">第三部分：将 Llama.cpp 集成到应用中</h1>
+<blockquote>
+<p>由于我们课程毕竟不是 ArkTS 语言学习或者 OpenHarmony 应用开发。本节还是几乎不需要大家完成代码。以介绍流程和引发大家兴趣为主。</p>
+</blockquote>
+<h2 id="3-1-openharmony-c">3. 1 在 OpenHarmony 应用中调用 C++ 代码</h2>
+<p>还记得第一阶段中你创建的那个以自己学号命名的 DevEco Studio 中的项目吗？创建项目时，我们选择了 Native C++ 项目，但第一阶段运行时，好像并没有出现什么跟 C++ 有关的内容。</p>
+<p>实际上，作为 Native C++ 的模板应用，这个项目中隐藏了在ArkTS中调用C++函数的示例。下面，我们将介绍这个例子，简单了解 OpenHarmony 应用调用 C++ 函数的思路。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>接下来的内容将在 Windows 中进行，请打开DevEco，开启你之前创建的项目。（或新建一个 Native C++项目。）</p>
+</div>
+<h3 id="311-native-c">3.1.1 Native C++ 代码结构介绍</h3>
+<blockquote>
+<p>在上一阶段，我们虽然通过修改项目配置文件，将一个应用运行在了开发板上，但并没有对项目结构做太多介绍。这一节，我们将首先介绍项目的代码结构。</p>
+</blockquote>
+<p>我们可以在DevEco左侧的项目目录中看到项目大体结构。为了简单起见，我们只关注对开发应用最重要的代码部分（其余部分留给感兴趣的同学自行探索吧）。项目主要代码均存放在<code>entry/src/main</code>这个目录底下，如图，可以看到，目录下有3个子目录和一个文件。</p>
+<p><img src="./assets/image-20250513223421181.png" alt="image-20250513223421181" style="zoom:50%;" /></p>
+<p>这些目录和文件主要功能如下：</p>
+<ul>
+<li><code>cpp</code>: 存放项目的 C++ 代码，和编译所需的<code>CMakeLists.txt</code>、给ArkTS提供的接口等。</li>
+<li><code>ets</code>: 存放项目的 ArkTS 代码。<code>ets/pages/Index.ets</code>可以被认为是项目的入口。</li>
+<li><code>resources</code>: 存放项目的资源文件。</li>
+<li><code>module.json5</code>: 该模块（<code>entry</code>）的主要配置。</li>
+</ul>
+<blockquote>
+<p><strong>什么是资源文件？</strong></p>
+<p>移动应用中，为了安全起见（大家都不想其它不经允许，读取你的微信聊天记录吧），每个应用都运行在“沙盒”之中，只能看到自己应用需要的一小部分文件。（联系课上所学的“虚拟内存空间”，你可以认为，移动应用也有一个“虚拟文件空间”。）但应用本身就会用到许多文件，例如作为背景的图片、音效等等。为了方便应用使用这些文件，项目中会指定一个目录，专门存放这些文件，这些文件能被应用看到，称为资源文件。（这里解释其实没那么严谨，大家意会吧^_^）</p>
+<p><strong>什么是模块？</strong></p>
+<p>一个应用其实可以有多个“模块”组成，每个模块都有自己独立的依赖库等，方便管理。我们的示例应用中只有一个模块<code>entry</code>，即应用的入口模块，你可以认为，应用一打开就会进入这个<code>entry</code>模块中<code>Index.ets</code>所描述的页面。相当于OH应用中的主进程、main函数了。</p>
+</blockquote>
+<h3 id="312-c">3.1.2 尝试调用 C++ 函数</h3>
+<p>项目中，其实已经给我们定义好了一个C++函数<code>Add</code>，和它的ArkTS接口函数<code>add</code>，功能是将两个数字相加。</p>
+<blockquote>
+<p>怎么定义的？具体定义在<code>src/main/cpp/napi_init.cpp</code>这个文件中，如果你想了解，可以参考<a href="#附录D: Native C++ 应用中 C++ 函数定义">附录D</a>。</p>
+</blockquote>
+<p>相当于，只要我们在 ArkTS 代码中调用 <code>add</code> 函数，应用后台经过一系列神奇转换后，就会调用 C++ 函数 <code>Add</code> 执行运算，并返回结果。我们现在就来尝试这一点。</p>
+<p>打开<code>src/ets/pages/Index.ets</code>，还记得阶段一中你们修改为学号的一行吗？现在，将其修改为：</p>
+<div class="highlight"><pre><span></span><code><span class="k">this</span><span class="p">.</span><span class="nx">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">testNapi</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">).</span><span class="nx">toString</span><span class="p">();</span>
+</code></pre></div>
+<p>这里<code>testNapi.add(2, 3)</code>会调用C++函数，将两个参数相加，并返回结果<code>5</code>，而<code>toString</code>将把结果转成字符串。然后，这个字符串被赋值给<code>this.message</code>。</p>
+<p>然后，我们运行previewer（参考阶段一），再试试应用功能吧。</p>
+<blockquote>
+<p>注意，运行Previewer需要使用Release版本，即，将下图下拉框改为图中的选项（上面的entry）：</p>
+<p><img src="./assets/image-20250513232313625.png" alt="image-20250513232313625" style="zoom:50%;" /></p>
+</blockquote>
+<p>点击"Hello World"，文字变成如下：</p>
+<p><img src="./assets/image-20250513232354639.png" alt="image-20250513232354639" style="zoom:33%;" /></p>
+<p>这样我们就成功调用了C++函数啦，欢呼~</p>
+<blockquote>
+<p>我猜读到这里，大部分同学可能仍然很迷茫，我在哪里，我在干什么，这和C++有什么关系。如果这样，助教表示很抱歉。确实，这次实验涉及的背景知识过多，从 Cmake 到库的使用，从交叉编译到移动应用开发，从 OpenHarmony 到 llama.cpp 。助教已经尽力尝试让大家理解发生了什么了，如果没能做到，我们再次表示抱歉。</p>
+<p>其实这次实验不止是操作系统，更像是一次计算机学科工具的导论，我们希望这次实验能至少激发大家对某一部分的兴趣，或者对某些工具、流程留下一些印象。如果你没有理解，没关系，也不要气馁，这不是你的错，跟着步骤做一遍实验就可以啦。作为计算机系的学生，在未来几年，实验中的很多概念、工具你还会遇到很多次，你有很多机会不断加深对它们的理解。所以，放轻松吧。</p>
+<p>当然，如果理解了其中某些东西，我们也由衷为你感到高兴，祝贺你！</p>
+<p>虽然说了那么多，但实验其实还没有结束，不过后续没有想让大家理解的内容啦。助教们把完整的大模型推理应用写好了（虽然很简陋），大家跟着步骤安装使用就好了。当然，我们还是会尽力尝试解释我们在其中做了什么，感兴趣的同学可以尝试了解。</p>
+</blockquote>
+<h2 id="32-openharmony">3.2 实现 OpenHarmony 大模型推理应用</h2>
+<p>本阶段的目的是实现能在开发板上运行的大模型推理应用。即将 llama.cpp 的编译产物集成到 Demo 应用中。</p>
+<p>理论上，根据我们两个阶段的所有前置知识，再加上一点点新知识，本阶段的任务是有可能完成的。实践中，因为背景知识过多，代码较为复杂，我们不要求大家理解具体的实现流程。我们会提供实现好的源代码，你只需要把文件夹替换掉，并按第一阶段中的方法，将项目运行到开发板上即可。</p>
+<h3 id="321">3.2.1 新建项目并替换代码</h3>
+<ol>
+<li>
+<p>新建 Native C++ 项目。（参考 第一阶段 3.2.1 节，项目名自定，请记住项目位置，下一步需要找到该项目。）</p>
+</li>
+<li>
+<p>（在Windows中）打开项目所在目录，删除项目中的 <code>entry</code> 文件夹，替换为助教提供的<code>entry</code>文件夹。</p>
 </li>
 </ol>
-<p>完成这些步骤后，你就成功使用CMake将Llama.cpp交叉编译为可以在目标OpenHarmony设备（配置为armeabi-v7a）上运行的库了。接下来的步骤将是将这些产物部署到DAYU200并集成到Demo HAP中。</p>
-<h3 id="313">3.1.3 任务目标</h3>
-<p>将llama.cpp的编译产物集成到Demo HAP中,我们使用在第一阶段创建的，名为你的学号的Demo。由于Llama.cpp的代码较为复杂，故本次实验不要求同学们理解其内部实现，只需要将其作为黑盒即可。</p>
-<p>我们会提供实现好的源代码，你只需要把文件夹替换掉。(源代码中有编译好的64位库，所以你只需要编译32位的库即可，编译方式和3.1.2中相同)</p>
+<p><code>entry</code>文件夹的下载方式：</p>
+<ul>
+<li>下载链接：https://rec.ustc.edu.cn/share/dfbc3380-2b3c-11f0-aee2-27696db61006 （选择 <code>第二阶段素材 -&gt; entry.zip</code>）</li>
+<li>解压后替换原<code>entry</code>文件夹。</li>
+</ul>
+<h3 id="322">3.2.2 将交叉编译所需文件复制到项目中</h3>
 <ol>
-<li>下载提供好的源代码压缩包，解压，将原本创建的空白项目中的entry文件夹删除，将压缩包中的entry文件夹复制到项目根目录下。</li>
-<li>在<code>entry/src/main/cpp</code>目录下创建<code>include</code>文件夹，将3.1.2中编译得到的头文件（.h文件）复制到该文件夹下</li>
-<li>在<code>entry/libs</code>目录下创建<code>armeabi-v7a</code>文件夹，将3.1.2中编译得到的32位动态链接库（.so文件）复制到该文件夹下</li>
-<li>构建应用并且在开发板上运行,上面输入框可以输入提示词，效果如下所示:
+<li>在<code>entry/libs</code>文件夹下创建<code>armeabi-v7a</code>文件夹。如下图，你可以右键<code>libs</code>，选择<code>New</code>-&gt;<code>Directory</code>，然后输入文件夹的名字。
+    <img alt="create folder" src="assets/3.2.3/1.png" /></li>
+<li>
+<p>将 2.3.1 节中，在Ubuntu里交叉编译好的库文件，复制到<code>armeabi-v7a</code>文件夹下。注意，你需要复制<code>llama.cpp/build-ohos/install/libs</code>下所有的<code>.so</code>文件。</p>
+</li>
+<li>
+<p>类似第一步，在<code>entry/src/main/cpp</code>目录下创建<code>include</code>文件夹，将3.1.2中编译得到的头文件（.h文件）复制到该文件夹下。注意，你需要复制<code>llama.cpp/build-ohos/install/include</code>下的所有文件。</p>
+</li>
+<li>构建应用并且在开发板上运行,上面输入框可以输入提示词，效果如下所示：
 <img alt="alt text" src="assets/Llama%E6%95%88%E6%9E%9C.jpg" /></li>
 </ol>
 <blockquote>
-<p>这里效果很差，原因是我们为了大家的体验，选用了特别小的Tinystory模型，该模型将会生成一个小故事，如果你对如何运行其他可以使用的模型比较感兴趣，查看附录即可。</p>
+<p>这里效果很差，原因是我们为了大家的体验，选用了特别小的Tinystory模型，该模型将会生成一个小故事，如果你对如何运行其他可以使用的模型比较感兴趣，查看附录E即可。</p>
 </blockquote>
-<h1 id="_6">第四部分：第二阶段实验内容与检查标准</h1>
+<h3 id="323">3.2.3 代码里做了什么？（可选）</h3>
+<p>助教的<code>entry</code>代码中，大致做了以下修改：</p>
+<ol>
+<li>编写了ArkTS和C++代码。(<code>src/main/ets/pages/Index.ets</code>和<code>src/main/cpp/napi_init.cpp</code>两个文件。)</li>
+<li>添加了C++、ArkTS互相调用的接口。（<code>src/main/cpp/types/libentry/Index.d.ts</code>文件。）</li>
+<li>修改了C++部分的编译配置，添加对项目中<code>llama.cpp</code>库相关文件的依赖。（<code>src/main/cpp/CMakeLists.txt</code>文件。）</li>
+</ol>
+<h1 id="_8">第四部分：第二阶段实验内容与检查标准</h1>
 <h2 id="41">4.1 实验内容</h2>
 <ol>
-<li>交叉编译llama.cpp得到32位的动态链接库<code>libllama.so,libggml-base.so,libggml-cpu.so,libggml.so,libllama.so,libllava_shared.so</code>与头文件(参考3.1.2)</li>
-<li>将llama.cpp的编译产物集成到Demo HAP中(参考3.1.3)</li>
-<li>在DAYU200上运行Demo HAP(参考<strong>第一阶段</strong>3.1.3)</li>
+<li>使用<code>cmake</code>编译<code>llama.cpp</code>第三方库，并成功用其编译并运行<code>llama-Demo.cpp</code>，能够运行并获得输出。（参考<a href="#第一部分：第三方库的编译与使用">第一部分</a>。）</li>
+<li>交叉编译llama.cpp得到32位的动态链接库<code>libllama.so,libggml-base.so,libggml-cpu.so,libggml.so,libllama.so,libllava_shared.so</code>与头文件（参考<a href="#第二部分 通过交叉编译跨架构生成库文件">第二部分</a>。）</li>
+<li>成功在自己的项目中，成功调用C++函数。（参考<a href="#3. 1 在 OpenHarmony 应用中调用 C++ 代码">3.1节</a>。）</li>
+<li>成功在开发板上运行大模型推理应用。（参考<a href="#3.2 实现 OpenHarmony 大模型推理应用">3.2节</a>。）</li>
 </ol>
 <h2 id="42">4.2 实验评分标准</h2>
-<p>本次实验共 10 分，第二阶段满分为 5 分，实验检查要求和评分标准如下：</p>
+<p>本次实验共 10 分，第二阶段满分为 6 分，实验检查要求和评分标准如下：</p>
 <ol>
-<li>成功交叉编译llama.cpp得到32位动态链接库和头文件(2')</li>
-<li>成功将llama.cpp的编译产物集成到Demo HAP中,并且成功运行(3')</li>
+<li>成功编译动态链接库，并运行<code>llama-Demo</code>，得到输出。（2分）</li>
+<li>成功交叉编译，得到<code>.so</code>库文件，并用<code>file</code>命令验证其架构。（2分）</li>
+<li>成功在OpenHarmony应用中调用C++函数，在previewer中，实现点击Hello World变为5的效果。（1分）</li>
+<li>成功在开发板上运行大模型推理应用。（1分）</li>
 </ol>
-<h1 id="_7">附录</h1>
-<h2 id="a-llamacpp">附录A: llama.cpp的使用</h2>
-<p>我们在实验中为了实验的体验，使用了极小的小故事文本生成模型，名字叫做<a href="https://huggingface.co/afrideva/Tinystories-gpt-0.1-3m-GGUF">TinyStory</a>,其由于模型太小，所以产生文本的效果有点差。</p>
-<p>那么同学就要问了，有没有表现更好一点的模型呢？答案是：有的兄弟，有的。</p>
-<p>我们推荐qwen2的0.5B模型（当然其他的GGUF模型也可以，不过要考虑开发板只有2G运存）。</p>
-<h3 id="a0">A.0 创建交换分区</h3>
-<p>在运行大型应用程序，尤其是像Llama.cpp这样的大语言模型时，我们可能会遇到开发板物理内存（RAM）不足的情况。为了让系统在这种情况下依然能够运行（尽管性能可能会有所下降），我们可以配置“交换分区”。</p>
-<p><strong>什么是交换分区？</strong>
-交换分区 (Swap Space)，常被称为“虚拟内存”的一部分，是操作系统在硬盘或其他持久性存储设备（在DAYU200上通常是eMMC内部存储）上划分出来的一块区域。
-- 工作原理： 当系统的物理内存 (RAM) 即将耗尽时，操作系统会将RAM中一些暂时不活跃的数据（称为“内存页”）临时移动到交换空间中，从而释放出物理内存给当前更需要的活动进程使用。当那些被移到交换空间的数据再次需要被访问时，操作系统会再将它们从交换空间读回到RAM中。
-- 目的：
-    - 扩展可用内存： 使得系统能够运行比实际物理内存更大的程序或同时运行更多的程序。
-    - 防止内存溢出 (Out-Of-Memory, OOM)： 在物理内存完全用尽时，避免系统因无法分配内存而直接崩溃或杀死重要进程。</p>
-<p><strong>如何创建交换分区？</strong></p>
-<div class="highlight"><pre><span></span><code><span class="c1"># hdc shell 进入开发板执行</span>
-<span class="nb">cd</span><span class="w"> </span>data/llama_file
-
-<span class="c1"># 在2GB的dayu200上加swap交换空间</span>
-<span class="c1"># 新建一个空的ram_ohos文件</span>
-touch<span class="w"> </span>ram_ohos
-<span class="c1"># 创建一个用于交换空间的文件（8GB大小的交换文件）</span>
-dd<span class="w"> </span><span class="k">if</span><span class="o">=</span>/dev/zero<span class="w"> </span><span class="nv">of</span><span class="o">=</span>/data/ram_ohos<span class="w"> </span><span class="nv">bs</span><span class="o">=</span>1G<span class="w"> </span><span class="nv">count</span><span class="o">=</span><span class="m">8</span>
-<span class="c1"># 设置文件权限，以确保所有用户可以读写该文件：</span>
-chmod<span class="w"> </span><span class="m">777</span><span class="w"> </span>/data/ram_ohos
-<span class="c1"># 将文件设置为交换空间：</span>
-mkswap<span class="w"> </span>/data/ram_ohos
-<span class="c1"># 启用交换空间：</span>
-swapon<span class="w"> </span>/data/ram_ohos
-<span class="c1"># 查看内存空间:</span>
-free<span class="w"> </span>-m
-</code></pre></div>
-<h3 id="a1-qwen205b">A.1 使用qwen2的0.5B模型</h3>
 <blockquote>
-<p>如果你只是想要尝试一下，并不想自己构建，直接下载睿客网盘中第二阶段素材中的Demo即可（https://rec.ustc.edu.cn/share/dfbc3380-2b3c-11f0-aee2-27696db61006 中的<code>qwen-Demo.hap</code>）
-1. 下载qwen2的0.5B模型，下载地址：https://huggingface.co/Qwen/Qwen2-0.5B-Instruct-GGUF/tree/main ，下载其中qwen2-0_5b-instruct-q4_0.gguf即可
-2. 将其放入<code>entry/src/main/resources/resfile</code>文件夹下
-3. 修改<code>entry/src/main/ets/pages/Index.ets</code>，修改其中的<code>modelName</code>变量为:
-    <div class="highlight"><pre><span></span><code><span class="err">@</span><span class="nx">State</span><span class="w"> </span><span class="nx">modelName</span><span class="o">:</span><span class="w"> </span><span class="nx">string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;qwen2-0_5b-instruct-q4_0.gguf&#39;</span><span class="p">;</span>
-</code></pre></div>
-4. 重新构建应用运行即可（由于加载模型时间过长，可能会存在appfreeze导致应用闪退，这是正常现象，真正感兴趣联系助教）效果如下所示：
-<img alt="alt text" src="assets/%E6%95%88%E6%9E%9C%E5%9B%BE.jpg" /></p>
+<p>第一阶段的奖励分数和该阶段不叠加。即使你第一阶段获得了6分，也需要完成1.和2.，才能获得8分。完成全部实验，才能获得10分。</p>
 </blockquote>
 
 
