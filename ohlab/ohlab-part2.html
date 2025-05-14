@@ -1079,6 +1079,12 @@ CMake<span class="w"> </span>suite<span class="w"> </span>maintained<span class=
 <div class="highlight"><pre><span></span><code><span class="c1"># 定义环境变量，注意将改行改成你自己的路径，请使用绝对路径以避免出错。</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">OHOS_SDK_ROOT</span><span class="o">=</span><span class="s2">&quot;/home/[username]/ohlab/native-linux-x64-5.0.3.135-Release&quot;</span>
 
+<span class="c1"># （可选）使用ls验证环境变量是否设置成功</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;OpenHarmony SDK Linux Native Root: </span><span class="si">${</span><span class="nv">OHOS_SDK_ROOT</span><span class="si">}</span><span class="s2">&quot;</span>
+ls<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">OHOS_SDK_ROOT</span><span class="si">}</span><span class="s2">/build-tools/cmake/bin/cmake&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;SDK bundled CMake not found!&quot;</span>
+ls<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">OHOS_SDK_ROOT</span><span class="si">}</span><span class="s2">/build/cmake/ohos.toolchain.cmake&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;OHOS Toolchain file not found!&quot;</span>
+
 <span class="c1"># 使用对应的cmake编译文件（以下是一个命令，&#39;\&#39;在bash中表示命令没写完，下一行可以继续写。这条命令太长了，分行写看起来好看。你想写在同一行也是可以的。注意&#39;\&#39;字符后面不能有空格。）</span>
 <span class="si">${</span><span class="nv">OHOS_SDK_ROOT</span><span class="si">}</span>/build-tools/cmake/bin/cmake<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-S<span class="w"> </span>.<span class="w"> </span><span class="se">\</span>
@@ -1100,7 +1106,7 @@ CMake<span class="w"> </span>suite<span class="w"> </span>maintained<span class=
 <p>我们来具体分析一下命令发生了哪些变化：</p>
 <ul>
 <li><code>${OHOS_SDK_ROOT}/build-tools/cmake/bin/cmake</code>: 我们使用了一个完整的路径名（<code>${OHOS_SDK_ROOT}</code>会被替换成我们通过<code>export</code>定义的变量），指定使用 OpenHarmony SDK 中自带的 CMake 可执行文件，而不是直接使用<code>cmake</code>命令。</li>
-<li><code>-B build-ohos32</code>: 类似<code>-B build</code>，只是这次将编译的中间文件和结果放在<code>build-ohos32</code>而不是<code>build</code>目录下，方便我们查找。</li>
+<li><code>-B build-ohos</code>: 类似<code>-B build</code>，只是这次将编译的中间文件和结果放在<code>build-ohos</code>而不是<code>build</code>目录下，方便我们查找。</li>
 <li><code>-DCMAKE_TOOLCHAIN_FILE=${OHOS_SDK_ROOT}/build/cmake/ohos.toolchain.cmake</code>: <strong>该参数是交叉编译的核心。</strong><code>-DCMAKE_TOOLCHAIN_FILE</code>会让<code>cmake</code>从指定的文件里读取用到的工具的位置（例如编译器<code>gcc</code>，和<code>make</code>等）。后面的文件是SDK中已经写好的，编译到OpenHarmony的特定配置，它指定了使用 SDK 中的<code>gcc</code>进行编译。</li>
 <li><code>-DOHOS_ARCH=armeabi-v7a</code>: 这个参数用于指定目标CPU架构为 <code>armeabi-v7a</code> (ARM 32位架构)。上一个参数的文件内会读取该参数。</li>
 <li><code>-DCMAKE_CXX_FLAGS="-Wno-c++11-narrowing"</code>：这个参数为GCC添加了一个编译标志，告诉GCC允许范围缩小的强制类型转换。（这是因为我们目标架构是32位的，llama.cpp没考虑这种情况，存在一些把64位整数转换成32位的情况。不加这个参数会导致编译错误。）</li>
@@ -1122,11 +1128,11 @@ CMake<span class="w"> </span>suite<span class="w"> </span>maintained<span class=
 <p>编译成功后，生成的库文件和可执行文件位于刚刚指定的安装目录里，如：</p>
 <ul>
 <li>动态链接库 libllama.so 可能位于：<code>build-ohos/install/lib</code>。</li>
-<li>头文件可能位于：<code>build-ohos32/install/include</code>。 请检查这些常见位置。例如：</li>
+<li>头文件可能位于：<code>build-ohos/install/include</code>。 请检查这些常见位置。例如：</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="c1"># ls -l build-ohos32/install/lib</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># ls -l build-ohos/install/lib</span>
 cmake<span class="w">  </span>libggml-base.so<span class="w">  </span>libggml-cpu.so<span class="w">  </span>libggml.so<span class="w">  </span>libllama.so<span class="w">  </span>libllava_shared.so<span class="w">  </span>libmtmd_shared.so<span class="w">  </span>pkgconfig
-<span class="c1"># ls -l build-ohos32/install/include</span>
+<span class="c1"># ls -l build-ohos/install/include</span>
 ggml-alloc.h<span class="w">   </span>ggml-blas.h<span class="w">  </span>ggml-cpp.h<span class="w">  </span>ggml-cuda.h<span class="w">  </span>ggml-kompute.h<span class="w">  </span>ggml-opt.h<span class="w">  </span>ggml-sycl.h<span class="w">    </span>gguf.h<span class="w">       </span>llama.h<span class="w"> </span>ggml-backend.h<span class="w">  </span>ggml-cann.h<span class="w">  </span>ggml-cpu.h<span class="w">  </span>ggml.h<span class="w">       </span>ggml-metal.h<span class="w">    </span>ggml-rpc.h<span class="w">  </span>ggml-vulkan.h<span class="w">  </span>llama-cpp.h
 </code></pre></div>
 <ol>
