@@ -495,6 +495,12 @@ cd llama.cpp  # 请自行修改路径
 # 定义环境变量，注意将改行改成你自己的路径，请使用绝对路径以避免出错。
 export OHOS_SDK_ROOT="/home/[username]/ohlab/native-linux-x64-5.0.3.135-Release"
 
+# （可选）使用ls验证环境变量是否设置成功
+
+echo "OpenHarmony SDK Linux Native Root: ${OHOS_SDK_ROOT}"
+ls "${OHOS_SDK_ROOT}/build-tools/cmake/bin/cmake" || echo "SDK bundled CMake not found!"
+ls "${OHOS_SDK_ROOT}/build/cmake/ohos.toolchain.cmake" || echo "OHOS Toolchain file not found!"
+
 # 使用对应的cmake编译文件（以下是一个命令，'\'在bash中表示命令没写完，下一行可以继续写。这条命令太长了，分行写看起来好看。你想写在同一行也是可以的。注意'\'字符后面不能有空格。）
 ${OHOS_SDK_ROOT}/build-tools/cmake/bin/cmake \
 	-S . \
@@ -518,7 +524,7 @@ ${OHOS_SDK_ROOT}/build-tools/cmake/bin/cmake \
 我们来具体分析一下命令发生了哪些变化：
 
 - `${OHOS_SDK_ROOT}/build-tools/cmake/bin/cmake`: 我们使用了一个完整的路径名（`${OHOS_SDK_ROOT}`会被替换成我们通过`export`定义的变量），指定使用 OpenHarmony SDK 中自带的 CMake 可执行文件，而不是直接使用`cmake`命令。
-- `-B build-ohos32`: 类似`-B build`，只是这次将编译的中间文件和结果放在`build-ohos32`而不是`build`目录下，方便我们查找。
+- `-B build-ohos`: 类似`-B build`，只是这次将编译的中间文件和结果放在`build-ohos`而不是`build`目录下，方便我们查找。
 - `-DCMAKE_TOOLCHAIN_FILE=${OHOS_SDK_ROOT}/build/cmake/ohos.toolchain.cmake`: **该参数是交叉编译的核心。**`-DCMAKE_TOOLCHAIN_FILE`会让`cmake`从指定的文件里读取用到的工具的位置（例如编译器`gcc`，和`make`等）。后面的文件是SDK中已经写好的，编译到OpenHarmony的特定配置，它指定了使用 SDK 中的`gcc`进行编译。
 - `-DOHOS_ARCH=armeabi-v7a`: 这个参数用于指定目标CPU架构为 `armeabi-v7a` (ARM 32位架构)。上一个参数的文件内会读取该参数。
 - `-DCMAKE_CXX_FLAGS="-Wno-c++11-narrowing"`：这个参数为GCC添加了一个编译标志，告诉GCC允许范围缩小的强制类型转换。（这是因为我们目标架构是32位的，llama.cpp没考虑这种情况，存在一些把64位整数转换成32位的情况。不加这个参数会导致编译错误。）
@@ -544,12 +550,12 @@ ${OHOS_SDK_ROOT}/build-tools/cmake/bin/cmake \
    编译成功后，生成的库文件和可执行文件位于刚刚指定的安装目录里，如：
 
    - 动态链接库 libllama.so 可能位于：`build-ohos/install/lib`。
-   - 头文件可能位于：`build-ohos32/install/include`。 请检查这些常见位置。例如：
+   - 头文件可能位于：`build-ohos/install/include`。 请检查这些常见位置。例如：
 
    ```sh
-   # ls -l build-ohos32/install/lib
+   # ls -l build-ohos/install/lib
    cmake  libggml-base.so  libggml-cpu.so  libggml.so  libllama.so  libllava_shared.so  libmtmd_shared.so  pkgconfig
-   # ls -l build-ohos32/install/include
+   # ls -l build-ohos/install/include
    ggml-alloc.h   ggml-blas.h  ggml-cpp.h  ggml-cuda.h  ggml-kompute.h  ggml-opt.h  ggml-sycl.h    gguf.h       llama.h ggml-backend.h  ggml-cann.h  ggml-cpu.h  ggml.h       ggml-metal.h    ggml-rpc.h  ggml-vulkan.h  llama-cpp.h
    ```
 
