@@ -243,14 +243,14 @@ CMake本身不是一个编译器，而是一个构建系统生成器。它读取
     g++ -o llama-Demo llama-Demo.cpp \
     -I./llama.cpp/build/install/include \
     -L./llama.cpp/build/install/lib \
-    -lllama \
+    -lllama -lggml -lggml-base -lggml-cpu \
     -std=c++17
     ```
     参数解析：
     - `-o llama-Demo`: 指定输出可执行文件的名称为llama-Demo。
     - `-I./llama.cpp/build/install/include`: 指定头文件的搜索路径(相对路径)。
     - `-L./llama.cpp/build/install/lib`: 指定库文件的搜索路径(相对路径)。
-    - `-lllama`: (小写L) 告诉链接器链接名为llama的库（即libllama.so）。（你可以把`-lllama`断句为`-l`和`llama`，虽然它们必须要连着写。意思是链接（link）llama 库。看到这句话的编译器会自动寻找名字为`libllama.so`或`.a`的文件，并从中寻找函数的实现。）
+    - `-lllama -lggml -lggml-base -lggml-cpu`: (小写L) 告诉链接器链接名为llama,ggml,ggml-base,ggml-cpu的库（即libllama.so等）。（你可以把`-lllama`断句为`-l`和`llama`，虽然它们必须要连着写。意思是链接（link）llama 库。看到这句话的编译器会自动寻找名字为`libllama.so`或`.a`的文件，并从中寻找函数的实现。）
     - `-std=c++17`: 指定C++标准版本为C++17。
     
     > 从这一步的参数中也可以看出，C/C++中使用第三方库需要两类文件：**头文件**和**库文件**。头文件定义了函数的接口，库文件内存放了函数的实现（机器码）。
