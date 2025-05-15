@@ -21,8 +21,8 @@ theme:
         name: 切换至深色模式
     - scheme: slate
       media: "(prefers-color-scheme: dark)"
-      primary: light blue
-      accent: light blue
+      # primary: light blue
+      # accent: light blue
       toggle:
         icon: material/toggle-switch
         name: 切换至浅色模式
