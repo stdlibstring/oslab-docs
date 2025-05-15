@@ -2,11 +2,42 @@ site_name: "USTC OS Docs"
 site_description: "中国科学技术大学操作系统课程实验文档"
 site_author: "USTC OS Team"
 
-use_directory_urls: false
+use_directory_urls: true
+
+# Repository
+repo_name: 'oslab-docs'
+repo_url: 'https://github.com/stdlibstring/oslab-docs'
 
 theme:
   name: 'material'
   language: 'zh'
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo # 你可以选择喜欢的主色
+      accent: indigo  # 你可以选择喜欢的强调色
+      toggle:
+        icon: octicons/brightness-7 # Light mode icon
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate # 'slate' 通常用于暗色模式
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: octicons/moon-stars-24 # Dark mode icon
+        name: Switch to light mode
+
+    # Palette toggle for light mode (explicitly)
+    - media: "(prefers-color-scheme: light)" # Optional: explicitly define light mode toggle
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: octicons/brightness-7
+        name: Switch to dark mode
 
 markdown_extensions:
   - admonition
