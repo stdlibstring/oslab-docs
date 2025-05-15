@@ -14,8 +14,8 @@ theme:
   palette:
     - scheme: default
       media: "(prefers-color-scheme: light)"
-      primary: blue
-      accent: blue
+      # primary: blue
+      # accent: blue
       toggle:
         icon: material/toggle-switch-off-outline
         name: 切换至深色模式
