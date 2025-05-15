@@ -12,32 +12,20 @@ theme:
   name: 'material'
   language: 'zh'
   palette:
-    # Palette toggle for automatic mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: indigo # 你可以选择喜欢的主色
-      accent: indigo  # 你可以选择喜欢的强调色
+    - scheme: default
+      media: "(prefers-color-scheme: light)"
+      primary: blue
+      accent: blue
       toggle:
-        icon: octicons/brightness-7 # Light mode icon
-        name: Switch to dark mode
-
-    # Palette toggle for dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate # 'slate' 通常用于暗色模式
-      primary: indigo
-      accent: indigo
+        icon: material/toggle-switch-off-outline
+        name: 切换至深色模式
+    - scheme: slate
+      media: "(prefers-color-scheme: dark)"
+      primary: light blue
+      accent: light blue
       toggle:
-        icon: octicons/moon-stars-24 # Dark mode icon
-        name: Switch to light mode
-
-    # Palette toggle for light mode (explicitly)
-    - media: "(prefers-color-scheme: light)" # Optional: explicitly define light mode toggle
-      scheme: default
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: octicons/brightness-7
-        name: Switch to dark mode
+        icon: material/toggle-switch
+        name: 切换至浅色模式
 
 markdown_extensions:
   - admonition
