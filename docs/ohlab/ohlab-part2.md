@@ -676,7 +676,7 @@ this.message = testNapi.add(2, 3).toString();
 2. 将 2.3.1 节中，在Ubuntu里交叉编译好的库文件，复制到`armeabi-v7a`文件夹下。注意，你需要复制`llama.cpp/build-ohos/install/libs`下所有的`.so`文件。
   
 3. 类似第一步，在`entry/src/main/cpp`目录下创建`include`文件夹，将3.1.2中编译得到的头文件（.h文件）复制到该文件夹下。注意，你需要复制`llama.cpp/build-ohos/install/include`下的所有文件。
-6. 构建应用并且在开发板上运行,上面输入框可以输入提示词，效果如下所示：
+4. 构建应用并且在开发板上运行,上面输入框可以输入提示词，效果如下所示：
 ![alt text](./assets/Llama效果.jpg)
 
 > 注意：这里运行只能在开发板上运行，不能使用Previewer运行，因为推理过程使用的是真实的硬件（例如CPU），Previewer模拟的硬件环境无法支持。
