@@ -1,0 +1,26 @@
+name: Deploy MkDocs site
+on:
+  push:
+    branches:
+      - main                   # 推送到 main 分支时触发
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest    # 使用 Ubuntu 最新镜像
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4                     # 获取仓库代码:contentReference[oaicite:3]{index=3}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5                 # 配置 Python 环境:contentReference[oaicite:4]{index=4}
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install mkdocs mkdocs-material       # 安装 MkDocs 及主题:contentReference[oaicite:5]{index=5}
+
+      - name: Deploy to GitHub Pages
+        run: mkdocs gh-deploy --force --clean         # 构建并推送到 gh-pages 分支:contentReference[oaicite:6]{index=6}
+        env:
+          CI: true                                    # 表明在 CI 环境中运行
