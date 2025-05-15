@@ -10,7 +10,7 @@ theme:
 
 markdown_extensions:
   - admonition
-  - markdown_gfm_admonition
+  # - markdown_gfm_admonition
   - pymdownx.details
   - pymdownx.superfences
 
