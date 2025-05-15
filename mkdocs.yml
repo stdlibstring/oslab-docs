@@ -25,3 +25,5 @@ nav:
     - "Part1 开源鸿蒙初探": ohlab/ohlab-part1.md
     - "Part2 端侧推理应用实现": ohlab/ohlab-part2.md
     - "附录": ohlab/appendix.md
+
+dev_addr: 127.0.0.1:9999
